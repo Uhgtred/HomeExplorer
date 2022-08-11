@@ -6,7 +6,7 @@ import time
 from Controller.Controller import Controller
 from Network.SocketClient import SocketClient
 from Camera.IPCamera import IPCamera
-from Remote.HardwareConfiguration.ConfigReader import ConfigReader
+from Remote.Configuration.ConfigReader import ConfigReader
 
 
 class Main:

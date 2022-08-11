@@ -4,7 +4,7 @@
 import time
 import serial
 
-from Robot.HardwareConfiguration.ConfigReader import ConfigReader
+from Robot.Configurations.ConfigReader import ConfigReader
 
 
 class Arduino:
@@ -45,7 +45,7 @@ class Arduino:
 
 
 if __name__ == '__main__':
-    # import /home/pi/Desktop/Robot_V1_0_2_1/HardwareConfiguration/ConfigReader
+    # import /home/pi/Desktop/Robot_V1_0_2_1/Configuration/ConfigReader
     obj = Arduino()
     device = Arduino.initArduino()
     device.sendMessage('Hallo')

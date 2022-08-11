@@ -42,7 +42,7 @@ class Controller:
         self.__YCross = int(self.__conf.readConfigParameter('YCross'))
 
     def initController(self):
-        """Automatically detects, connects and returns (object) the controller with the vendor-ID specified in Hardware.conf! Only works on linux!"""
+        """Automatically detects, connects and returns (object) the controller with the vendor-ID specified in Configurations.conf! Only works on linux!"""
         __path = self.__conf.readConfigParameter('ControllerPath')
         __temp = subprocess.Popen(['ls', __path], stdout=subprocess.PIPE)
         __controller = None

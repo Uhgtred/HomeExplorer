@@ -4,16 +4,15 @@
 import os
 from pathlib import Path
 
-
 class ConfigReader:
 
     def __init__(self):
         __filePath = Path(os.path.abspath(__file__))
         __filePath = __filePath.parent
-        self.__confFile = os.path.join(__filePath, 'Hardware.conf')
+        self.__confFile = os.path.join(__filePath, 'Configurations.conf')
 
     def readConfig(self):
-        """Reads and returns Hardware.conf as dictionary."""
+        """Reads and returns Configurations.conf as dictionary."""
         self.__configList = {}
         with open(self.__confFile, 'r') as __file:
             for __line in __file:
@@ -43,8 +42,6 @@ class ConfigReader:
             __configInfo = str(__configInfo).strip()
         return __configInfo
 
-
-if __name__ == '__main__':
-    # Testing
-    Conf = ConfigReader()
-    print(Conf.readConfigParameter('Socket_IP_Address'))
+#Testing
+#Conf = ConfigReader()
+#print(Conf.readConfigParameter('Socket_IP_Address'))

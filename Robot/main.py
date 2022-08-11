@@ -11,7 +11,7 @@ import cv2
 from Arduino.Arduino import Arduino
 # from Controller.Controller import Controller
 from Network.SocketServer import Server
-from HardwareConfiguration.ConfigReader import ConfigReader
+from Configurations.ConfigReader import ConfigReader
 
 os.chdir(os.path.dirname(os.getcwd()))
 
