@@ -43,24 +43,24 @@ class Server:
                     self.start()
 
     def getData(self):
-        data = '00000000'
         data = self.msg
         return data
 
-    def __sendData(self, conn, data):
-        byteData = []
-        transmissionSuccess = False
-        try:
-            for element in data:
-                try:
-                    byteData = (element.to_bytes(1, byteorder=sys.byteorder))
-                except:
-                    pass
-            conn.sendall(byteData)
-            transmissionSuccess = True
-        except:
-            transmissionSuccess = False
-        return transmissionSuccess
+    def sendData(self, conn, data):
+        # byteData = []
+        # transmissionSuccess = False
+        # try:
+        #     for element in data:
+        #         try:
+        #             byteData = (element.to_bytes(1, byteorder=sys.byteorder))
+        #         except:
+        #             pass
+        #     conn.sendall(byteData)
+        #     transmissionSuccess = True
+        # except:
+        #     transmissionSuccess = False
+        # return transmissionSuccess
+        conn.sendall(data)
 
     def start(self, debug=False):
         server = self.setupServer()
@@ -80,7 +80,7 @@ if __name__ == '__main__':
     import os
     os.chdir('/home/pi/Desktop/Ro*')
     from HardwareConfiguration.ConfigReader import ConfigReader
-    print('[STARTING] serer is starting...')
+    print('[STARTING] server is starting...')
     obj = Server()
     obj.start()
     obj.getData()

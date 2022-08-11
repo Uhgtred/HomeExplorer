@@ -2,41 +2,33 @@
 # @author      Markus Kösters
 
 import os
-
-hardwareConfigDict = {}
-
+from pathlib import Path
 
 class ConfigReader:
 
     def __init__(self):
-        self.__configList = None
-        global hardwareConfigDict
-        __dirPath = os.path.dirname(os.path.realpath(__file__))
-        self.__confFile = os.path.join(__dirPath, 'Hardware.conf')
+        __filePath = Path(os.path.abspath(__file__))
+        __filePath = __filePath.parent
+        self.__confFile = os.path.join(__filePath, 'Hardware.conf')
 
     def readConfig(self):
-        """Reads Hardware.conf and returns it as dictionary."""
-        global hardwareConfigDict
-        if not hardwareConfigDict:
-            self.__configList = {}
-            with open(self.__confFile, 'r') as __file:
-                for __line in __file:
-                    __line = __line.strip()
-                    if __line and not __line.startswith('#'):
-                        if '#' in __line:
-                            __line = (__line.split('#'))[0]
-                        __configParameter, __configInfo = __line.split('=')
-                        __configInfo = __configInfo.strip()
-                        if __configInfo.startswith('='):
-                            __configInfo = __configInfo[1:].strip()
-                        self.__configList[str(__configParameter).strip()] = __configInfo
-            hardwareConfigDict = self.__configList
-        else:
-            self.__configList = hardwareConfigDict
+        """Reads and returns Hardware.conf as dictionary."""
+        self.__configList = {}
+        with open(self.__confFile, 'r') as __file:
+            for __line in __file:
+                __line = __line.strip()
+                if __line and not __line.startswith('#'):
+                    if '#' in __line:
+                        __line = (__line.split('#'))[0]
+                    __configParameter, __configInfo = __line.split('=')
+                    __configInfo = __configInfo.strip()
+                    if __configInfo.startswith('='):
+                        __configInfo = __configInfo[1:].strip()
+                    self.__configList[str(__configParameter).strip()] = __configInfo
         return self.__configList
 
     def readConfigParameter(self, parameter):
-        """Reads and returns a single Parameter of Hardware.conf"""
+        """Reads and returns a single Parameter from config dictionary"""
         self.readConfig()
         __parameter = parameter.strip()
         __configInfo = str(self.__configList.get(__parameter))
@@ -50,6 +42,7 @@ class ConfigReader:
             __configInfo = str(__configInfo).strip()
         return __configInfo
 
-#Testing
-#Conf = ConfigReader()
-#print(Conf.readConfigParameter('CameraDelay'))
+if __name__ == '__main__':
+    #Testing
+    Conf = ConfigReader()
+    print(Conf.readConfigParameter('Socket_IP_Address'))

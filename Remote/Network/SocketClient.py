@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 # @author   Markus Kösters
+import pickle
+import struct
+
+import cv2
 
 from HardwareConfiguration.ConfigReader import ConfigReader
 import socket
@@ -18,9 +22,6 @@ class SocketClient:
         self.__DisconnectMessage = '!DISCONNECT'
         self.__socketServer = None
         self.__userInformed = False
-        
-    def __del__(self):
-        self.disconnect()
     
     def connect(self):
         try:
@@ -58,7 +59,32 @@ class SocketClient:
                 return __data
         except:
             pass
-        
+
+    def rcvVideo(self):
+        """source: https://www.youtube.com/watch?v=7-O7yeO3hNQ"""
+        try:
+            if self.__serverConn is not None:
+                rawVidData = b''
+                payLoadLength = struct.calcsize('Q')
+                if self.__serverConn:
+                    while len(rawVidData) <= payLoadLength:
+                        tmpMessage = self.__serverConn.recv(2*1024)
+                        if not tmpMessage:
+                            break
+                        rawVidData += tmpMessage
+                    packedMessageSize = rawVidData[:payLoadLength]
+                    rawVidData = rawVidData[payLoadLength:]
+                    msgLength = struct.unpack('Q', packedMessageSize)[0]
+                    while len(rawVidData) < msgLength:
+                        rawVidData += self.__serverConn.recv(2*1024)
+                    vidData = rawVidData[:msgLength]
+                    rawVidData = rawVidData[msgLength:]
+                    vid = pickle.loads(vidData)
+                    cv2.imshow('RobotStream', vid)
+                    key = cv2.waitkey(1)
+        except Exception:
+            print('Videostream interrupted')
+
     def disconnect(self):
         try:
             if self.__serverConn is not None:

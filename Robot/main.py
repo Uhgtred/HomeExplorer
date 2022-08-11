@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 # @author   Markus Kösters
 
+import pickle
+import struct
 import threading
 import time
 import os
+import cv2
 
 from Arduino.Arduino import Arduino
 # from Controller.Controller import Controller
@@ -21,9 +24,10 @@ class Main:
         self.__conf = ConfigReader()
         # self.__cont = Controller()
         self.__delay = float(self.__conf.readConfigParameter('DelayMain'))
-        
+        self.camStream = ''
+
         self.__socket = Server()
-        self.__socket.start()
+        self.conn = self.__socket.start()
         socketThread = threading.Thread(target=self.__socketRead, name='SocketReadThread')
         socketThread.daemon = True
         socketThread.start()
@@ -36,12 +40,24 @@ class Main:
         finally:
             self.__exit_handler()
 
+    def __readCamera(self):
+        camStream = cv2.VideoCapture(0)
+        msg = ''
+        while camStream.isOpened():
+            img, frame = camStream.read()
+            temp = pickle.dumps(frame)
+            msg = struct.pack('Q', len(temp))+temp
+        if msg:
+            self.camStream = msg
+
     def __socketRead(self):
         while True:
             try:
                 dataLine = self.__socket.getData()
                 #print(f'fata : {dataLine}')
-                self.Arduino.sendMessage(dataLine, self.__serial)
+                self.__readCamera()
+                # self.__socket.sendData(self.conn, self.camStream)
+                self.Arduino.sendMessage(dataLine, self.__serial)  # should probably be it's own method
                 time.sleep(self.__delay)
             except Exception as e:
                 print('Error occurred during reading from socket-server!', e)
