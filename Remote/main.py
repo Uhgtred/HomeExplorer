@@ -4,9 +4,9 @@
 import threading
 import time
 from Controller.Controller import Controller
-from HardwareConfiguration.ConfigReader import ConfigReader
 from Network.SocketClient import SocketClient
 from Camera.IPCamera import IPCamera
+from Remote.HardwareConfiguration.ConfigReader import ConfigReader
 
 
 class Main:
@@ -30,8 +30,7 @@ class Main:
         __cameraThread = threading.Thread(target=self.__camReadContinuously, name='CameraThread')
         __cameraThread.daemon = True
         __cameraThread.start()
-        
-        # Need to be a send message thread, which is being fed by the necessary data to be send
+
         __trackThread = threading.Thread(target=self.__sendControllerData, name='ControllerValueThread')
         __trackThread.daemon = True
         __trackThread.start()
