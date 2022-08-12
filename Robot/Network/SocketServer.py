@@ -1,8 +1,10 @@
+#!/usr/bin/env python3
+# @author      Markus Kösters
+
 import socket
 import threading
-import sys
-from HardwareConfiguration.ConfigReader import ConfigReader
 
+from Robot.Configurations.ConfigReader import ConfigReader
 
 class Server:
     def __init__(self):
@@ -78,8 +80,10 @@ class Server:
 
 if __name__ == '__main__':
     import os
+
     os.chdir('/home/pi/Desktop/Ro*')
     from HardwareConfiguration.ConfigReader import ConfigReader
+
     print('[STARTING] server is starting...')
     obj = Server()
     obj.start()

@@ -3,7 +3,7 @@
 
 from evdev import InputDevice
 import subprocess
-from HardwareConfiguration.ConfigReader import ConfigReader
+from Remote.Configuration.ConfigReader import ConfigReader
 
 
 class Controller:
