@@ -25,7 +25,7 @@ __mouse = None
 __temp = __temp.communicate()
 __deviceList = (__temp[0]).decode()
 print(__deviceList)
-print(InputDevice(f'{__path}event6').info.vendor)  #####find vendor-ID for Hardware.conf
+print(InputDevice(f'{__path}event6').info.vendor)  #####find vendor-ID for Configurations.conf
 __deviceList = __deviceList.split('\n')
 controller = InputDevice(f'{__path}event6')
 for event in controller.read_loop():

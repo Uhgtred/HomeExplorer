@@ -6,9 +6,9 @@ import time
 import os
 
 from Arduino.Arduino import Arduino
-# from Controller.Controller import Controller
 from Network.SocketServer import Server
-from HardwareConfiguration.ConfigReader import ConfigReader
+from Configurations.ConfigReader import ConfigReader
+from Robot.Camera.Camera import Camera
 
 os.chdir(os.path.dirname(os.getcwd()))
 
@@ -19,39 +19,41 @@ class Main:
         self.Arduino = Arduino()
         self.__serial = self.Arduino.initArduino()
         self.__conf = ConfigReader()
-        # self.__cont = Controller()
         self.__delay = float(self.__conf.readConfigParameter('DelayMain'))
-        
+
+        self.__camera = Camera()
+
         self.__socket = Server()
-        self.__socket.start()
-        socketThread = threading.Thread(target=self.__socketRead, name='SocketReadThread')
-        socketThread.daemon = True
+        self.conn = self.__socket.start()
+        socketThread = threading.Thread(target=self.__communication, name='SocketReadThread', daemon=True)
         socketThread.start()
 
         try:
             while True:
-                time.sleep(1)
+                time.sleep(1)  # sleep is for reducing CPU-load
         except KeyboardInterrupt:
             print('Program exit, resetting GPIO-Pins...')
         finally:
             self.__exit_handler()
 
-    def __socketRead(self):
+    def __communication(self):
         while True:
             try:
                 dataLine = self.__socket.getData()
-                #print(f'fata : {dataLine}')
+                vid = self.__camera.readCamera()
+                self.__socket.sendData(vid)
                 self.Arduino.sendMessage(dataLine, self.__serial)
                 time.sleep(self.__delay)
             except Exception as e:
-                print('Error occurred during reading from socket-server!', e)
+                print('Error occurred during communication to external device!', e)
 
     def __exit_handler(self):
         self.Arduino.close(self.__serial)
 
+
 if __name__ == '__main__':
     main = Main()
-    #((0-255),(0/1),(0-255),(0/1),(-32768-32767),y)
+    # ((0-255),(0/1),(0-255),(0/1),(-32768-32767),y)
 #     import serial
 #     device = serial.Serial()
 #     device.baud = 9600
@@ -71,6 +73,3 @@ if __name__ == '__main__':
 #         pass
 #     print(answer)
 #     device.close()
-    
-    
-    

@@ -1,21 +1,24 @@
+#!/usr/bin/env python3
+# @author      Markus Kösters
+
 import socket
 import threading
-import sys
-from HardwareConfiguration.ConfigReader import ConfigReader
+
+from Robot.Configurations.ConfigReader import ConfigReader
 
 
 class Server:
     def __init__(self):
         self.__conf = ConfigReader()
-        # Port to listen to (non-privileged ports are > 1024)
         self.__Header = int(self.__conf.readConfigParameter('MessageHeader'))
         self.__Port = int(self.__conf.readConfigParameter('Socket_IP_Port'))
-        self.__Server = self.__conf.readConfigParameter('Server_IP_Address')  # socket.gethostbyname(socket.gethostname())
+        self.__Server = self.__conf.readConfigParameter('Server_IP_Address')
         self.__Address = (self.__Server, self.__Port)
         self.__Format = self.__conf.readConfigParameter('MessageFormat')
         self.__DisconnectMessage = '!DISCONNECT'
-        self.__socketServer = None
+        self.__clientConnection = None
         self.msg = ''
+        self.__data = ''
 
     def setupServer(self):
         socketServer = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -23,18 +26,18 @@ class Server:
         print(self.__Address)
         return socketServer
 
-    def handleClient(self, conn, addr, debug=False):
+    def handleClient(self, addr, debug=False):
         print(f'Robot with address:   {addr}   connected.')
         connected = True
         while connected:
-            msgLength = conn.recv(self.__Header).decode(self.__Format)
+            msgLength = self.__clientConnection.recv(self.__Header).decode(self.__Format)
             if msgLength:
                 msgLength = int(msgLength)
                 try:
-                    self.msg = conn.recv(msgLength)
+                    self.msg = self.__clientConnection.recv(msgLength)  # if nothing is received this is blocking me
                     self.msg = self.msg.decode(self.__Format)
-                except:
-                    pass
+                except Exception as e:
+                    print('Something failed in sockets: ', e)
                 if debug:
                     print(f'[{addr}] {self.msg}')
                 if str(self.msg) == self.__DisconnectMessage:
@@ -43,44 +46,35 @@ class Server:
                     self.start()
 
     def getData(self):
-        data = '00000000'
         data = self.msg
         return data
 
-    def __sendData(self, conn, data):
-        byteData = []
-        transmissionSuccess = False
-        try:
-            for element in data:
-                try:
-                    byteData = (element.to_bytes(1, byteorder=sys.byteorder))
-                except:
-                    pass
-            conn.sendall(byteData)
-            transmissionSuccess = True
-        except:
-            transmissionSuccess = False
-        return transmissionSuccess
+    def sendData(self, data):
+        print('trying to send data', len(data))
+        self.__clientConnection.sendall(data)
+        self.__data = data
 
     def start(self, debug=False):
         server = self.setupServer()
         server.listen()
-        conn = None
+        self.__clientConnection = None
         addr = None
-        while not conn:
-            conn, addr = server.accept()
-            thread = threading.Thread(target=self.handleClient, args=(conn, addr, debug))
+        while not self.__clientConnection:
+            self.__clientConnection, addr = server.accept()
+            thread = threading.Thread(target=self.handleClient, args=(addr, debug))
             thread.start()
             if debug:
                 print(f'[ACTIVE CONNECTIONS] {threading.active_count() - 1}')
-        return conn, addr
+        return self.__clientConnection, addr
 
 
 if __name__ == '__main__':
     import os
+
     os.chdir('/home/pi/Desktop/Ro*')
     from HardwareConfiguration.ConfigReader import ConfigReader
-    print('[STARTING] serer is starting...')
+
+    print('[STARTING] server is starting...')
     obj = Server()
     obj.start()
     obj.getData()

@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 # @author   Markus Kösters
+import pickle
+import struct
 
-from HardwareConfiguration.ConfigReader import ConfigReader
+import cv2
+
+from Remote.Configuration.ConfigReader import ConfigReader
 import socket
 
 
@@ -15,12 +19,10 @@ class SocketClient:
         self.__Header = int(self.__conf.readConfigParameter('MessageHeader'))
         self.__Address = (self.__Host, self.__Port)
         self.__Format = self.__conf.readConfigParameter('MessageFormat')
+        self.__VideoSize = int(self.__conf.readConfigParameter('VideoSize'))
         self.__DisconnectMessage = '!DISCONNECT'
         self.__socketServer = None
         self.__userInformed = False
-        
-    def __del__(self):
-        self.disconnect()
     
     def connect(self):
         try:
@@ -58,7 +60,32 @@ class SocketClient:
                 return __data
         except:
             pass
-        
+
+    def rcvVideo(self):
+        """source: https://www.youtube.com/watch?v=7-O7yeO3hNQ"""
+        try:
+            if self.__serverConn is not None:
+                rawVidData = b''
+                payLoadLength = struct.calcsize('Q')
+                if self.__serverConn:
+                    while len(rawVidData) <= payLoadLength:
+                        tmpMessage = self.__serverConn.recv(self.__VideoSize)
+                        if not tmpMessage:
+                            break
+                        rawVidData += tmpMessage
+                    packedMessage = rawVidData[:payLoadLength]
+                    rawVidData = rawVidData[payLoadLength:]
+                    msgLength = struct.unpack('Q', packedMessage)[0]
+                    while len(rawVidData) < msgLength:
+                        rawVidData += self.__serverConn.recv(self.__VideoSize)
+                    vidData = rawVidData[:msgLength]
+                    rawVidData = rawVidData[msgLength:]
+                    vid = pickle.loads(vidData)
+                    cv2.imshow('RobotStream', vid)
+                    key = cv2.waitKey(1) & 0xFF
+        except Exception as e:
+            print('Video-stream interrupted', e)
+
     def disconnect(self):
         try:
             if self.__serverConn is not None:
