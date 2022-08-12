@@ -28,13 +28,12 @@ class Main:
 
         self.__socket = Server()
         self.conn = self.__socket.start()
-        socketThread = threading.Thread(target=self.__socketRead, name='SocketReadThread')
-        socketThread.daemon = True
+        socketThread = threading.Thread(target=self.__socketRead, name='SocketReadThread', daemon=True)
         socketThread.start()
 
         try:
             while True:
-                time.sleep(1)
+                time.sleep(1)  # sleep is for reducing CPU-load
         except KeyboardInterrupt:
             print('Program exit, resetting GPIO-Pins...')
         finally:
@@ -46,7 +45,7 @@ class Main:
         while camStream.isOpened():
             img, frame = camStream.read()
             temp = pickle.dumps(frame)
-            msg = struct.pack('Q', len(temp))+temp
+            msg = struct.pack('Q', len(temp)) + temp
         if msg:
             self.camStream = msg
 
@@ -54,10 +53,10 @@ class Main:
         while True:
             try:
                 dataLine = self.__socket.getData()
-                #print(f'fata : {dataLine}')
+                # print(f'data : {dataLine}')
                 self.__readCamera()
                 # self.__socket.sendData(self.conn, self.camStream)
-                self.Arduino.sendMessage(dataLine, self.__serial)  # should probably be it's own method
+                self.Arduino.sendMessage(dataLine, self.__serial)  # should probably be its own method
                 time.sleep(self.__delay)
             except Exception as e:
                 print('Error occurred during reading from socket-server!', e)
@@ -65,9 +64,10 @@ class Main:
     def __exit_handler(self):
         self.Arduino.close(self.__serial)
 
+
 if __name__ == '__main__':
     main = Main()
-    #((0-255),(0/1),(0-255),(0/1),(-32768-32767),y)
+    # ((0-255),(0/1),(0-255),(0/1),(-32768-32767),y)
 #     import serial
 #     device = serial.Serial()
 #     device.baud = 9600
@@ -87,6 +87,3 @@ if __name__ == '__main__':
 #         pass
 #     print(answer)
 #     device.close()
-    
-    
-    

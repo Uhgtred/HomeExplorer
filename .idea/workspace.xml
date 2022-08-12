@@ -2,11 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3aa7b622-19b8-4b1f-b53d-e9ee316c00e2" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/Repos.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Repos.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Remote/Controller/Controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/Remote/Controller/Controller.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Robot/Network/SocketServer.py" beforeDir="false" afterPath="$PROJECT_DIR$/Robot/Network/SocketServer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Robot/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/Robot/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
