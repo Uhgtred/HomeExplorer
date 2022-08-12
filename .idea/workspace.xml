@@ -7,12 +7,8 @@
     <list default="true" id="3aa7b622-19b8-4b1f-b53d-e9ee316c00e2" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Remote/Configuration/Configurations.conf" beforeDir="false" afterPath="$PROJECT_DIR$/Remote/Configuration/Configurations.conf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Remote/Network/SocketClient.py" beforeDir="false" afterPath="$PROJECT_DIR$/Remote/Network/SocketClient.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Remote/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/Remote/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Robot/Camera/Camera.py" beforeDir="false" afterPath="$PROJECT_DIR$/Robot/Camera/Camera.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Robot/Configurations/Configurations.conf" beforeDir="false" afterPath="$PROJECT_DIR$/Robot/Configurations/Configurations.conf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Robot/Network/SocketServer.py" beforeDir="false" afterPath="$PROJECT_DIR$/Robot/Network/SocketServer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Robot/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/Robot/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
