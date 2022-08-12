@@ -5,7 +5,7 @@ import struct
 
 import cv2
 
-from HardwareConfiguration.ConfigReader import ConfigReader
+from Remote.Configuration.ConfigReader import ConfigReader
 import socket
 
 
@@ -19,6 +19,7 @@ class SocketClient:
         self.__Header = int(self.__conf.readConfigParameter('MessageHeader'))
         self.__Address = (self.__Host, self.__Port)
         self.__Format = self.__conf.readConfigParameter('MessageFormat')
+        self.__VideoSize = self.__conf.readConfigParameter('VideoSize')
         self.__DisconnectMessage = '!DISCONNECT'
         self.__socketServer = None
         self.__userInformed = False
@@ -68,22 +69,22 @@ class SocketClient:
                 payLoadLength = struct.calcsize('Q')
                 if self.__serverConn:
                     while len(rawVidData) <= payLoadLength:
-                        tmpMessage = self.__serverConn.recv(2*1024)
+                        tmpMessage = self.__serverConn.recv(self.__VideoSize)
                         if not tmpMessage:
                             break
                         rawVidData += tmpMessage
-                    packedMessageSize = rawVidData[:payLoadLength]
+                    packedMessage = rawVidData[:payLoadLength]
                     rawVidData = rawVidData[payLoadLength:]
-                    msgLength = struct.unpack('Q', packedMessageSize)[0]
+                    msgLength = struct.unpack('Q', packedMessage)[0]
                     while len(rawVidData) < msgLength:
-                        rawVidData += self.__serverConn.recv(2*1024)
+                        rawVidData += self.__serverConn.recv(self.__VideoSize)
                     vidData = rawVidData[:msgLength]
                     rawVidData = rawVidData[msgLength:]
                     vid = pickle.loads(vidData)
                     cv2.imshow('RobotStream', vid)
                     key = cv2.waitkey(1)
         except Exception:
-            print('Videostream interrupted')
+            print('Video-stream interrupted')
 
     def disconnect(self):
         try:

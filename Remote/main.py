@@ -53,7 +53,8 @@ class Main:
         print(f'Connection to Server:\t{__connected}')
     
     def __camReadContinuously(self):
-        self.__socketClient.rcvVideo()
+        while True:
+            self.__socketClient.rcvVideo()
         # self.__camera = IPCamera()
         # while True:
         #     try:
