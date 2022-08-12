@@ -19,7 +19,7 @@ class SocketClient:
         self.__Header = int(self.__conf.readConfigParameter('MessageHeader'))
         self.__Address = (self.__Host, self.__Port)
         self.__Format = self.__conf.readConfigParameter('MessageFormat')
-        self.__VideoSize = self.__conf.readConfigParameter('VideoSize')
+        self.__VideoSize = int(self.__conf.readConfigParameter('VideoSize'))
         self.__DisconnectMessage = '!DISCONNECT'
         self.__socketServer = None
         self.__userInformed = False
@@ -82,9 +82,9 @@ class SocketClient:
                     rawVidData = rawVidData[msgLength:]
                     vid = pickle.loads(vidData)
                     cv2.imshow('RobotStream', vid)
-                    key = cv2.waitkey(1)
-        except Exception:
-            print('Video-stream interrupted')
+                    key = cv2.waitKey(1) & 0xFF
+        except Exception as e:
+            print('Video-stream interrupted', e)
 
     def disconnect(self):
         try:

@@ -3,7 +3,7 @@
 
 import threading
 import time
-from Controller.Controller import Controller
+#from Controller.Controller import Controller
 from Network.SocketClient import SocketClient
 from Camera.IPCamera import IPCamera
 from Remote.Configuration.ConfigReader import ConfigReader
@@ -13,19 +13,18 @@ class Main:
     
     def __init__(self):
         self.__conf = ConfigReader()
-        self.__cont = Controller()
+        #self.__cont = Controller()
         self.__socketClient = SocketClient()
         self.connectToServer()
         self.__delay = float(self.__conf.readConfigParameter('DelayMain'))
-        self.__cameraDelay = float(self.__conf.readConfigParameter('CameraDelay'))
 
-        __controller = self.__cont.initController()
-        print(__controller)
-        self.__controllerValues = ''
-        
-        __controllerThread = threading.Thread(target=lambda: self.__cont.readController(__controller), name='ControllerThread')  # has to be lambda-function! arguments won't work because of obj-like parameter
-        __controllerThread.daemon = True
-        __controllerThread.start()
+        # __controller = self.__cont.initController()
+        # print(__controller)
+        # self.__controllerValues = ''
+        #
+        # __controllerThread = threading.Thread(target=lambda: self.__cont.readController(__controller), name='ControllerThread')  # has to be lambda-function! arguments won't work because of obj-like parameter
+        # __controllerThread.daemon = True
+        # __controllerThread.start()
         
         __cameraThread = threading.Thread(target=self.__camReadContinuously, name='CameraThread')
         __cameraThread.daemon = True
@@ -55,22 +54,16 @@ class Main:
     def __camReadContinuously(self):
         while True:
             self.__socketClient.rcvVideo()
-        # self.__camera = IPCamera()
-        # while True:
-        #     try:
-        #         #self.__camera = IPCamera() # better performance if out of the loop?
-        #         self.__camera.readCamera()
-        #     except:
-        #         pass
+            time.sleep(self.__delay)
 
     def __sendControllerData(self):
         while True:
-            self.__controllerValues = self.__cont.getControllerValues()
-            self.__socketClient.sendMessage(self.__controllerValues)
+            # self.__controllerValues = self.__cont.getControllerValues()
+            # self.__socketClient.sendMessage(self.__controllerValues)
             time.sleep(self.__delay)
 
     def exit_handler(self):
-        self.__camera.cleanCamera()
+        #self.__camera.cleanCamera()
         self.__socketClient.disconnect()
     
     def __del__(self):

@@ -5,12 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3aa7b622-19b8-4b1f-b53d-e9ee316c00e2" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Robot/Camera/Camera.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Remote/Camera/IPCamera.py" beforeDir="false" afterPath="$PROJECT_DIR$/Remote/Camera/IPCamera.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Remote/Configuration/Configurations.conf" beforeDir="false" afterPath="$PROJECT_DIR$/Remote/Configuration/Configurations.conf" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Remote/Network/SocketClient.py" beforeDir="false" afterPath="$PROJECT_DIR$/Remote/Network/SocketClient.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Remote/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/Remote/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Robot/Camera/Camera.py" beforeDir="false" afterPath="$PROJECT_DIR$/Robot/Camera/Camera.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Robot/Configurations/Configurations.conf" beforeDir="false" afterPath="$PROJECT_DIR$/Robot/Configurations/Configurations.conf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Robot/Network/SocketServer.py" beforeDir="false" afterPath="$PROJECT_DIR$/Robot/Network/SocketServer.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Robot/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/Robot/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -50,6 +51,27 @@
     </key>
   </component>
   <component name="RunManager" selected="Python.main (1)">
+    <configuration name="Camera" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="Repos" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Robot/Camera" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Robot/Camera/Camera.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="main (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Repos" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -96,6 +118,7 @@
       <list>
         <item itemvalue="Python.main (1)" />
         <item itemvalue="Python.main" />
+        <item itemvalue="Python.Camera" />
       </list>
     </recent_temporary>
   </component>
