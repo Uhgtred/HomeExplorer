@@ -8,7 +8,7 @@ import os
 from Arduino.Arduino import Arduino
 from Network.SocketServer import Server
 from Configurations.ConfigReader import ConfigReader
-from Robot.Camera.Camera import Camera
+from Camera.Camera import Camera
 
 os.chdir(os.path.dirname(os.getcwd()))
 

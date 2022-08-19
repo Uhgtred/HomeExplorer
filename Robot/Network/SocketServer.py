@@ -4,7 +4,7 @@
 import socket
 import threading
 
-from Robot.Configurations.ConfigReader import ConfigReader
+from Configurations.ConfigReader import ConfigReader
 
 
 class Server:
@@ -17,8 +17,6 @@ class Server:
         self.__Format = self.__conf.readConfigParameter('MessageFormat')
         self.__DisconnectMessage = '!DISCONNECT'
         self.__clientConnection = None
-        self.msg = ''
-        self.__data = ''
 
     def setupServer(self):
         socketServer = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -30,29 +28,36 @@ class Server:
         print(f'Robot with address:   {addr}   connected.')
         connected = True
         while connected:
-            msgLength = self.__clientConnection.recv(self.__Header).decode(self.__Format)
-            if msgLength:
-                msgLength = int(msgLength)
-                try:
-                    self.msg = self.__clientConnection.recv(msgLength)  # if nothing is received this is blocking me
-                    self.msg = self.msg.decode(self.__Format)
-                except Exception as e:
-                    print('Something failed in sockets: ', e)
-                if debug:
-                    print(f'[{addr}] {self.msg}')
-                if str(self.msg) == self.__DisconnectMessage:
-                    connected = False
-                    print('Robot disconnected!')
-                    self.start()
+            try:
+                msg = self.getData()
+            except Exception as e:
+                print('Something failed in sockets: ', e)
+            if debug:
+                print(f'[{addr}] {msg}')
+            if str(msg) == self.__DisconnectMessage:
+                connected = False
+                print('Robot disconnected!')
+                self.start()
 
     def getData(self):
-        data = self.msg
-        return data
+        msgLength = self.__clientConnection.recv(self.__Header).decode(self.__Format)
+        if msgLength:
+            msgLength = int(msgLength)
+            msg = self.__clientConnection.recv(msgLength)
+            if msg and type(msg) is bytes:
+                msg = msg.decode(self.__Format)
+                return msg
 
-    def sendData(self, data):
-        print('trying to send data', len(data))
-        self.__clientConnection.sendall(data)
-        self.__data = data
+    def sendData(self, msg):
+        if type(msg) is not str:
+            msg = str(msg)
+        if type(msg) is not bytes:
+            msg = msg.encode(self.__Format)
+        msgLength = len(msg)
+        sendLength = str(msgLength).encode(self.__Format)
+        sendLength += b' ' * (self.__Header - len(sendLength))
+        self.__clientConnection.sendall(sendLength)
+        self.__clientConnection.sendall(msg)
 
     def start(self, debug=False):
         server = self.setupServer()

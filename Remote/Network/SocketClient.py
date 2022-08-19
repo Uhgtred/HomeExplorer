@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 # @author   Markus Kösters
+
 import pickle
 import struct
-
 import cv2
 
-from Remote.Configuration.ConfigReader import ConfigReader
+from Configuration.ConfigReader import ConfigReader
 import socket
 
 
@@ -45,16 +45,24 @@ class SocketClient:
         self.__serverConn.send(__sendLength)
         self.__serverConn.send(msg)
     
+    def getData(self):
+        msgLength = self.__serverConn.recv(self.__Header).decode(self.__Format)
+        if msgLength:
+            msgLength= int(msgLength)
+            msg = self.__serverConn.recv(msgLength)
+            if msg:
+                msg = msg.decode(self.__Format)
+                return msg
+    
     def rcvCommands(self): #HAS TO BE ADAPTED TO NEW HANDSHAKE-SYSTEM
         try:
             if self.__serverConn is not None:
-                __msgLength = self.__serverConn.recv(self.__Header)
-                __data = self.__serverConn.recv(__msgLength)
-                for i in range(len(__data)):
-                    try:
-                        __data[i] = __data[i].decode(self.__Format)
-                    except:
-                        pass
+                __data = self.getData()
+#                 for i in range(len(__data)):
+#                     try:
+#                         __data[i] = __data[i].decode(self.__Format)
+#                     except:
+#                         pass
                 if str(__data) == self.__DisconnectMessage:
                     self.disconnect()
                 return __data
@@ -66,21 +74,18 @@ class SocketClient:
         try:
             if self.__serverConn is not None:
                 rawVidData = b''
-                payLoadLength = struct.calcsize('Q')
+                #payLoadLength = struct.calcsize('Q')
                 if self.__serverConn:
-                    while len(rawVidData) <= payLoadLength:
-                        tmpMessage = self.__serverConn.recv(self.__VideoSize)
-                        if not tmpMessage:
-                            break
-                        rawVidData += tmpMessage
-                    packedMessage = rawVidData[:payLoadLength]
-                    rawVidData = rawVidData[payLoadLength:]
-                    msgLength = struct.unpack('Q', packedMessage)[0]
-                    while len(rawVidData) < msgLength:
-                        rawVidData += self.__serverConn.recv(self.__VideoSize)
-                    vidData = rawVidData[:msgLength]
-                    rawVidData = rawVidData[msgLength:]
-                    vid = pickle.loads(vidData)
+#                     while len(rawVidData) <= payLoadLength:
+#                         tmpMessage = self.getData()
+#                         if not tmpMessage:
+#                             break
+#                         rawVidData += tmpMessage
+                    packedMessage = self.getData()
+                    #packedMessage = rawVidData[:payLoadLength]
+                    #rawVidData = rawVidData[payLoadLength:]
+                    #vid = struct.unpack('Q', packedMessage)
+                    vid = pickle.loads(packedMessage)
                     cv2.imshow('RobotStream', vid)
                     key = cv2.waitKey(1) & 0xFF
         except Exception as e:

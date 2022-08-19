@@ -6,7 +6,7 @@ import time
 
 from Controller.Controller import Controller
 from Network.SocketClient import SocketClient
-from Remote.Configuration.ConfigReader import ConfigReader
+from Configuration.ConfigReader import ConfigReader
 
 
 class Main:
