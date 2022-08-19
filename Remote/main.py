@@ -25,14 +25,10 @@ class Main:
         __controllerThread = threading.Thread(target=lambda: self.__cont.readController(__controller), name='ControllerThread')  # has to be lambda-function! arguments won't work because of obj-like parameter
         __controllerThread.daemon = True
         __controllerThread.start()
-        
-        __cameraThread = threading.Thread(target=self.__camReadContinuously, name='CameraThread')
-        __cameraThread.daemon = True
-        __cameraThread.start()
 
-        __trackThread = threading.Thread(target=self.__sendControllerData, name='ControllerValueThread')
-        __trackThread.daemon = True
-        __trackThread.start()
+        __socketThread = threading.Thread(target=self.__socketCommunication, name='ControllerValueThread')
+        __socketThread.daemon = True
+        __socketThread.start()
 
         try:
             while True:
@@ -50,16 +46,12 @@ class Main:
             __connected = self.__socketClient.connect()
             time.sleep(1)
         print(f'Connection to Server:\t{__connected}')
-    
-    def __camReadContinuously(self):
-        while True:
-            self.__socketClient.rcvVideo()
-            time.sleep(self.__delay)
 
-    def __sendControllerData(self):
+    def __socketCommunication(self):
         while True:
             self.__controllerValues = self.__cont.getControllerValues()
             self.__socketClient.sendMessage(self.__controllerValues)
+            self.__socketClient.rcvVideo()
             time.sleep(self.__delay)
 
     def exit_handler(self):

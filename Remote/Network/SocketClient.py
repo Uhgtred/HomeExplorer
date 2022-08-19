@@ -10,7 +10,7 @@ import socket
 
 
 class SocketClient:
-    
+
     def __init__(self):
         self.__conf = ConfigReader()
         self.__serverConn = None
@@ -23,7 +23,10 @@ class SocketClient:
         self.__DisconnectMessage = '!DISCONNECT'
         self.__socketServer = None
         self.__userInformed = False
-    
+
+    def __del__(self):
+        self.disconnect()
+
     def connect(self):
         try:
             print(self.__Address)
@@ -33,7 +36,7 @@ class SocketClient:
         except Exception as e:
             print('Exception in server-connection', e)
             return False
-            
+
     def sendMessage(self, msg):
         if type(msg) is not str:
             msg = str(msg)
@@ -44,50 +47,42 @@ class SocketClient:
         __sendLength += b' ' * (self.__Header - len(__sendLength))
         self.__serverConn.send(__sendLength)
         self.__serverConn.send(msg)
-    
+
     def getData(self):
-        msgLength = self.__serverConn.recv(self.__Header).decode(self.__Format)
-        if msgLength:
-            msgLength= int(msgLength)
-            msg = self.__serverConn.recv(msgLength)
-            if msg:
-                msg = msg.decode(self.__Format)
-                return msg
-    
-    def rcvCommands(self): #HAS TO BE ADAPTED TO NEW HANDSHAKE-SYSTEM
         try:
             if self.__serverConn is not None:
-                __data = self.getData()
-#                 for i in range(len(__data)):
-#                     try:
-#                         __data[i] = __data[i].decode(self.__Format)
-#                     except:
-#                         pass
-                if str(__data) == self.__DisconnectMessage:
-                    self.disconnect()
-                return __data
-        except:
-            pass
+                msg = ''
+                msgLength = self.__serverConn.recv(self.__Header).decode(self.__Format)
+                if msgLength:
+                    msgLength = int(msgLength)
+                    msg = self.__serverConn.recv(msgLength)
+                    if msg and type(msg) is bytes:
+                        msg = msg.decode(self.__Format)
+                    if str(msg) == self.__DisconnectMessage:
+                        self.disconnect()
+                        print('Server disconnected!')
+                return msg
+        except Exception as e:
+            print(f'Receiving data from client failed: {e}')
 
     def rcvVideo(self):
         """source: https://www.youtube.com/watch?v=7-O7yeO3hNQ"""
         try:
-            if self.__serverConn is not None:
-                rawVidData = b''
-                #payLoadLength = struct.calcsize('Q')
-                if self.__serverConn:
-#                     while len(rawVidData) <= payLoadLength:
-#                         tmpMessage = self.getData()
-#                         if not tmpMessage:
-#                             break
-#                         rawVidData += tmpMessage
-                    packedMessage = self.getData()
-                    #packedMessage = rawVidData[:payLoadLength]
-                    #rawVidData = rawVidData[payLoadLength:]
-                    #vid = struct.unpack('Q', packedMessage)
-                    vid = pickle.loads(packedMessage)
-                    cv2.imshow('RobotStream', vid)
-                    key = cv2.waitKey(1) & 0xFF
+            rawVidData = b''
+            # payLoadLength = struct.calcsize('Q')
+            if self.__serverConn:
+                # while len(rawVidData) <= payLoadLength:
+                #     tmpMessage = self.getData()
+                #     if not tmpMessage:
+                #         break
+                #     rawVidData += tmpMessage
+                packedMessage = self.getData()
+                # packedMessage = rawVidData[:payLoadLength]
+                # rawVidData = rawVidData[payLoadLength:]
+                # vid = struct.unpack('Q', packedMessage)
+                vid = pickle.loads(packedMessage)
+                cv2.imshow('RobotStream', vid)
+                key = cv2.waitKey(1) & 0xFF
         except Exception as e:
             print('Video-stream interrupted', e)
 

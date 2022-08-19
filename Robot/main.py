@@ -21,7 +21,7 @@ class Main:
         self.__conf = ConfigReader()
         self.__delay = float(self.__conf.readConfigParameter('DelayMain'))
 
-        self.__camera = Camera()
+        #self.__camera = Camera()
 
         self.__socket = Server()
         self.conn = self.__socket.start()
@@ -40,8 +40,8 @@ class Main:
         while True:
             try:
                 dataLine = self.__socket.getData()
-                vid = self.__camera.readCamera()
-                self.__socket.sendData(vid)
+                #vid = self.__camera.readCamera()
+                #self.__socket.sendData(vid)
                 self.Arduino.sendMessage(dataLine, self.__serial)
                 time.sleep(self.__delay)
             except Exception as e:
