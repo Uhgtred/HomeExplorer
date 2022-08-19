@@ -19,7 +19,6 @@ class Main:
         self.__delay = float(self.__conf.readConfigParameter('DelayMain'))
 
         __controller = self.__cont.initController()
-        print(__controller)
         self.__controllerValues = ''
 
         __controllerThread = threading.Thread(target=lambda: self.__cont.readController(__controller), name='ControllerThread')  # has to be lambda-function! arguments won't work because of obj-like parameter
@@ -41,11 +40,13 @@ class Main:
             
     def connectToServer(self):
         __connected = False
+        retryCounter = 1
         while not __connected:
-            print('trying to connect')
+            print(f'Trying to connect to server! (Try: {retryCounter})')
             __connected = self.__socketClient.connect()
+            retryCounter += 1
             time.sleep(1)
-        print(f'Connection to Server:\t{__connected}')
+        print(f'Connection to Server established:\t{__connected}')
 
     def __socketCommunication(self):
         while True:

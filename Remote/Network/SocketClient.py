@@ -87,9 +87,6 @@ class SocketClient:
             print('Video-stream interrupted', e)
 
     def disconnect(self):
-        try:
-            if self.__serverConn is not None:
-                self.sendMessage(self.__DisconnectMessage)
-                self.__serverConn.close()
-        except:
-            pass
+        if self.__serverConn is not None:
+            self.sendMessage(self.__DisconnectMessage)
+            self.__serverConn.close()
