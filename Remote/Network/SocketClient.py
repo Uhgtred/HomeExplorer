@@ -4,6 +4,7 @@
 import pickle
 import struct
 import cv2
+import time
 
 from Configuration.ConfigReader import ConfigReader
 import socket
@@ -23,6 +24,9 @@ class SocketClient:
         self.__DisconnectMessage = '!DISCONNECT'
         self.__socketServer = None
         self.__userInformed = False
+        self.sendMsg = ''
+        self.rcvMsg = ''
+        self.socketDelay = 0.01
 
     def __del__(self):
         self.disconnect()
@@ -37,33 +41,42 @@ class SocketClient:
             print('Exception in server-connection', e)
             return False
 
-    def sendMessage(self, msg):
-        if type(msg) is not str:
-            msg = str(msg)
-        if type(msg) is not bytes:
-            msg = msg.encode(self.__Format)
-        __msgLength = len(msg)
-        __sendLength = str(__msgLength).encode(self.__Format)
-        __sendLength += b' ' * (self.__Header - len(__sendLength))
-        self.__serverConn.send(__sendLength)
-        self.__serverConn.send(msg)
-
+    def sendMessage(self):
+        while True:
+            msg = self.sendMsg
+            if msg:
+                if type(msg) is not str:
+                    msg = str(msg)
+                if type(msg) is not bytes:
+                    msg = msg.encode(self.__Format)
+                __msgLength = len(msg)
+                __sendLength = str(__msgLength).encode(self.__Format)
+                __sendLength += b' ' * (self.__Header - len(__sendLength))
+                self.__serverConn.sendall(__sendLength)
+                self.__serverConn.sendall(msg)
+            time.sleep(self.socketDelay)
+    
+    def rcvMessage(self):
+        while True:
+            msg = ''
+            msgLength = self.__serverConn.recv(self.__Header).decode(self.__Format)
+            if msgLength:
+                msgLength = int(msgLength)
+                msg = self.__serverConn.recv(msgLength)
+                if msg and type(msg) is bytes:
+                    msg = msg.decode(self.__Format)
+                if str(msg) == self.__DisconnectMessage:
+                    self.disconnect()
+                    print('Server disconnected!')
+            self.rcvMsg = msg
+            time.sleep(self.socketDelay)
+    
     def getData(self):
-        try:
-            if self.__serverConn is not None:
-                msg = ''
-                msgLength = self.__serverConn.recv(self.__Header).decode(self.__Format)
-                if msgLength:
-                    msgLength = int(msgLength)
-                    msg = self.__serverConn.recv(msgLength)
-                    if msg and type(msg) is bytes:
-                        msg = msg.decode(self.__Format)
-                    if str(msg) == self.__DisconnectMessage:
-                        self.disconnect()
-                        print('Server disconnected!')
-                return msg
-        except Exception as e:
-            print(f'Receiving data from client failed: {e}')
+        if self.rcvMsg:
+            return self.rcvMsg
+    
+    def sendData(self, data):
+        self.sendMsg = data
 
     def rcvVideo(self):
         """source: https://www.youtube.com/watch?v=7-O7yeO3hNQ"""
@@ -90,3 +103,21 @@ class SocketClient:
         if self.__serverConn is not None:
             self.sendMessage(self.__DisconnectMessage)
             self.__serverConn.close()
+
+if __name__ == '__main__':
+    import time
+    msg = 'Furz'
+    start = time.time()
+    if type(msg) is not str:
+        msg = str(msg)
+    if type(msg) is not bytes:
+        msg = msg.encode('utf-8')
+    __msgLength = len(msg)
+    print(__msgLength)
+    __sendLength = str(__msgLength).encode('utf-8')
+    print(__sendLength)
+    __sendLength += b' ' * (32 - len(__sendLength))
+    print(len(__sendLength))
+    print(time.time() - start)
+    #self.__serverConn.send(__sendLength)
+    #self.__serverConn.send(msg)

@@ -50,7 +50,6 @@ class Controller:
         __temp = __temp.communicate()
         deviceList = (__temp[0]).decode()
         deviceList = deviceList.split('\n')
-        print(deviceList)
 
         for element in deviceList:
             element = f'{__path}{element}'

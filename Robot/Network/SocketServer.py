@@ -17,6 +17,8 @@ class Server:
         self.__Format = self.__conf.readConfigParameter('MessageFormat')
         self.__DisconnectMessage = '!DISCONNECT'
         self.__clientConnection = None
+        self.sendMsg = ''
+        self.rcvMsg = ''
 
     def __setupServer(self):
         socketServer = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -24,36 +26,44 @@ class Server:
         print(self.__Address)
         return socketServer
 
-    def getData(self):
-        try:
-            if self.__clientConnection is not None:
-                msg = ''
-                msgLength = self.__clientConnection.recv(self.__Header).decode(self.__Format)
-                if msgLength:
-                    msgLength = int(msgLength)
-                    msg = self.__clientConnection.recv(msgLength)
-                    if msg and type(msg) is bytes:
-                        msg = msg.decode(self.__Format)
-                    if str(msg) == self.__DisconnectMessage:
-                        print('Robot disconnected!')
-                        self.start()
-                return msg
-        except Exception as e:
-            print(f'Receiving data from client failed: {e}')
-
-    def sendData(self, msg):
-        try:
+    def __sendMessage(self):
+        msg = self.sendMsg
+        if msg:
             if type(msg) is not str:
                 msg = str(msg)
             if type(msg) is not bytes:
                 msg = msg.encode(self.__Format)
-            msgLength = len(msg)
-            sendLength = str(msgLength).encode(self.__Format)
-            sendLength += b' ' * (self.__Header - len(sendLength))
-            self.__clientConnection.sendall(sendLength)
-            self.__clientConnection.sendall(msg)
-        except Exception as e:
-            print(f'Sending data to client failed: {e}')
+            __msgLength = len(msg)
+            __sendLength = str(__msgLength).encode(self.__Format)
+            __sendLength += b' ' * (self.__Header - len(__sendLength))
+            self.__clientConnection.send(__sendLength)
+            self.__clientConnection.send(msg)
+    
+    def __rcvMessage(self):
+        msg = ''
+        msgLength = self.__clientConnection.recv(self.__Header).decode(self.__Format)
+        if msgLength:
+            msgLength = int(msgLength)
+            msg = self.__clientConnection.recv(msgLength)
+            if msg and type(msg) is bytes:
+                msg = msg.decode(self.__Format)
+            if str(msg) == self.__DisconnectMessage:
+                self.close()
+                print('Robot disconnected!')
+        self.rcvMsg = msg
+    
+    def connHandler(self):
+        while self.__clientConnection is not None:
+            self.__sendMessage()
+            self.__rcvMessage()
+        self.start()
+
+    def getData(self):
+        if self.rcvMsg:
+            return self.rcvMsg
+    
+    def sendData(self, data):
+        self.sendMsg = data
 
     def start(self, debug=False):
         server = self.__setupServer()
@@ -64,6 +74,8 @@ class Server:
             self.__clientConnection, addr = server.accept()
             if debug:
                 print(f'[ACTIVE CONNECTIONS] {threading.active_count() - 1}')
+        __connHandlerThread = threading.Thread(target=self.connHandler, name='ConnHandlerThread', daemon=True)
+        __connHandlerThread.start()
         print(f'Robot with address:   {addr}   connected.')
 
 

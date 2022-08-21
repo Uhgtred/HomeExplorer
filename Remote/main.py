@@ -25,9 +25,17 @@ class Main:
         __controllerThread.daemon = True
         __controllerThread.start()
 
-        __socketThread = threading.Thread(target=self.__socketCommunication, name='ControllerValueThread')
-        __socketThread.daemon = True
-        __socketThread.start()
+        __socketReadThread = threading.Thread(target=self.__socketClient.rcvMessage, name='SocketReadThread')
+        __socketReadThread.daemon = True
+        __socketReadThread.start()
+        
+        __socketWriteThread = threading.Thread(target=self.__socketClient.sendMessage, name='SocketWriteThread')
+        __socketWriteThread.daemon = True
+        __socketWriteThread.start()
+        
+        __socketCommunicationThread = threading.Thread(target=self.__socketCommunication, name='SocketCommunicationThread')
+        __socketCommunicationThread.daemon = True
+        __socketCommunicationThread.start()
 
         try:
             while True:
@@ -51,8 +59,8 @@ class Main:
     def __socketCommunication(self):
         while True:
             self.__controllerValues = self.__cont.getControllerValues()
-            self.__socketClient.sendMessage(self.__controllerValues)
-            self.__socketClient.rcvVideo()
+            self.__socketClient.sendData(self.__controllerValues)
+            #self.__socketClient.rcvVideo()
             time.sleep(self.__delay)
 
     def exit_handler(self):

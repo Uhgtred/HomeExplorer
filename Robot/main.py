@@ -22,11 +22,12 @@ class Main:
         self.__delay = float(self.__conf.readConfigParameter('DelayMain'))
 
         #self.__camera = Camera()
-
+        
         self.__socket = Server()
-        self.conn = self.__socket.start()
-        socketThread = threading.Thread(target=self.__communication, name='SocketReadThread', daemon=True)
-        socketThread.start()
+        self.conn = self.__socket.start()        
+        __socketCommunicationThread = threading.Thread(target=self.__socketCommunication, name='SocketCommunicationThread')
+        __socketCommunicationThread.daemon = True
+        __socketCommunicationThread.start()
 
         try:
             while True:
@@ -36,13 +37,14 @@ class Main:
         finally:
             self.__exit_handler()
 
-    def __communication(self):
+    def __socketCommunication(self):
         while True:
             try:
                 dataLine = self.__socket.getData()
                 #vid = self.__camera.readCamera()
                 #self.__socket.sendData(vid)
-                self.Arduino.sendMessage(dataLine, self.__serial)
+                if dataLine:
+                    self.Arduino.sendMessage(dataLine, self.__serial)
                 time.sleep(self.__delay)
             except Exception as e:
                 print('Error occurred during communication to external device!', e)
