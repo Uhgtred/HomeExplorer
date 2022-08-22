@@ -24,7 +24,15 @@ class Main:
         #self.__camera = Camera()
         
         self.__socket = Server()
-        self.conn = self.__socket.start()        
+        self.conn = self.__socket.start()
+        __socketReadThread = threading.Thread(target=self.__socket.rcvMessage, name='SocketReadThread')
+        __socketReadThread.daemon = True
+        __socketReadThread.start()
+        
+        __socketWriteThread = threading.Thread(target=self.__socket.sendMessage, name='SocketWriteThread')
+        __socketWriteThread.daemon = True
+        __socketWriteThread.start()
+        
         __socketCommunicationThread = threading.Thread(target=self.__socketCommunication, name='SocketCommunicationThread')
         __socketCommunicationThread.daemon = True
         __socketCommunicationThread.start()
