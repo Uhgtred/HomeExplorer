@@ -2,6 +2,7 @@
 # @author      Markus Kösters
 
 import socket
+import time
 import threading
 
 from Configurations.ConfigReader import ConfigReader
@@ -19,6 +20,7 @@ class Server:
         self.__clientConnection = None
         self.sendMsg = ''
         self.rcvMsg = ''
+        self.socketDelay = 0.01
 
     def __setupServer(self):
         socketServer = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
