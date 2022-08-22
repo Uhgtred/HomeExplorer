@@ -4,7 +4,7 @@
 import cv2
 import pickle
 import struct
-import imutils
+#import imutils
 
 
 class Camera:
@@ -21,9 +21,10 @@ class Camera:
                 cv2.imshow('RobotStream', frame)
                 key = cv2.waitKey(1)
             frame = imutils.resize(frame, width=320)
-            temp = pickle.dumps(frame)
-            msg = struct.pack('Q', len(temp)) + temp
+            temp = pickle.dumps(frame)  # pretty sure that either this line or the following is not needed.
+            # msg = struct.pack('Q', len(temp)) # + temp
         return msg
+
 
 if __name__ == '__main__':
     obj = Camera()

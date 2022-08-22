@@ -4,7 +4,7 @@
 import time
 import serial
 
-from Robot.Configurations.ConfigReader import ConfigReader
+from Configurations.ConfigReader import ConfigReader
 
 
 class Arduino:

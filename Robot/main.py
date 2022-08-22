@@ -8,7 +8,7 @@ import os
 from Arduino.Arduino import Arduino
 from Network.SocketServer import Server
 from Configurations.ConfigReader import ConfigReader
-from Robot.Camera.Camera import Camera
+from Camera.Camera import Camera
 
 os.chdir(os.path.dirname(os.getcwd()))
 
@@ -21,12 +21,21 @@ class Main:
         self.__conf = ConfigReader()
         self.__delay = float(self.__conf.readConfigParameter('DelayMain'))
 
-        self.__camera = Camera()
-
+        #self.__camera = Camera()
+        
         self.__socket = Server()
         self.conn = self.__socket.start()
-        socketThread = threading.Thread(target=self.__communication, name='SocketReadThread', daemon=True)
-        socketThread.start()
+        __socketReadThread = threading.Thread(target=self.__socket.rcvMessage, name='SocketReadThread')
+        __socketReadThread.daemon = True
+        __socketReadThread.start()
+        
+        __socketWriteThread = threading.Thread(target=self.__socket.sendMessage, name='SocketWriteThread')
+        __socketWriteThread.daemon = True
+        __socketWriteThread.start()
+        
+        __socketCommunicationThread = threading.Thread(target=self.__socketCommunication, name='SocketCommunicationThread')
+        __socketCommunicationThread.daemon = True
+        __socketCommunicationThread.start()
 
         try:
             while True:
@@ -36,13 +45,14 @@ class Main:
         finally:
             self.__exit_handler()
 
-    def __communication(self):
+    def __socketCommunication(self):
         while True:
             try:
                 dataLine = self.__socket.getData()
-                vid = self.__camera.readCamera()
-                self.__socket.sendData(vid)
-                self.Arduino.sendMessage(dataLine, self.__serial)
+                #vid = self.__camera.readCamera()
+                #self.__socket.sendData(vid)
+                if dataLine:
+                    self.Arduino.sendMessage(dataLine, self.__serial)
                 time.sleep(self.__delay)
             except Exception as e:
                 print('Error occurred during communication to external device!', e)

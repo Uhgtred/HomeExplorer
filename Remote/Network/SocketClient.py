@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 # @author   Markus Kösters
+
 import pickle
 import struct
-
 import cv2
+import time
 
-from Remote.Configuration.ConfigReader import ConfigReader
+from Configuration.ConfigReader import ConfigReader
 import socket
 
 
 class SocketClient:
-    
+
     def __init__(self):
         self.__conf = ConfigReader()
         self.__serverConn = None
@@ -23,7 +24,13 @@ class SocketClient:
         self.__DisconnectMessage = '!DISCONNECT'
         self.__socketServer = None
         self.__userInformed = False
-    
+        self.sendMsg = ''
+        self.rcvMsg = ''
+        self.socketDelay = 0.01
+
+    def __del__(self):
+        self.disconnect()
+
     def connect(self):
         try:
             print(self.__Address)
@@ -33,63 +40,84 @@ class SocketClient:
         except Exception as e:
             print('Exception in server-connection', e)
             return False
-            
-    def sendMessage(self, msg):
-        if type(msg) is not str:
-            msg = str(msg)
-        if type(msg) is not bytes:
-            msg = msg.encode(self.__Format)
-        __msgLength = len(msg)
-        __sendLength = str(__msgLength).encode(self.__Format)
-        __sendLength += b' ' * (self.__Header - len(__sendLength))
-        self.__serverConn.send(__sendLength)
-        self.__serverConn.send(msg)
+
+    def sendMessage(self):
+        while True:
+            msg = self.sendMsg
+            if msg:
+                if type(msg) is not str:
+                    msg = str(msg)
+                if type(msg) is not bytes:
+                    msg = msg.encode(self.__Format)
+                __msgLength = len(msg)
+                __sendLength = str(__msgLength).encode(self.__Format)
+                __sendLength += b' ' * (self.__Header - len(__sendLength))
+                self.__serverConn.sendall(__sendLength)
+                self.__serverConn.sendall(msg)
+            time.sleep(self.socketDelay)
     
-    def rcvCommands(self): #HAS TO BE ADAPTED TO NEW HANDSHAKE-SYSTEM
-        try:
-            if self.__serverConn is not None:
-                __msgLength = self.__serverConn.recv(self.__Header)
-                __data = self.__serverConn.recv(__msgLength)
-                for i in range(len(__data)):
-                    try:
-                        __data[i] = __data[i].decode(self.__Format)
-                    except:
-                        pass
-                if str(__data) == self.__DisconnectMessage:
+    def rcvMessage(self):
+        while True:
+            msg = ''
+            msgLength = self.__serverConn.recv(self.__Header).decode(self.__Format)
+            if msgLength:
+                msgLength = int(msgLength)
+                msg = self.__serverConn.recv(msgLength)
+                if msg and type(msg) is bytes:
+                    msg = msg.decode(self.__Format)
+                if str(msg) == self.__DisconnectMessage:
                     self.disconnect()
-                return __data
-        except:
-            pass
+                    print('Server disconnected!')
+            self.rcvMsg = msg
+            time.sleep(self.socketDelay)
+    
+    def getData(self):
+        if self.rcvMsg:
+            return self.rcvMsg
+    
+    def sendData(self, data):
+        self.sendMsg = data
 
     def rcvVideo(self):
         """source: https://www.youtube.com/watch?v=7-O7yeO3hNQ"""
         try:
-            if self.__serverConn is not None:
-                rawVidData = b''
-                payLoadLength = struct.calcsize('Q')
-                if self.__serverConn:
-                    while len(rawVidData) <= payLoadLength:
-                        tmpMessage = self.__serverConn.recv(self.__VideoSize)
-                        if not tmpMessage:
-                            break
-                        rawVidData += tmpMessage
-                    packedMessage = rawVidData[:payLoadLength]
-                    rawVidData = rawVidData[payLoadLength:]
-                    msgLength = struct.unpack('Q', packedMessage)[0]
-                    while len(rawVidData) < msgLength:
-                        rawVidData += self.__serverConn.recv(self.__VideoSize)
-                    vidData = rawVidData[:msgLength]
-                    rawVidData = rawVidData[msgLength:]
-                    vid = pickle.loads(vidData)
-                    cv2.imshow('RobotStream', vid)
-                    key = cv2.waitKey(1) & 0xFF
+            rawVidData = b''
+            # payLoadLength = struct.calcsize('Q')
+            if self.__serverConn:
+                # while len(rawVidData) <= payLoadLength:
+                #     tmpMessage = self.getData()
+                #     if not tmpMessage:
+                #         break
+                #     rawVidData += tmpMessage
+                packedMessage = self.getData()
+                # packedMessage = rawVidData[:payLoadLength]
+                # rawVidData = rawVidData[payLoadLength:]
+                # vid = struct.unpack('Q', packedMessage)
+                vid = pickle.loads(packedMessage)
+                cv2.imshow('RobotStream', vid)
+                key = cv2.waitKey(1) & 0xFF
         except Exception as e:
             print('Video-stream interrupted', e)
 
     def disconnect(self):
-        try:
-            if self.__serverConn is not None:
-                self.sendMessage(self.__DisconnectMessage)
-                self.__serverConn.close()
-        except:
-            pass
+        if self.__serverConn is not None:
+            self.sendMessage(self.__DisconnectMessage)
+            self.__serverConn.close()
+
+if __name__ == '__main__':
+    import time
+    msg = 'Furz'
+    start = time.time()
+    if type(msg) is not str:
+        msg = str(msg)
+    if type(msg) is not bytes:
+        msg = msg.encode('utf-8')
+    __msgLength = len(msg)
+    print(__msgLength)
+    __sendLength = str(__msgLength).encode('utf-8')
+    print(__sendLength)
+    __sendLength += b' ' * (32 - len(__sendLength))
+    print(len(__sendLength))
+    print(time.time() - start)
+    #self.__serverConn.send(__sendLength)
+    #self.__serverConn.send(msg)

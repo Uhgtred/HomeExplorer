@@ -3,7 +3,7 @@
 
 from evdev import InputDevice
 import subprocess
-from Remote.Configuration.ConfigReader import ConfigReader
+from Configuration.ConfigReader import ConfigReader
 
 
 class Controller:
@@ -50,7 +50,6 @@ class Controller:
         __temp = __temp.communicate()
         deviceList = (__temp[0]).decode()
         deviceList = deviceList.split('\n')
-        print(deviceList)
 
         for element in deviceList:
             element = f'{__path}{element}'
