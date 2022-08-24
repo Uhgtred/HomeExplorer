@@ -14,13 +14,13 @@ class Server:
         self.__Header = int(self.__conf.readConfigParameter('MessageHeader'))
         self.__Port = int(self.__conf.readConfigParameter('Socket_IP_Port'))
         self.__Server = self.__conf.readConfigParameter('Server_IP_Address')
-        self.__Address = (self.__Server, self.__Port)
+        self.socketDelay = float(self.__conf.readConfigParameter('SocketDelay'))
         self.__Format = self.__conf.readConfigParameter('MessageFormat')
+        self.__Address = (self.__Server, self.__Port)
         self.__DisconnectMessage = '!DISCONNECT'
         self.__clientConnection = None
         self.sendMsg = ''
         self.rcvMsg = ''
-        self.socketDelay = 0.01
 
     def __setupServer(self):
         socketServer = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
