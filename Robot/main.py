@@ -65,13 +65,11 @@ class Main:
         __socketWriteThread.daemon = True
         __socketWriteThread.start()
 
-        __socketCommunicationThread = threading.Thread(target=self.__socketCommunication,
-                                                       name='SocketCommunicationThread')
+        __socketCommunicationThread = threading.Thread(target=self.__socketCommunication, name='SocketCommunicationThread')
         __socketCommunicationThread.daemon = True
         __socketCommunicationThread.start()
 
-        __serialCommunicationThread = threading.Thread(target=self.__serialCommunication,
-                                                       name='SerialCommunicationThread')
+        __serialCommunicationThread = threading.Thread(target=self.__serialCommunication, name='SerialCommunicationThread')
         __serialCommunicationThread.daemon = True
         __serialCommunicationThread.start()
 
