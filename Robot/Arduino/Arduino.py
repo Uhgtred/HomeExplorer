@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # @author      Markus Kösters
 
-import time
 import serial
 
 from Configurations.ConfigReader import ConfigReader
@@ -17,20 +16,17 @@ class Arduino:
         self.__delay = float(self.__conf.readConfigParameter('SerialTimeOut'))
 
     def sendMessage(self, message, device):
-        try:
+        if message:
             message = message.encode(self.__format)
-        except:
-            pass
         device.write(message)
-        time.sleep(self.__delay)
 
     def readMessage(self, device):
-        message = device.readline()
-        if message:
-            if type(message) is not str:
-                message = message.decode(self.__format)
-        time.sleep(self.__delay)
-        return message
+        if device.in_waiting:
+            message = device.readline()
+            if message:
+                if type(message) is not str:
+                    message = message.decode(self.__format).strip()
+            return message
 
     def close(self, device):
         device.close()
