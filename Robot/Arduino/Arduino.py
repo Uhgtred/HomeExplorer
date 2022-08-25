@@ -21,12 +21,11 @@ class Arduino:
         device.write(message)
 
     def readMessage(self, device):
-        if device.in_waiting:
-            message = device.readline()
-            if message:
-                if type(message) is not str:
-                    message = message.decode(self.__format).strip()
-            return message
+        message = device.readline()
+        if message:
+            if type(message) is not str:
+                message = message.decode(self.__format).strip()
+        return message
 
     def close(self, device):
         device.close()
