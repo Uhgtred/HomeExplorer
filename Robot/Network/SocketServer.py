@@ -14,8 +14,8 @@ class Server:
         self.__Header = int(self.__conf.readConfigParameter('MessageHeader'))
         self.__Port = int(self.__conf.readConfigParameter('Socket_IP_Port'))
         self.__Server = self.__conf.readConfigParameter('Server_IP_Address')
-        self.socketDelay = float(self.__conf.readConfigParameter('SocketDelay'))
         self.__Format = self.__conf.readConfigParameter('MessageFormat')
+        self.socketDelay = self.__conf.readConfigParameter('SocketDelay')
         self.__Address = (self.__Server, self.__Port)
         self.__DisconnectMessage = '!DISCONNECT'
         self.__clientConnection = None

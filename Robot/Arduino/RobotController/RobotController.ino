@@ -47,19 +47,15 @@ void MotorControl(char charData[]){
   LMotorValue = (int(charData[4]) - 48) * 100 + (int(charData[5]) - 48) * 10 + (int(charData[6]) - 48);
   if ((int(charData[3]) - 48) == 1){ //data[3] is bool and decides if RMotor is turning backward or forward
     analogWrite(RMotorRPin, RMotorValue);
-    //Serial.println(RMotorValue);
   }
   else{
     analogWrite(RMotorFPin, RMotorValue);
-    //Serial.println(RMotorValue);
   }
   if ((int(charData[7]) - 48) == 1){ //data[7] is bool and decides if LMotor is turning backward or forward
     analogWrite(LMotorRPin, LMotorValue);
-    //Serial.println(LMotorValue);
   }
   else{
     analogWrite(LMotorFPin, LMotorValue);
-    //Serial.println(LMotorValue);
   }
 }
 
@@ -68,7 +64,7 @@ void ServoControl(char charData[]) {
   int RStickXValueNeg = (int(charData[11]) - 48) * 100 + (int(charData[12]) - 48) * 10 + (int(charData[13]) - 48);
   int RStickYValuePos = (int(charData[14]) - 48) * 100 + (int(charData[15]) - 48) * 10 + (int(charData[16]) - 48);
   int RStickYValueNeg = (int(charData[17]) - 48) * 100 + (int(charData[18]) - 48) * 10 + (int(charData[19]) - 48);
-  //XServo.writeMicroseconds(1500);
+
   RStickXValuePos = map(RStickXValuePos, 0, 254, 90, 180);
   RStickXValueNeg = map(RStickXValueNeg, 0, 255, 90, 0);
 
@@ -81,4 +77,17 @@ void ServoControl(char charData[]) {
   else{
     XServo.write(90);
   }             
+}
+
+void voltageMeasurement() {
+  float voltageValue;
+  int analogValue = analogRead(A0);
+  if (analogValue != 0){
+    float tempValue = (analogValue * 5) / 1024;
+    voltageValue = tempValue / 0.909091; //(100000 / (10000 + 100000))
+    Serial.println(voltageValue);
+  }
+  else{
+    voltageValue = 0;
+  }
 }
