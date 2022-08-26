@@ -14,19 +14,19 @@ class SocketClient:
 
     def __init__(self):
         self.__conf = ConfigReader()
-        self.__serverConn = None
         self.__Host = self.__conf.readConfigParameter('Socket_IP_Address')
         self.__Port = int(self.__conf.readConfigParameter('Socket_IP_Port'))
         self.__Header = int(self.__conf.readConfigParameter('MessageHeader'))
-        self.__Address = (self.__Host, self.__Port)
         self.__Format = self.__conf.readConfigParameter('MessageFormat')
         self.__VideoSize = int(self.__conf.readConfigParameter('VideoSize'))
+        self.socketDelay = self.__conf.readConfigParameter('SocketDelay')
+        self.__Address = (self.__Host, self.__Port)
+        self.__serverConn = None
         self.__DisconnectMessage = '!DISCONNECT'
         self.__socketServer = None
         self.__userInformed = False
         self.sendMsg = ''
         self.rcvMsg = ''
-        self.socketDelay = 0.01
 
     def __del__(self):
         self.disconnect()
