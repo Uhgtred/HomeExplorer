@@ -21,7 +21,6 @@ class SocketClient:
         self.__Format = self.__conf.readConfigParameter('MessageFormat')
         self.__VideoSize = int(self.__conf.readConfigParameter('VideoSize'))
         self.socketDelay = float(self.__conf.readConfigParameter('SocketDelay'))
-        self.videoFPS = float(1 / self.__conf.readConfigParameter('VideoFPS'))
         self.__Address = (self.__Host, self.__Port)
         self.__serverConn = None
         self.__DisconnectMessage = '!DISCONNECT'
@@ -99,7 +98,6 @@ class SocketClient:
         frame_data = self.vidData[:msg_size]
         self.vidData = self.vidData[msg_size:]
         frame = pickle.loads(frame_data)
-        time.sleep(self.videoFPS)
         return frame
 
     def disconnect(self):

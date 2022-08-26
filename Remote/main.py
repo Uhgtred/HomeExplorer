@@ -3,6 +3,7 @@
 
 import threading
 import time
+import cv2
 
 from Controller.Controller import Controller
 from Network.SocketClient import SocketClient
@@ -14,11 +15,13 @@ class Main:
     def __init__(self):
         """Starting the Remote-Program and configuring everything"""
         self.__conf = ConfigReader()
+        self.__delay = float(self.__conf.readConfigParameter('DelayMain'))
+        self.__socketDelay = float(self.__conf.readConfigParameter('SocketDelay'))
+        self.videoFPS = float(1 / self.__conf.readConfigParameter('VideoFPS'))
+        self.videoController = cv2
         self.__cont = Controller()
         self.__socketClient = SocketClient()
         self.__connectToServer()
-        self.__delay = float(self.__conf.readConfigParameter('DelayMain'))
-        self.__socketDelay = float(self.__conf.readConfigParameter('SocketDelay'))
         self.__threads()
         try:
             while True:
@@ -54,6 +57,8 @@ class Main:
     def __cameraStream(self):
         while True:
             vidFrame = self.__socketClient.rcvVideo()
+            self.videoController.imshow('Robot Vision') # needs to go on a real GUI!!!
+            time.sleep(self.videoFPS)
 
     def __socketCommunication(self):
         while True:
@@ -77,6 +82,10 @@ class Main:
         __socketCommunicationThread = threading.Thread(target=self.__socketCommunication, name='SocketCommunicationThread')
         __socketCommunicationThread.daemon = True
         __socketCommunicationThread.start()
+
+        __cameraStreamThread = threading.Thread(target=self.__cameraStream, name='CameraStreamThread')
+        __cameraStreamThread.daemon = True
+        __cameraStreamThread.start()
 
     def exit_handler(self):
         """Put things that need to b done before program-exit"""
