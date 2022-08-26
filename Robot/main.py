@@ -16,26 +16,19 @@ os.chdir(os.path.dirname(os.getcwd()))
 class Main:
 
     def __init__(self):
+        """Starting the Robot-Program and configuring everything"""
         self.Arduino = Arduino()
         self.__serial = self.Arduino.initArduino()
         self.__conf = ConfigReader()
         self.__delay = float(self.__conf.readConfigParameter('DelayMain'))
+        self.__socketDelay = float(self.__conf.readConfigParameter('SocketDelay'))
 
-        #self.__camera = Camera()
+        self.__camera = Camera()
         
         self.__socket = Server()
         self.conn = self.__socket.start()
-        __socketReadThread = threading.Thread(target=self.__socket.rcvMessage, name='SocketReadThread')
-        __socketReadThread.daemon = True
-        __socketReadThread.start()
-        
-        __socketWriteThread = threading.Thread(target=self.__socket.sendMessage, name='SocketWriteThread')
-        __socketWriteThread.daemon = True
-        __socketWriteThread.start()
-        
-        __socketCommunicationThread = threading.Thread(target=self.__socketCommunication, name='SocketCommunicationThread')
-        __socketCommunicationThread.daemon = True
-        __socketCommunicationThread.start()
+
+        self.__threads()
 
         try:
             while True:
@@ -45,17 +38,40 @@ class Main:
         finally:
             self.__exit_handler()
 
+    def __serialCommunication(self):
+        if self.__serialDataLine:
+            self.Arduino.sendMessage(self.__serialDataLine, self.__serial)
+            time.sleep(self.__delay)  # sleep is for reducing CPU-load
+
     def __socketCommunication(self):
+        """This method is handling the communication between Robot and Remote"""
         while True:
             try:
-                dataLine = self.__socket.getData()
-                #vid = self.__camera.readCamera()
-                #self.__socket.sendData(vid)
-                if dataLine:
-                    self.Arduino.sendMessage(dataLine, self.__serial)
-                time.sleep(self.__delay)
+                self.__serialDataLine = self.__socket.getData()
+                vid = self.__camera.readCamera()
+                self.__socket.sendData(vid)
+                time.sleep(self.__socketDelay)  # sleep is for reducing CPU-load
             except Exception as e:
+                self.__serialDataLine = '00000000000000000000'  # in case of error in communication to remote puts zeroes to stop the motors
                 print('Error occurred during communication to external device!', e)
+
+    def __threads(self):
+        """Any Thread that has to run goes in here!"""
+        __socketReadThread = threading.Thread(target=self.__socket.rcvMessage, name='SocketReadThread')
+        __socketReadThread.daemon = True
+        __socketReadThread.start()
+
+        __socketWriteThread = threading.Thread(target=self.__socket.sendMessage, name='SocketWriteThread')
+        __socketWriteThread.daemon = True
+        __socketWriteThread.start()
+
+        __socketCommunicationThread = threading.Thread(target=self.__socketCommunication, name='SocketCommunicationThread')
+        __socketCommunicationThread.daemon = True
+        __socketCommunicationThread.start()
+
+        __serialCommunicationThread = threading.Thread(target=self.__serialCommunication, name='SerialCommunicationThread')
+        __serialCommunicationThread.daemon = True
+        __serialCommunicationThread.start()
 
     def __exit_handler(self):
         self.Arduino.close(self.__serial)

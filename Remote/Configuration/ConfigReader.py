@@ -14,7 +14,7 @@ class ConfigReader:
 
     def readConfig(self):
         """Reads and returns Configurations.conf as dictionary."""
-        self.__configList = {}
+        configList = {}
         with open(self.__confFile, 'r') as __file:
             for __line in __file:
                 __line = __line.strip()
@@ -25,14 +25,14 @@ class ConfigReader:
                     __configInfo = __configInfo.strip()
                     if __configInfo.startswith('='):
                         __configInfo = __configInfo[1:].strip()
-                    self.__configList[str(__configParameter).strip()] = __configInfo
-        return self.__configList
+                configList[str(__configParameter).strip()] = __configInfo
+        return configList
 
     def readConfigParameter(self, parameter):
         """Reads and returns a single Parameter from config dictionary"""
-        self.readConfig()
+        configList = self.readConfig()
         __parameter = parameter.strip()
-        __configInfo = str(self.__configList.get(__parameter))
+        __configInfo = str(configList.get(__parameter))
         if ',' in __configInfo:
             __configInfo = __configInfo.split(',')
             for i in range(len(__configInfo)):

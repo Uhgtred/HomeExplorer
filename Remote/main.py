@@ -10,33 +10,16 @@ from Configuration.ConfigReader import ConfigReader
 
 
 class Main:
-    
+
     def __init__(self):
+        """Starting the Remote-Program and configuring everything"""
         self.__conf = ConfigReader()
         self.__cont = Controller()
         self.__socketClient = SocketClient()
-        self.connectToServer()
+        self.__connectToServer()
         self.__delay = float(self.__conf.readConfigParameter('DelayMain'))
-
-        __controller = self.__cont.initController()
-        self.__controllerValues = ''
-
-        __controllerThread = threading.Thread(target=lambda: self.__cont.readController(__controller), name='ControllerThread')  # has to be lambda-function! arguments won't work because of obj-like parameter
-        __controllerThread.daemon = True
-        __controllerThread.start()
-
-        __socketReadThread = threading.Thread(target=self.__socketClient.rcvMessage, name='SocketReadThread')
-        __socketReadThread.daemon = True
-        __socketReadThread.start()
-        
-        __socketWriteThread = threading.Thread(target=self.__socketClient.sendMessage, name='SocketWriteThread')
-        __socketWriteThread.daemon = True
-        __socketWriteThread.start()
-        
-        __socketCommunicationThread = threading.Thread(target=self.__socketCommunication, name='SocketCommunicationThread')
-        __socketCommunicationThread.daemon = True
-        __socketCommunicationThread.start()
-
+        self.__socketDelay = float(self.__conf.readConfigParameter('SocketDelay'))
+        self.__threads()
         try:
             while True:
                 time.sleep(1)
@@ -45,8 +28,9 @@ class Main:
             self.exit_handler()
         finally:
             self.exit_handler()
-            
-    def connectToServer(self):
+
+    def __connectToServer(self):
+        """Connects Remote (client) to Robot (server)"""
         __connected = False
         retryCounter = 1
         while not __connected:
@@ -56,18 +40,44 @@ class Main:
             time.sleep(1)
         print(f'Connection to Server established:\t{__connected}')
 
-    def __socketCommunication(self):
+    def __readController(self):
+        __controller = self.__cont.initController()
+        self.__controllerValues = ''
         while True:
-            self.__controllerValues = self.__cont.getControllerValues()
-            self.__socketClient.sendData(self.__controllerValues)
-            #self.__socketClient.rcvVideo()
+            try:
+                self.__controllerValues = self.__cont.getControllerValues()
+            except Exception as e:
+                self.__controllerValues = '00000000000000000000'  # in case of error in communication to controller puts zeroes to stop the motors
+                print(f'Error while reading controller: {e}')
             time.sleep(self.__delay)
 
+    def __socketCommunication(self):
+        while True:
+            self.__socketClient.sendData(self.__controllerValues)
+            self.__socketClient.rcvVideo()
+            time.sleep(self.__socketDelay)
+
+    def __threads(self):
+        """Any Thread that has to run goes in here!"""
+        __controllerThread = threading.Thread(target=self.__readController, name='ControllerThread')
+        __controllerThread.daemon = True
+        __controllerThread.start()
+
+        __socketReadThread = threading.Thread(target=self.__socketClient.rcvMessage, name='SocketReadThread')
+        __socketReadThread.daemon = True
+        __socketReadThread.start()
+
+        __socketWriteThread = threading.Thread(target=self.__socketClient.sendMessage, name='SocketWriteThread')
+        __socketWriteThread.daemon = True
+        __socketWriteThread.start()
+
+        __socketCommunicationThread = threading.Thread(target=self.__socketCommunication, name='SocketCommunicationThread')
+        __socketCommunicationThread.daemon = True
+        __socketCommunicationThread.start()
+
     def exit_handler(self):
-        self.__socketClient.disconnect()
-    
-    def __del__(self):
-        self.exit_handler()
+        """Put things that need to b done before program-exit"""
+        pass
 
 
 main = Main()

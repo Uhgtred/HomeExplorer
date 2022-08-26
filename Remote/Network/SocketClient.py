@@ -19,7 +19,7 @@ class SocketClient:
         self.__Header = int(self.__conf.readConfigParameter('MessageHeader'))
         self.__Format = self.__conf.readConfigParameter('MessageFormat')
         self.__VideoSize = int(self.__conf.readConfigParameter('VideoSize'))
-        self.socketDelay = self.__conf.readConfigParameter('SocketDelay')
+        self.socketDelay = float(self.__conf.readConfigParameter('SocketDelay'))
         self.__Address = (self.__Host, self.__Port)
         self.__serverConn = None
         self.__DisconnectMessage = '!DISCONNECT'
