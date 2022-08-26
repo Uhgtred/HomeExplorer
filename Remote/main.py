@@ -51,10 +51,13 @@ class Main:
                 print(f'Error while reading controller: {e}')
             time.sleep(self.__delay)
 
+    def __cameraStream(self):
+        while True:
+            vidFrame = self.__socketClient.rcvVideo()
+
     def __socketCommunication(self):
         while True:
             self.__socketClient.sendData(self.__controllerValues)
-            self.__socketClient.rcvVideo()
             time.sleep(self.__socketDelay)
 
     def __threads(self):

@@ -13,6 +13,7 @@ import socket
 class SocketClient:
 
     def __init__(self):
+        self.frame = None
         self.__conf = ConfigReader()
         self.__Host = self.__conf.readConfigParameter('Socket_IP_Address')
         self.__Port = int(self.__conf.readConfigParameter('Socket_IP_Port'))
@@ -20,6 +21,7 @@ class SocketClient:
         self.__Format = self.__conf.readConfigParameter('MessageFormat')
         self.__VideoSize = int(self.__conf.readConfigParameter('VideoSize'))
         self.socketDelay = float(self.__conf.readConfigParameter('SocketDelay'))
+        self.videoFPS = float(1 / self.__conf.readConfigParameter('VideoFPS'))
         self.__Address = (self.__Host, self.__Port)
         self.__serverConn = None
         self.__DisconnectMessage = '!DISCONNECT'
@@ -27,6 +29,8 @@ class SocketClient:
         self.__userInformed = False
         self.sendMsg = ''
         self.rcvMsg = ''
+        self.vidData = b''
+        self.payloadSize = struct.calcsize('Q')
 
     def __del__(self):
         self.disconnect()
@@ -55,7 +59,7 @@ class SocketClient:
                 self.__serverConn.sendall(__sendLength)
                 self.__serverConn.sendall(msg)
             time.sleep(self.socketDelay)
-    
+
     def rcvMessage(self):
         while True:
             msg = ''
@@ -70,34 +74,33 @@ class SocketClient:
                     print('Server disconnected!')
             self.rcvMsg = msg
             time.sleep(self.socketDelay)
-    
+
     def getData(self):
         if self.rcvMsg:
             return self.rcvMsg
-    
+
     def sendData(self, data):
         self.sendMsg = data
 
-    def rcvVideo(self):
+    def __rcvVideo(self):
         """source: https://www.youtube.com/watch?v=7-O7yeO3hNQ"""
-        try:
-            rawVidData = b''
-            # payLoadLength = struct.calcsize('Q')
-            if self.__serverConn:
-                # while len(rawVidData) <= payLoadLength:
-                #     tmpMessage = self.getData()
-                #     if not tmpMessage:
-                #         break
-                #     rawVidData += tmpMessage
-                packedMessage = self.getData()
-                # packedMessage = rawVidData[:payLoadLength]
-                # rawVidData = rawVidData[payLoadLength:]
-                # vid = struct.unpack('Q', packedMessage)
-                vid = pickle.loads(packedMessage)
-                cv2.imshow('RobotStream', vid)
-                key = cv2.waitKey(1) & 0xFF
-        except Exception as e:
-            print('Video-stream interrupted', e)
+        while len(self.vidData) < self.payloadSize:
+            if len(self.getData()) > 500:  # make sure we got a videoframe cause nothing else would be >500 byte
+                packet = self.getData()
+                if not packet:
+                    break
+                self.vidData += packet
+        packed_msg_size = self.vidData[:self.payloadSize]
+        self.vidData = self.vidData[self.payloadSize:]
+        msg_size = struct.unpack("Q", packed_msg_size)[0]
+        while len(self.vidData) < msg_size:
+            if len(self.getData()) > 500:  # make sure we got a videoframe cause nothing else would be >500 byte
+                self.vidData += self.getData()
+        frame_data = self.vidData[:msg_size]
+        self.vidData = self.vidData[msg_size:]
+        frame = pickle.loads(frame_data)
+        time.sleep(self.videoFPS)
+        return frame
 
     def disconnect(self):
         if self.__serverConn is not None:

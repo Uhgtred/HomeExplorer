@@ -17,17 +17,14 @@ class Main:
 
     def __init__(self):
         """Starting the Robot-Program and configuring everything"""
-        self.Arduino = Arduino()
-        self.__serial = self.Arduino.initArduino()
         self.__conf = ConfigReader()
         self.__delay = float(self.__conf.readConfigParameter('DelayMain'))
         self.__socketDelay = float(self.__conf.readConfigParameter('SocketDelay'))
-
+        self.Arduino = Arduino()
+        self.__serial = self.Arduino.initArduino()
         self.__camera = Camera()
-        
         self.__socket = Server()
         self.conn = self.__socket.start()
-
         self.__threads()
 
         try:
@@ -64,6 +61,10 @@ class Main:
         __socketWriteThread = threading.Thread(target=self.__socket.sendMessage, name='SocketWriteThread')
         __socketWriteThread.daemon = True
         __socketWriteThread.start()
+
+        __cameraStreamThread = threading.Thread(target=self.__camera.readCamera(), name='CameraStreamThread')
+        __cameraStreamThread.daemon = True
+        __cameraStreamThread.start()
 
         __socketCommunicationThread = threading.Thread(target=self.__socketCommunication, name='SocketCommunicationThread')
         __socketCommunicationThread.daemon = True

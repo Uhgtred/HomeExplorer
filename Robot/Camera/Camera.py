@@ -1,29 +1,33 @@
 #!/usr/bin/env python3
 # @author      Markus Kösters
 
+
+import time
 import cv2
 import pickle
 import struct
-#import imutils
+import imutils
+
+from Configurations.ConfigReader import ConfigReader
 
 
 class Camera:
 
     def __init__(self):
-        pass
+        self.__conf = ConfigReader()
+        self.videoFPS = float(1 / self.__conf.readConfigParameter('VideoFPS)'))
+        self.message = ''
 
     def readCamera(self, display=False):
-        camStream = cv2.VideoCapture(0)
-        msg = ''
-        if camStream.isOpened():
-            img, frame = camStream.read()
-            if display:
-                cv2.imshow('RobotStream', frame)
-                key = cv2.waitKey(1)
-            frame = imutils.resize(frame, width=320)
-            temp = pickle.dumps(frame)  # pretty sure that either this line or the following is not needed.
-            # msg = struct.pack('Q', len(temp)) # + temp
-        return msg
+        while True:
+            vid = cv2.VideoCapture(0)
+            while vid.isOpened():
+                img, frame = vid.read()
+                frame = imutils.resize(frame, width=320)
+                a = pickle.dumps(frame)
+                self.message = struct.pack("Q", len(a)) + a
+                time.sleep(self.videoFPS)
+
 
 
 if __name__ == '__main__':
