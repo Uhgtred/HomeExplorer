@@ -8,7 +8,7 @@ import os
 from Arduino.Arduino import Arduino
 from Network.SocketServer import Server
 from Configurations.ConfigReader import ConfigReader
-from Camera.Camera import Camera
+#from Camera.Camera import Camera
 
 os.chdir(os.path.dirname(os.getcwd()))
 
@@ -17,17 +17,15 @@ class Main:
 
     def __init__(self):
         """Starting the Robot-Program and configuring everything"""
-        self.Arduino = Arduino()
-        self.__serial = self.Arduino.initArduino()
+        self.socketReceivedMessage = '00000000000000000000'
         self.__conf = ConfigReader()
         self.__delay = float(self.__conf.readConfigParameter('DelayMain'))
         self.__socketDelay = float(self.__conf.readConfigParameter('SocketDelay'))
-
-        self.__camera = Camera()
-        
+        self.Arduino = Arduino()
+        self.__serial = self.Arduino.initArduino()
+        #self.__camera = Camera()
         self.__socket = Server()
         self.conn = self.__socket.start()
-
         self.__threads()
 
         try:
@@ -39,17 +37,30 @@ class Main:
             self.__exit_handler()
 
     def __serialCommunication(self):
-        if self.__serialDataLine:
-            self.Arduino.sendMessage(self.__serialDataLine, self.__serial)
+        while True:
+            self.Arduino.sendMessage(self.socketReceivedMessage, self.__serial)
+            receivedMessage = self.Arduino.readMessage(self.__serial)
             time.sleep(self.__delay)  # sleep is for reducing CPU-load
+    
+    def __socketRead(self):
+        while True:
+            self.socketReceivedMessage = self.__socket.rcvMessage()
+#             if not self.socketReceivedMessage:
+#                 self.socketReceivedMessage = '00000000000000000000'
+            time.sleep(self.__socketDelay)
+            
+    def __socketWrite(self):
+        while True:
+            self.__socket.sendMessage(self.socketSendMessage)
+            time.sleep(self.__socketDelay)
 
     def __socketCommunication(self):
         """This method is handling the communication between Robot and Remote"""
         while True:
             try:
-                self.__serialDataLine = self.__socket.getData()
-                vid = self.__camera.readCamera()
-                self.__socket.sendData(vid)
+                self.__serialDataLine = self.socketReceivedMessage
+                #vid = self.__camera.readCamera()
+                #self.__socket.sendMessage(vid)
                 time.sleep(self.__socketDelay)  # sleep is for reducing CPU-load
             except Exception as e:
                 self.__serialDataLine = '00000000000000000000'  # in case of error in communication to remote puts zeroes to stop the motors
@@ -57,17 +68,21 @@ class Main:
 
     def __threads(self):
         """Any Thread that has to run goes in here!"""
-        __socketReadThread = threading.Thread(target=self.__socket.rcvMessage, name='SocketReadThread')
+        __socketReadThread = threading.Thread(target=self.__socketRead, name='SocketReadThread')
         __socketReadThread.daemon = True
         __socketReadThread.start()
 
-        __socketWriteThread = threading.Thread(target=self.__socket.sendMessage, name='SocketWriteThread')
-        __socketWriteThread.daemon = True
-        __socketWriteThread.start()
+#         __socketWriteThread = threading.Thread(target=self.__socketWrite, name='SocketWriteThread')
+#         __socketWriteThread.daemon = True
+#         __socketWriteThread.start()
 
-        __socketCommunicationThread = threading.Thread(target=self.__socketCommunication, name='SocketCommunicationThread')
-        __socketCommunicationThread.daemon = True
-        __socketCommunicationThread.start()
+        #__cameraStreamThread = threading.Thread(target=self.__camera.readCamera(), name='CameraStreamThread')
+        #__cameraStreamThread.daemon = True
+        #__cameraStreamThread.start()
+
+#         __socketCommunicationThread = threading.Thread(target=self.__socketCommunication, name='SocketCommunicationThread')
+#         __socketCommunicationThread.daemon = True
+#         __socketCommunicationThread.start()
 
         __serialCommunicationThread = threading.Thread(target=self.__serialCommunication, name='SerialCommunicationThread')
         __serialCommunicationThread.daemon = True

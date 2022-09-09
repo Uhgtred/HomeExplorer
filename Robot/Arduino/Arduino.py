@@ -18,6 +18,7 @@ class Arduino:
     def sendMessage(self, message, device):
         if message:
             message = message.encode(self.__format)
+            # print(f'Messagesend: {message} to device: {device}')
         device.write(message)
 
     def readMessage(self, device):
@@ -40,8 +41,11 @@ class Arduino:
 
 
 if __name__ == '__main__':
+    import time
     # import /home/pi/Desktop/Robot_V1_0_2_1/Configuration/ConfigReader
     obj = Arduino()
-    device = Arduino.initArduino()
-    device.sendMessage('Hallo')
-    print(device.readMessage())
+    device = obj.initArduino()
+    while True:
+        obj.sendMessage(('Test'), device)
+        print(obj.readMessage(device))
+        time.sleep(0.05)

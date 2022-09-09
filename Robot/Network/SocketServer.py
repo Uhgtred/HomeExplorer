@@ -15,7 +15,7 @@ class Server:
         self.__Port = int(self.__conf.readConfigParameter('Socket_IP_Port'))
         self.__Server = self.__conf.readConfigParameter('Server_IP_Address')
         self.__Format = self.__conf.readConfigParameter('MessageFormat')
-        self.socketDelay = self.__conf.readConfigParameter('SocketDelay')
+        self.socketDelay = float(self.__conf.readConfigParameter('SocketDelay'))
         self.__Address = (self.__Server, self.__Port)
         self.__DisconnectMessage = '!DISCONNECT'
         self.__clientConnection = None
@@ -27,43 +27,32 @@ class Server:
         socketServer.bind(self.__Address)
         print(self.__Address)
         return socketServer
-
-    def sendMessage(self):
-        while True:
-            msg = self.sendMsg
-            if msg:
-                if type(msg) is not str:
-                    msg = str(msg)
-                if type(msg) is not bytes:
-                    msg = msg.encode(self.__Format)
-                __msgLength = len(msg)
-                __sendLength = str(__msgLength).encode(self.__Format)
-                __sendLength += b' ' * (self.__Header - len(__sendLength))
-                self.__clientConnection.sendall(__sendLength)
-                self.__clientConnection.sendall(msg)
-            time.sleep(self.socketDelay)
     
+    def sendMessage(self, msg):
+        msg = msg
+        if msg:
+            if type(msg) is not str:
+                msg = str(msg)
+            if type(msg) is not bytes:
+                msg = msg.encode(self.__Format)
+            __msgLength = len(msg)
+            __sendLength = str(__msgLength).encode(self.__Format)
+            __sendLength += b' ' * (self.__Header - len(__sendLength))
+            self.__clientConnection.sendall(__sendLength)
+            self.__clientConnection.sendall(msg)
+            
     def rcvMessage(self):
-        while True:
-            msg = ''
-            msgLength = self.__clientConnection.recv(self.__Header).decode(self.__Format)
-            if msgLength:
-                msgLength = int(msgLength)
-                msg = self.__clientConnection.recv(msgLength)
-                if msg and type(msg) is bytes:
-                    msg = msg.decode(self.__Format)
-                if str(msg) == self.__DisconnectMessage:
-                    print('Client disconnected!')
-                    self.start()
-            self.rcvMsg = msg
-            time.sleep(self.socketDelay)
-
-    def getData(self):
-        if self.rcvMsg:
-            return self.rcvMsg
-    
-    def sendData(self, data):
-        self.sendMsg = data
+        msg = ''
+        msgLength = self.__clientConnection.recv(self.__Header).decode(self.__Format)
+        if msgLength:
+            msgLength = int(msgLength)
+            msg = self.__clientConnection.recv(msgLength)
+            if msg and type(msg) is bytes:
+                msg = msg.decode(self.__Format)
+            if str(msg) == self.__DisconnectMessage:
+                print('Client disconnected!')
+                self.start()
+        return msg
 
     def start(self, debug=False):
         server = self.__setupServer()
