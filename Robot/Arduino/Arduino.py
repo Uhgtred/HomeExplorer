@@ -22,7 +22,9 @@ class Arduino:
         device.write(message)
 
     def readMessage(self, device):
-        message = device.readline()
+        message = ''
+        while not message:
+            message = device.readline()
         if message:
             if type(message) is not str:
                 message = message.decode(self.__format).strip()
