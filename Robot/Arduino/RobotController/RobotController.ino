@@ -6,6 +6,16 @@ int RMotorFPin = 6;
 int RMotorRPin = 7;
 int LMotorFPin = 8;
 int LMotorRPin = 9;
+int Battery0Pin = 35;
+int Battery1Pin = 37;
+int Battery2Pin = 39;
+int Battery3Pin = 41;
+int Battery4Pin = 43;
+int Battery5Pin = 45;
+int Battery6Pin = 47;
+int Battery7Pin = 49;
+int Battery8Pin = 51;
+int Battery9Pin = 53;
 
 String stringData;
 
@@ -37,7 +47,6 @@ void loop() {
     MotorControl(charData);
     ServoControl(charData);
   }
-  delay(50);
 }
 
 void MotorControl(char charData[]){
@@ -77,6 +86,10 @@ void ServoControl(char charData[]) {
   else{
     XServo.write(90);
   }             
+}
+
+void BatteryStatus(){
+  digitalWrite(Battery0Pin, HIGH);
 }
 
 void voltageMeasurement() {

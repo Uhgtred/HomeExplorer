@@ -15,6 +15,8 @@ class ConfigReader:
     def readConfig(self):
         """Reads and returns Configurations.conf as dictionary."""
         configList = {}
+        __configInfo = ''
+        __configParameter = ''
         with open(self.__confFile, 'r') as __file:
             for __line in __file:
                 __line = __line.strip()
@@ -30,6 +32,7 @@ class ConfigReader:
 
     def readConfigParameter(self, parameter):
         """Reads and returns a single Parameter from config dictionary"""
+        configList = {}
         configList = self.readConfig()
         __parameter = parameter.strip()
         __configInfo = str(configList.get(__parameter))
