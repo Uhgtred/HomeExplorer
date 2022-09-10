@@ -71,24 +71,20 @@ class SocketClient:
                 self.start()
         return msg
 
-    def rcvVideo(self):
+    def __rcvVideo(self):
         """source: https://www.youtube.com/watch?v=7-O7yeO3hNQ"""
         while len(self.vidData) < self.payloadSize:
-            data = self.getData()
-            if data:
-                if len(data) > 500:  # make sure we got a videoframe cause nothing else would be >500 byte
-                    packet = self.getData()
-                    if not packet:
-                        break
-                    self.vidData += packet
+            if len(self.getData()) > 500:  # make sure we got a videoframe cause nothing else would be >500 byte
+                packet = self.getData()
+                if not packet:
+                    break
+                self.vidData += packet
         packed_msg_size = self.vidData[:self.payloadSize]
         self.vidData = self.vidData[self.payloadSize:]
         msg_size = struct.unpack("Q", packed_msg_size)[0]
         while len(self.vidData) < msg_size:
-            data = self.getData()
-            if data:
-                if len(data) > 500:  # make sure we got a videoframe cause nothing else would be >500 byte
-                    self.vidData += self.getData()
+            if len(self.getData()) > 500:  # make sure we got a videoframe cause nothing else would be >500 byte
+                self.vidData += self.getData()
         frame_data = self.vidData[:msg_size]
         self.vidData = self.vidData[msg_size:]
         frame = pickle.loads(frame_data)

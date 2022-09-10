@@ -23,7 +23,7 @@ class Main:
         self.__socketDelay = float(self.__conf.readConfigParameter('SocketDelay'))
         self.Arduino = Arduino()
         self.__serial = self.Arduino.initArduino()
-        #self.__camera = Camera()
+        self.__camera = Camera()
         self.__socket = Server()
         self.conn = self.__socket.start()
         self.__threads()
@@ -80,9 +80,13 @@ class Main:
         #__cameraStreamThread.daemon = True
         #__cameraStreamThread.start()
 
-#         __socketCommunicationThread = threading.Thread(target=self.__socketCommunication, name='SocketCommunicationThread')
-#         __socketCommunicationThread.daemon = True
-#         __socketCommunicationThread.start()
+        __cameraStreamThread = threading.Thread(target=self.__camera.readCamera(), name='CameraStreamThread')
+        __cameraStreamThread.daemon = True
+        __cameraStreamThread.start()
+
+        __socketCommunicationThread = threading.Thread(target=self.__socketCommunication, name='SocketCommunicationThread')
+        __socketCommunicationThread.daemon = True
+        __socketCommunicationThread.start()
 
         __serialCommunicationThread = threading.Thread(target=self.__serialCommunication, name='SerialCommunicationThread')
         __serialCommunicationThread.daemon = True

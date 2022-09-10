@@ -18,7 +18,7 @@ class Main:
         self.__delay = float(self.__conf.readConfigParameter('DelayMain'))
         self.__socketDelay = float(self.__conf.readConfigParameter('SocketDelay'))
         print(self.__socketDelay)
-        #self.videoFPS = float(1 / float(self.__conf.readConfigParameter('VideoFPS')))
+        self.videoFPS = float(1 / float(self.__conf.readConfigParameter('VideoFPS')))
         self.__controllerValues = '00000000000000000000'
         #self.videoController = cv2
         self.__cont = Controller()
@@ -100,6 +100,10 @@ class Main:
         #__cameraStreamThread = threading.Thread(target=self.__cameraStream, name='CameraStreamThread')
         #__cameraStreamThread.daemon = True
         #__cameraStreamThread.start()
+
+        __cameraStreamThread = threading.Thread(target=self.__cameraStream, name='CameraStreamThread')
+        __cameraStreamThread.daemon = True
+        __cameraStreamThread.start()
 
     def exit_handler(self):
         """Put things that need to b done before program-exit"""
