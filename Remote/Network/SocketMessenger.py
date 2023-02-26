@@ -18,8 +18,8 @@ class SocketMessenger:
             if not packet:
                 break
             __msgLengthReceived += packet
-        __msgData = b''  # __msgLengthReceived[__msgLengthExpected:]
-        __msgLengthReceived = struct.unpack('Q', __msgLengthReceived)[0]  # [:__msgLengthExpected])[0]
+        __msgData = b''
+        __msgLengthReceived = struct.unpack('Q', __msgLengthReceived)[0]
         while len(__msgData) < __msgLengthReceived:
             rcvSize = __msgLengthReceived - len(__msgData)
             __msgData += _socket.recv(rcvSize if rcvSize <= self.__maxMsgSize else self.__maxMsgSize)
