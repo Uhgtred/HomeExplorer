@@ -3,7 +3,6 @@
 
 import socket
 from threading import Thread
-import time
 
 from Configurations.ConfigReader import ConfigReader
 from Network.SocketMessenger import SocketMessenger
@@ -28,13 +27,9 @@ class SocketController(Thread):
 
     def connectToServer(self, device: str):
         """Connects client to server returning the socket-object and connection-object"""
-        connection = None
-        __socket, port = self.sockets.get(device)
-        retryCounter = 1
+        connection, port = self.sockets.get(device)
         __socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         __socket.connect((self.address, port))
-        retryCounter += 1
-        time.sleep(1)
         print(f'Connection to Server established:\t{connection}')
         self.sockets[device][0] = __socket
 
