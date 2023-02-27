@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 # @author   Markus Kösters
 
-import pickle
 import threading
 import time
-import cv2
 
 from Configurations.ConfigReader import ConfigReader
 from Controller.Controller import Controller
@@ -18,7 +16,6 @@ class Main:
         """Starting the Remote-Program and configuring everything"""
         self.__conf = ConfigReader()
         self.__delay = float(self.__conf.readConfigParameter('DelayMain'))
-        self.videoFPS = float(1 / float(self.__conf.readConfigParameter('VideoFPS')))
         self.socketController = SocketController()
         self.__cont = Controller()
         self.__controller = self.__cont.initController()

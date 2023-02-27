@@ -4,6 +4,7 @@
 import os
 from pathlib import Path
 
+
 class ConfigReader:
 
     def __init__(self):
@@ -44,7 +45,3 @@ class ConfigReader:
         else:
             __configInfo = str(__configInfo).strip()
         return __configInfo
-
-#Testing
-#Conf = ConfigReader()
-#print(Conf.readConfigParameter('Socket_IP_Address'))

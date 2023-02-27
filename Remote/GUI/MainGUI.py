@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
+import pickle
 import threading
 import time
 
+import cv2
 # Form implementation generated from reading ui file 'MainGUI.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.9
@@ -16,7 +18,7 @@ import os
 from Configurations.ConfigReader import ConfigReader
 from Network.SocketController import SocketController
 
-os.system("xrandr  | grep \* | cut -d' ' -f4")
+os.system("xrandr  | grep \* | cut -d' ' -f4")  # maybe a possibility to detect screen-resolution automatically
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -75,8 +77,9 @@ class Ui_MainWindow(object):
     def __getVideoStream(self):
         while True:
             print('Running Video GUI')
-            rawFrame = self.socketController.receiveMessage('video')
-            qtFrame = QtGui.QImage(rawFrame.data, rawFrame.shape[1], rawFrame.shape[0], QtGui.QImage.Format_RGB888).rgbSwapped()
+            rawFrame = pickle.loads(self.socketController.receiveMessage('video'))
+            rgbFrame = cv2.cvtColor(rawFrame, cv2.COLOR_BGR2RGB)
+            qtFrame = QtGui.QImage(rgbFrame.data, rawFrame.shape[1], rawFrame.shape[0], QtGui.QImage.Format_RGB888)
             self.label.setPixmap(QtGui.QPixmap.fromImage(qtFrame))
             time.sleep(self.videoSleep)
 
