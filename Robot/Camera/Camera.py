@@ -6,6 +6,7 @@ import time
 import cv2
 import pickle
 
+import imutils
 from Configurations.ConfigReader import ConfigReader
 from Network.SocketController import SocketController
 
@@ -24,9 +25,8 @@ class Camera:
         # __socket = Server()
         self.socketController.startServer('video')
         while vid.isOpened():
-            print('VIDEOSTREAM LÄUFT!')
             img, frame = vid.read()
-            # frame = imutils.resize(frame, width=320)
+            frame = imutils.resize(frame, width=640, height=480)
             self.socketController.sendMessage(pickle.dumps(frame), 'video')
             time.sleep(self.videoFPS)
 

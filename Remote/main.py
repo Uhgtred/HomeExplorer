@@ -7,7 +7,7 @@ import time
 from Configurations.ConfigReader import ConfigReader
 from Controller.Controller import Controller
 from Network.SocketController import SocketController
-from GUI.MainGUI import Ui_MainWindow
+from GUI.MainGUI import MainGUI
 
 
 class Main:
@@ -19,7 +19,7 @@ class Main:
         self.socketController = SocketController()
         self.__cont = Controller()
         self.__controller = self.__cont.initController()
-        self.mainGUI = Ui_MainWindow()
+        self.mainGUI = MainGUI()
         self.__threads()
 
     def __readController(self):
