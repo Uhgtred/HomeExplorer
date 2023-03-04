@@ -11,7 +11,10 @@ from Network.SocketMessenger import SocketMessenger
 class SocketController(Thread):
     instance = None
     __conf = ConfigReader()
-    sockets = {'video': [None, int(__conf.readConfigParameter('Video_Port'))], 'controller': [None, int(__conf.readConfigParameter('Communication_Port'))]}
+    sockets = {
+                'video': [None, int(__conf.readConfigParameter('Video_Port'))],
+                'controller': [None, int(__conf.readConfigParameter('Communication_Port'))]
+                }
 
     def __new__(cls):
         """Making sure that the class is only being instanced once"""

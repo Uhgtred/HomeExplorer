@@ -26,9 +26,9 @@ class Camera:
         self.socketController.startServer('video')
         while vid.isOpened():
             img, frame = vid.read()
-            frame = imutils.resize(frame, width=640, height=480)
+            frame = imutils.resize(frame, width=120, height=80)
             self.socketController.sendMessage(pickle.dumps(frame), 'video')
-            time.sleep(self.videoFPS)
+            # time.sleep(self.videoFPS)
 
 
 if __name__ == '__main__':

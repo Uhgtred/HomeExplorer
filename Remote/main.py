@@ -7,7 +7,7 @@ import time
 from Configurations.ConfigReader import ConfigReader
 from Controller.Controller import Controller
 from Network.SocketController import SocketController
-from GUI.MainGUI import MainGUI
+from Remote.MainGUI import MainGUI
 
 
 class Main:
