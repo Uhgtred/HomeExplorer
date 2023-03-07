@@ -28,9 +28,8 @@ class Main:
 
     def __serialCommunication(self):
         while True:
-            __message = self.socketController.receiveMessage('controller')
-            if __message and int(__message) != 0:
-                self.Arduino.sendMessage(__message)
+            message = self.socketController.receiveMessage('controller')
+            self.Arduino.sendMessage(message)
             time.sleep(self.__delay)  # sleep is for reducing CPU-load
 
     def __threads(self):
