@@ -5,6 +5,7 @@ from evdev import InputDevice
 import subprocess
 
 from Configurations.ConfigReader import ConfigReader
+from Network.SocketController import SocketController
 
 
 class Controller:
@@ -12,13 +13,13 @@ class Controller:
     def __init__(self):
         self.__conf = ConfigReader()
         self.__deviceVendor = int(self.__conf.readConfigParameter('DeviceVendorID'))
-        self.__lValue = 0
-        self.__rValue = 0
-        self.__rBack = 0
-        self.__lBack = 0
-        self.__rStickXValue = 0
-        self.__rStickYValue = 0
+        self.socketController = SocketController()
+        self.defineButtonConfig()
+        self.__controller = None
+        self.initController()
 
+    def defineButtonConfig(self):
+        """Button configuration can be done in the config"""
         self.__LXAxis = int(self.__conf.readConfigParameter('LXAxis'))
         self.__LYAxis = int(self.__conf.readConfigParameter('LYAxis'))
         self.__LTrigger = int(self.__conf.readConfigParameter('LTrigger'))
@@ -41,98 +42,70 @@ class Controller:
 
         self.__XCross = int(self.__conf.readConfigParameter('XCross'))
         self.__YCross = int(self.__conf.readConfigParameter('YCross'))
+        """Defining the configuration of the buttons. Button-IDs can be changed in the config-file"""
+        self.__buttonDict = {self.__LXAxis: [0, 0],
+                             self.__LYAxis: [0, 0],
+                             self.__LTrigger: 0,
+                             self.__LBtn: 0,
+                             self.__L3: 0,
+                             self.__RXAxis: [0, 0],
+                             self.__RYAxis: [0, 0],
+                             self.__RTrigger: 0,
+                             self.__RBtn: 0,
+                             self.__R3: 0,
+                             self.__StartBtn: 0,
+                             self.__SelectBtn: 0,
+                             self.__ABtn: 0,
+                             self.__BBtn: 0,
+                             self.__XBtn: 0,
+                             self.__YBtn: 0,
+                             self.__XCross: [0, 0],
+                             self.__YCross: [0, 0]
+                             }
 
     def initController(self):
         """Automatically detects, connects and returns (object) the controller with the vendor-ID specified in Configurations.conf! Only works on linux!"""
-        __path = self.__conf.readConfigParameter('ControllerPath')
-        __temp = subprocess.Popen(['ls', __path], stdout=subprocess.PIPE)
-        __controller = None
-
-        __temp = __temp.communicate()
-        deviceList = (__temp[0]).decode()
+        path = self.__conf.readConfigParameter('ControllerPath')
+        temp = subprocess.Popen(['ls', path], stdout=subprocess.PIPE)
+        temp = temp.communicate()
+        deviceList = (temp[0]).decode()
         deviceList = deviceList.split('\n')
 
         for element in deviceList:
-            element = f'{__path}{element}'
+            element = f'{path}{element}'
             if 'event' in element:
                 if InputDevice(element).info.vendor == self.__deviceVendor:
-                    __controller = InputDevice(element)
-        return __controller
+                    self.__controller = InputDevice(element)
 
-    def readController(self, controller):
+    def readController(self):
         """Reads controller-output in a loop! Controller-object needed, this is being returned by initController!"""
-        try:
-            __controller = controller
-            __controller.grab()  # makes the controller only listen to this Code
-            for event in __controller.read_loop():  # better with dictionary?
-                if event.code == self.__LBtn:
-                    self.__reverse(event, 'left')
-                elif event.code == self.__LTrigger:
-                    self.__lValue = event.value
-                elif event.code == self.__RBtn:
-                    self.__reverse(event, 'right')
-                elif event.code == self.__RTrigger:
-                    self.__rValue = event.value
-                elif event.code == self.__RXAxis:
-                    self.__rStickXValue = event.value
-                elif event.code == self.__RYAxis:
-                    self.__rStickYValue = event.value
-                # elif event.code == self.__StartBtn and event.value:
-                #     __start = time.time()
-                # elif event.code == self.__StartBtn and not event.value: # for remote only makes sense if send to robot
-                #     if time.time() - __start >= 5:
-                #         os.system('sudo shutdown now')
-        except Exception as e:
-            print(f'Error while trying to read Controller output! {e}')
+        self.__controller.grab()  # makes the controller only listen to this Code
+        for event in self.__controller.read_loop():  # better with dictionary?
+            if event.code == self.__LBtn or event.code == self.__RBtn:
+                self.__buttonDict[event.code] = (0 if event.value else 1)
+            else:
+                if event.value < 0:
+                    self.__buttonDict[event.code][1] = -event.value
+                if type(self.__buttonDict.get(event.code)) is list:
+                    self.__buttonDict[event.code][0] = event.value
+                else:
+                    self.__buttonDict[event.code] = event.value
+            # elif event.code == self.__StartBtn and event.value:
+            #     __start = time.time()
+            # elif event.code == self.__StartBtn and not event.value: # for remote only makes sense if send to robot
+            #     if time.time() - __start >= 5:
+            #         os.system('sudo shutdown now')
+            self.sendControllerValues()
 
-    def __reverse(self, event, side):
-        __event = event
-        __side = side
-        if event.value:
-            if __side == 'left':
-                self.__lBack = 1
-            elif __side == 'right':
-                self.__rBack = 1
-        elif not event.value:
-            if __side == 'left':
-                self.__lBack = 0
-            elif __side == 'right':
-                self.__rBack = 0
-
-    @property
-    def getControllerValues(self):
+    def sendControllerValues(self):
         """Returning the values for Track-Control"""
-        __rStickXValue = 0  
-        __rStickYValue = 0  
-        __rStickXValueNeg = 0
-        __rStickYValueNeg = 0
-        __rStickXValuePos = 0
-        __rStickYValuePos = 0
-        __lValue = 0  
-        __lValue = self.__lValue
-        __lBack = self.__lBack
-        __rValue = 0  
-        __rValue = self.__rValue
-        __rBack = self.__rBack
-        if self.__rStickXValue > 0:
-            __rStickXValuePos = self.__rStickXValue / 128.5
-            __rStickXValuePos = round(__rStickXValuePos)
-        elif self.__rStickXValue < 0:
-            __rStickXValueNeg = self.__rStickXValue * (-1)
-            __rStickXValueNeg = __rStickXValueNeg / 128.5
-            __rStickXValueNeg = round(__rStickXValueNeg)
-        else:
-            __rStickXValueNeg = 0
-            __rStickXValuePos = 0
-        if self.__rStickYValue > 0:
-            __rStickYValuePos = self.__rStickYValue / 128.5
-            __rStickYValuePos = round(__rStickYValuePos)
-        elif self.__rStickYValue < 0:
-            __rStickYValueNeg = self.__rStickYValue * (-1)
-            __rStickYValueNeg = __rStickYValueNeg / 128.5
-            __rStickYValueNeg = round(__rStickYValueNeg)
-        else:
-            __rStickYValueNeg = 0
-            __rStickYValuePos = 0
-        __contValues = f'{str(__rValue).zfill(3)}{__rBack}{str(__lValue).zfill(3)}{__lBack}{str(__rStickXValuePos).zfill(3)}{str(__rStickXValueNeg).zfill(3)}{str(__rStickYValuePos).zfill(3)}{str(__rStickYValueNeg).zfill(3)}'
-        return __contValues
+        tempList = []
+        for key in self.__buttonDict:
+            keyValue = self.__buttonDict.get(key)
+            if type(keyValue) is list:
+                tempList.append(keyValue[0])
+                tempList.append(keyValue[1])
+            else:
+                tempList.append(keyValue)
+        contValues = ','.join(tempList)
+        self.socketController.sendMessage(contValues, 'controller')

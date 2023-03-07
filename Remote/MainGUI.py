@@ -120,34 +120,8 @@ class MainPrograms:
 
     def __init__(self):
         """Starting the Remote-Program and configuring everything"""
-        self.__conf = ConfigReader()
-        self.__delay = float(self.__conf.readConfigParameter('DelayMain'))
-        self.socketController = SocketController()
-        self.__cont = Controller()
-        self.__controller = self.__cont.initController()
-        self.__threads()
-
-    def readController(self):
-        while True:
-            self.socketController.sendMessage(self.__cont.getControllerValues, 'controller')
-            time.sleep(self.__delay)
-
-    def __threads(self):
-        """Any Thread that has to run goes in here!"""
-        pass
-        # __controllerThread = threading.Thread(target=self.__readController, name='ControllerThread', daemon=True)
-        # __controllerThread.start()
-
-        # self.socketController.connectToServer('controller')
-        # __controllerReadThread = threading.Thread(target=lambda: self.__cont.readController(self.__controller), name='ControllerReadThread', daemon=True)
-        # __controllerReadThread.start()
-
-        # __cameraStreamThread = threading.Thread(target=self.mainGUI.startGUI, name='CameraStreamThread', daemon=True)
-        # __cameraStreamThread.start()
-
-        # __controllerThread.join()
-        # __controllerReadThread.join()
-        # __cameraStreamThread.join()
+        # self.cont = Controller()
+        # self.cont.readController()
 
 
 if __name__ == "__main__":
