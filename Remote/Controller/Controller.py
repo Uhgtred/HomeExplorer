@@ -20,29 +20,30 @@ class Controller:
 
     def defineButtonConfig(self):
         """Button configuration can be done in the config"""
+        """Left side Trigger and Analog-stick"""
         self.__LXAxis = int(self.__conf.readConfigParameter('LXAxis'))
         self.__LYAxis = int(self.__conf.readConfigParameter('LYAxis'))
         self.__LTrigger = int(self.__conf.readConfigParameter('LTrigger'))
         self.__LBtn = int(self.__conf.readConfigParameter('LBtn'))
         self.__L3 = int(self.__conf.readConfigParameter('L3'))
-
+        """Right side Trigger and Analog-stick"""
         self.__RXAxis = int(self.__conf.readConfigParameter('RXAxis'))
         self.__RYAxis = int(self.__conf.readConfigParameter('RYAxis'))
         self.__RTrigger = int(self.__conf.readConfigParameter('RTrigger'))
         self.__RBtn = int(self.__conf.readConfigParameter('RBtn'))
         self.__R3 = int(self.__conf.readConfigParameter('R3'))
-
+        """Menu-Buttons"""
         self.__StartBtn = int(self.__conf.readConfigParameter('StartBtn'))
         self.__SelectBtn = int(self.__conf.readConfigParameter('SelectBtn'))
-
+        """ABXY-Buttons"""
         self.__ABtn = int(self.__conf.readConfigParameter('ABtn'))
         self.__BBtn = int(self.__conf.readConfigParameter('BBtn'))
         self.__XBtn = int(self.__conf.readConfigParameter('XBtn'))
         self.__YBtn = int(self.__conf.readConfigParameter('YBtn'))
-
+        """Cross-Buttons"""
         self.__XCross = int(self.__conf.readConfigParameter('XCross'))
         self.__YCross = int(self.__conf.readConfigParameter('YCross'))
-        """Defining the configuration of the buttons. Button-IDs can be changed in the config-file"""
+        """Defining the values of the buttons. Button-IDs can be changed in the config-file"""
         self.__buttonDict = {self.__LXAxis: [0, 0],
                              self.__LYAxis: [0, 0],
                              self.__LTrigger: 0,
@@ -65,12 +66,13 @@ class Controller:
 
     def initController(self):
         """Automatically detects, connects and returns (object) the controller with the vendor-ID specified in Configurations.conf! Only works on linux!"""
+        """Searching for any devices in /dev/..."""
         path = self.__conf.readConfigParameter('ControllerPath')
         temp = subprocess.Popen(['ls', path], stdout=subprocess.PIPE)
         temp = temp.communicate()
         deviceList = (temp[0]).decode()
         deviceList = deviceList.split('\n')
-
+        """Checking if device meets the preset vendor-id. If so setting it as the controller."""
         for element in deviceList:
             element = f'{path}{element}'
             if 'event' in element:
@@ -78,9 +80,9 @@ class Controller:
                     self.__controller = InputDevice(element)
 
     def readController(self):
-        """Reads controller-output in a loop! Controller-object needed, this is being returned by initController!"""
+        """Reads controller-output in a loop! Controller-object needed, this is being set by initController!"""
         self.__controller.grab()  # makes the controller only listen to this Code
-        for event in self.__controller.read_loop():  # better with dictionary?
+        for event in self.__controller.read_loop():
             if event.code == self.__LBtn or event.code == self.__RBtn:
                 self.__buttonDict[event.code] = (0 if event.value else 1)
             else:
@@ -90,22 +92,20 @@ class Controller:
                     self.__buttonDict[event.code][0] = event.value
                 else:
                     self.__buttonDict[event.code] = event.value
-            # elif event.code == self.__StartBtn and event.value:
-            #     __start = time.time()
-            # elif event.code == self.__StartBtn and not event.value: # for remote only makes sense if send to robot
-            #     if time.time() - __start >= 5:
-            #         os.system('sudo shutdown now')
             self.sendControllerValues()
 
     def sendControllerValues(self):
-        """Returning the values for Track-Control"""
+        """Sending the values for Track-Control to the robot"""
         tempList = []
+        """Running through the dictionary, reading all the values and adding them to a csv-string"""
         for key in self.__buttonDict:
             keyValue = self.__buttonDict.get(key)
+            """Values could be array (1D from AnalogStick)"""
             if type(keyValue) is list:
-                tempList.append(keyValue[0])
-                tempList.append(keyValue[1])
+                tempList.append(round(keyValue[0] / 128.5) if keyValue[0] != 0 else 0)  # making sure the value is not greater than 255
+                tempList.append(round(keyValue[1] / 128.5) if keyValue[1] != 0 else 0)  # making sure the value is not greater than 255
             else:
                 tempList.append(keyValue)
         contValues = ','.join(tempList)
+        """Sending csv-string to the robot"""
         self.socketController.sendMessage(contValues, 'controller')
