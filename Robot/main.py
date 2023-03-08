@@ -22,7 +22,6 @@ class Main:
         self.socketController = SocketController()
         # self.socketController.startServer('controller')
         self.Arduino = Arduino()
-        self.Arduino.initArduino()
         self.__camera = Camera()
         self.__threads()
 
