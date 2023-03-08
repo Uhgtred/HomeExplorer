@@ -15,20 +15,19 @@ class Camera:
 
     def __init__(self):
         self.__conf = ConfigReader()
-        self.videoFPS = float(1 / float(self.__conf.readConfigParameter('VideoFPS')))
+        self.videoFPS = float(1 / float(self.__conf.readConfigParameter('VideoFPS')))  # waiting time is the reciprocal of frames per second
         self.resolution = self.__conf.readConfigParameter('CameraResolution')
         self.videoPort = int(self.__conf.readConfigParameter('Video_Port'))
         self.socketController = SocketController()
 
     def readCamera(self):
-        vid = cv2.VideoCapture(0)
-        # __socket = Server()
-        self.socketController.startServer('video')
+        """Reading a frame from the default-camera and senfing it via socket"""
+        vid = cv2.VideoCapture(0)  # starting video-recording
+        self.socketController.startServer('video')  # starting the socket-server
         while vid.isOpened():
             img, frame = vid.read()
-            frame = imutils.resize(frame, width=120, height=80)
-            self.socketController.sendMessage(pickle.dumps(frame), 'video')
-            # time.sleep(self.videoFPS)
+            frame = imutils.resize(frame, width=120, height=80)  # resizing image for optimizing the transfer-rate
+            self.socketController.sendMessage(pickle.dumps(frame), 'video')  # Sending the frame to the socket-client
 
 
 if __name__ == '__main__':
