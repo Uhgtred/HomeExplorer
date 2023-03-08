@@ -15,9 +15,8 @@ import pickle
 import cv2
 import sys
 
-from Network.SocketController import SocketController
-from Controller.Controller import Controller
-from Configurations.ConfigReader import ConfigReader
+from Network import SocketController
+from Controller import Controller
 
 
 class MainGUI(QDialog):
@@ -120,8 +119,8 @@ class MainPrograms:
 
     def __init__(self):
         """Starting the Remote-Program and configuring everything"""
-        # self.cont = Controller()
-        # self.cont.readController()
+        self.cont = Controller()
+        self.cont.readController()
 
 
 if __name__ == "__main__":
