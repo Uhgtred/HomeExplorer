@@ -1,5 +1,8 @@
 #include <Servo.h>
 
+/*
+Declaring and defining Pins (could also be data-type short to safe some memory)
+*/
 int ServoXPin = 2;
 int ServoZPin = 3;
 int RMotorFPin = 10;
@@ -12,20 +15,25 @@ String stringData;
 
 Servo XServo;
 Servo ZServo;
-unsigned int servoStart;
 
 void setup() {
+    //Setting up serial parameters
     Serial.begin(9600);
     Serial.setTimeout(50);
+    //Setting up Servos
     XServo.attach(ServoXPin);
     ZServo.attach(ServoZPin);
+    //Setting up Pins for Motor-control
     pinMode(LMotorFPin, OUTPUT);
     pinMode(LMotorRPin, OUTPUT);
     pinMode(RMotorFPin, OUTPUT);
     pinMode(RMotorRPin, OUTPUT);
     pinMode(MotorEnablePin, OUTPUT);
+    //Enabling motors by setting "enable"-pin on motor-controller-board high (5V)
     digitalWrite(MotorEnablePin, HIGH);
+    //Making sure Servos are in default-position
     XServo.write(90);
+    //ZServo.write(90);
 }
 
 void loop() {
@@ -38,11 +46,12 @@ void loop() {
     digitalWrite(RMotorFPin, LOW);
     digitalWrite(RMotorRPin, LOW);
     if (stringData.length() != 0){
-        String *arrayData = ToStringArray(stringData);
-        Serial.println(arrayData[0] + arrayData[1]);
+        String* arrayData = ToStringArray(stringData);  // splitting the received string into an array
+        //Serial.println(arrayData[0] + arrayData[1]);  // debugging-line
+        // Sending transformed data to motors and servos
         MotorControl(arrayData);
         ServoControl(arrayData);
-        delete[] arrayData;
+        delete[] arrayData;  // deleting the array-pointer to release memory
     }
     delay(50);
 }
@@ -60,7 +69,7 @@ String *ToStringArray(String data){
             numberOfSeparators++;
         }
     }
-    //Defining Array-length and splitting the string into substrings which are bing stored in the array!
+    //Defining Array-length and splitting the string into substrings which are being stored in the array!
     String *newData = new String[numberOfSeparators + 1];
     int lastPosition = 0;
     int counter = 0;
@@ -87,20 +96,20 @@ void MotorControl(String *arrayData){
     //data[1] is bool and decides if RMotor is turning clockwise or counterclockwise
     if (arrayData[1].toInt() == 1){
         analogWrite(RMotorRPin, RMotorValue);
-        //Serial.println(RMotorValue);
+        //Serial.println(RMotorValue);  // debugging-line
     }
     else{
         analogWrite(RMotorFPin, RMotorValue);
-        //Serial.println(RMotorValue);
+        //Serial.println(RMotorValue);  // debugging-line
     }
     //data[3] is bool and decides if LMotor is turning clockwise or counterclockwise
     if (arrayData[3].toInt() == 1){
         analogWrite(LMotorRPin, LMotorValue);
-        //Serial.println(LMotorValue);
+        //Serial.println(LMotorValue);  // debugging-line
     }
     else{
         analogWrite(LMotorFPin, LMotorValue);
-        //Serial.println(LMotorValue);
+        //Serial.println(LMotorValue);  // debugging-line
     }
 }
 
