@@ -3,7 +3,7 @@
 
 import serial
 
-from Configurations.ConfigReader import ConfigReader
+from Configurations import ConfigReader
 
 
 class Arduino:

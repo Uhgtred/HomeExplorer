@@ -4,7 +4,7 @@
 import socket
 from threading import Thread
 
-from Configurations.ConfigReader import ConfigReader
+from Configurations import ConfigReader
 from Network.SocketMessenger import SocketMessenger
 
 
