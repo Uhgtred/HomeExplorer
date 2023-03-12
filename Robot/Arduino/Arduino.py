@@ -14,25 +14,36 @@ class Arduino:
         self.__baudRate = int(self.__conf.readConfigParameter('ArduinoBaudRate'))
         self.__format = self.__conf.readConfigParameter('MessageFormat')
         self.__delay = float(self.__conf.readConfigParameter('SerialTimeOut'))
+        self.__initArduino()
 
     @property
     def rcvMessage(self):
+        """Reading a single line from the serial-conncection to the Arduino and returning it!"""
         return self.device.readline()
 
-    def sendMessage(self, message):
+    def sendMessage(self, message:bytes):
+        """Writing a message <bytes> to the Arduino through the serial-connection!"""
         self.device.write(message)
 
     def close(self):
-        self.device.close()
+        """Closing the connection to the Arduino!"""
+        try:
+            self.device.close()
+        except Exception as e:
+            print(f'Could not close serial-connection to Arduino: {e}')
 
-    def initArduino(self):
+    def __initArduino(self):
+        """
+        Initialising the settings of the serial-connection.
+        Settings can be changed in Configurations/Configurations.conf.
+        Make sure settings on the Arduino match the settings in config-file. Arduino-settings can be changed in Arduino/MicrocontrollerCode/RobotController/RobotController.ino!
+        """
         device = serial.Serial()
         device.baud = self.__baudRate
         device.port = self.__Arduino
         device.timeout = self.__delay
         device.open()
         self.device = device
-        #return device
 
 
 if __name__ == '__main__':
