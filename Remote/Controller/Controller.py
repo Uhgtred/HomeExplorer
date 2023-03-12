@@ -4,8 +4,8 @@
 from evdev import InputDevice
 import subprocess
 
-from Configurations.ConfigReader import ConfigReader
-from Network.SocketController import SocketController
+from Configurations import ConfigReader
+from Network import SocketController
 
 
 class Controller:

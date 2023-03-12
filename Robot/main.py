@@ -5,10 +5,10 @@ import threading
 import time
 import os
 
-from Arduino.Arduino import Arduino
-from Camera.Camera import Camera
-from Configurations.ConfigReader import ConfigReader
-from Network.SocketController import SocketController
+from Arduino import Arduino
+from Camera import Camera
+from Configurations import ConfigReader
+from Network import SocketController
 
 os.chdir(os.path.dirname(os.getcwd()))
 
