@@ -2,13 +2,12 @@
 # @author      Markus Kösters
 
 
-import time
 import cv2
 import pickle
-
 import imutils
-from Configurations.ConfigReader import ConfigReader
-from Network.SocketController import SocketController
+
+from Configurations import ConfigReader
+from Network import SocketController
 
 
 class Camera:
