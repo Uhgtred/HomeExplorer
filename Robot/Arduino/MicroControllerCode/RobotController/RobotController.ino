@@ -37,7 +37,7 @@ void setup() {
 }
 
 void loop() {
-    stringData = Serial.read(); //"0,0,0,0"; //Testing-line  Serial.read(); //
+    stringData = Serial.readString(); //"0,0,0,0"; //Testing-line  Serial.read(); //
     /*
     Setting the motor-pins low in each iteration. If something gets stock or communication breaks robot will stop!
     */
