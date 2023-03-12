@@ -18,7 +18,7 @@ class Main:
         self.__delay = float(self.__conf.readConfigParameter('DelayMain'))
         self.socketController = SocketController()
         self.__cont = Controller()
-        self.__controller = self.__cont.initController()
+        self.__controller = self.__cont.__initController()
         self.mainGUI = MainGUI()
         self.__threads()
 

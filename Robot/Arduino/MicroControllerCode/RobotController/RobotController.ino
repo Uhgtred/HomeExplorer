@@ -37,7 +37,7 @@ void setup() {
 }
 
 void loop() {
-    stringData = Serial.readString(); //"250,0,100,1"; //Testing-line
+    stringData = Serial.read(); //"0,0,0,0"; //Testing-line  Serial.read(); //
     /*
     Setting the motor-pins low in each iteration. If something gets stock or communication breaks robot will stop!
     */
@@ -64,7 +64,7 @@ String *ToStringArray(String data){
     char separator;
     separator = ','; 
     int numberOfSeparators = 0;
-    for (int i=0; i <= data.length() - 1; i++){
+    for (int i=0; i <= data.length(); i++){
         if  (data[i] == separator){
             numberOfSeparators++;
         }
@@ -73,12 +73,12 @@ String *ToStringArray(String data){
     String *newData = new String[numberOfSeparators + 1];
     int lastPosition = 0;
     int counter = 0;
-    for (int i=0; i <= data.length() - 1; i++){
+    for (int i=0; i <= data.length(); i++){
         //If a separator has been found, the string will be taken from last separator-position to the new position
-        if (data[i] == separator){
+        if (data[i] == separator or i==data.length()){
             newData[counter] = data.substring(lastPosition, i);
             counter++;
-            lastPosition = i;
+            lastPosition = i + 1;  //the +1 removes the comma from the string  
         }
     }
     return newData;
@@ -93,23 +93,25 @@ void MotorControl(String *arrayData){
     //reading the data from array which is being provided through the serial-connection
     RMotorValue = arrayData[0].toInt();
     LMotorValue = arrayData[2].toInt();
+//    Serial.println("RMotor: "+ String(RMotorValue) + " LMotor: " + String(LMotorValue));  // debugging-line
+//    Serial.println("ARRAYDATA: " + arrayData[0] + arrayData[1] + arrayData[2] + arrayData[3]);  // debugging-line
     //data[1] is bool and decides if RMotor is turning clockwise or counterclockwise
     if (arrayData[1].toInt() == 1){
         analogWrite(RMotorRPin, RMotorValue);
-        //Serial.println(RMotorValue);  // debugging-line
+//        Serial.println(RMotorValue);  // debugging-line
     }
     else{
         analogWrite(RMotorFPin, RMotorValue);
-        //Serial.println(RMotorValue);  // debugging-line
+//        Serial.println(RMotorValue);  // debugging-line
     }
     //data[3] is bool and decides if LMotor is turning clockwise or counterclockwise
     if (arrayData[3].toInt() == 1){
         analogWrite(LMotorRPin, LMotorValue);
-        //Serial.println(LMotorValue);  // debugging-line
+//        Serial.println(LMotorValue);  // debugging-line
     }
     else{
         analogWrite(LMotorFPin, LMotorValue);
-        //Serial.println(LMotorValue);  // debugging-line
+//        Serial.println(LMotorValue);  // debugging-line
     }
 }
 
