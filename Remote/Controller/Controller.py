@@ -103,8 +103,8 @@ class Controller:
             keyValue = self.__buttonDict.get(key)
             """Values could be array (1D from AnalogStick)"""
             if type(keyValue) is list:
-                tempList.append(round(keyValue[0] / 128.5) if keyValue[0] != 0 else 0)  # making sure the value is not greater than 255
-                tempList.append(round(keyValue[1] / 128.5) if keyValue[1] != 0 else 0)  # making sure the value is not greater than 255
+                tempList.append(round(keyValue[0] / 128.5) if keyValue[0] != 0 else 0)  # making sure the value is not greater than 255 for analog-sticks
+                tempList.append(round(keyValue[1] / 128.5) if keyValue[1] != 0 else 0)  # making sure the value is not greater than 255 for analog-sticks
             else:
                 tempList.append(keyValue)
         for counter, element in enumerate(tempList):

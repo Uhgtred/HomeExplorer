@@ -3,15 +3,16 @@
 /*
 Declaring and defining Pins (could also be data-type short to safe some memory)
 */
-int ServoXPin = 2;
-int ServoZPin = 3;
-int RMotorFPin = 10;
-int RMotorRPin = 11;
-int LMotorFPin = 12;
-int LMotorRPin = 13;
-int MotorEnablePin = 26;
+const unsigned short ServoXPin = 2;
+const unsigned short ServoZPin = 3;
+const unsigned short RMotorFPin = 10;
+const unsigned short RMotorRPin = 11;
+const unsigned short LMotorFPin = 12;
+const unsigned short LMotorRPin = 13;
+const unsigned short MotorEnablePin = 26;
 
-String stringData;
+const unsigned short maxMessageSize = 50;
+char serialData[maxMessageSize];
 
 Servo XServo;
 Servo ZServo;
@@ -19,7 +20,6 @@ Servo ZServo;
 void setup() {
     //Setting up serial parameters
     Serial.begin(9600);
-    Serial.setTimeout(50);
     //Setting up Servos
     XServo.attach(ServoXPin);
     ZServo.attach(ServoZPin);
@@ -37,66 +37,78 @@ void setup() {
 }
 
 void loop() {
-    stringData = Serial.readString(); //"0,0,0,0"; //Testing-line  Serial.read(); //
-    /*
-    Setting the motor-pins low in each iteration. If something gets stock or communication breaks robot will stop!
-    */
+    int counter = 0;
+    while (Serial.available() > 0){
+      char readByte = Serial.read();
+      if (readByte != '&' and counter <= maxMessageSize){
+        serialData[counter] = readByte;
+        counter++;
+      }
+      else{
+        break;
+      }
+    }
+    //Setting the motor-pins low in each iteration. If something gets stock or communication breaks robot will stop!
     digitalWrite(LMotorFPin, LOW);
     digitalWrite(LMotorRPin, LOW);
     digitalWrite(RMotorFPin, LOW);
     digitalWrite(RMotorRPin, LOW);
-    if (stringData.length() != 0){
-        String* arrayData = ToStringArray(stringData);  // splitting the received string into an array
-        //Serial.println(arrayData[0] + arrayData[1]);  // debugging-line
-        // Sending transformed data to motors and servos
+   if (serialData.length() != 0){
+        int* arrayData = ToStringArray(serialData);  // splitting the received string into an array
+        Serial.println(arrayData[0] + arrayData[1]);  // debugging-line
+        //Sending transformed data to motors and servos
         MotorControl(arrayData);
         ServoControl(arrayData);
         delete[] arrayData;  // deleting the array-pointer to release memory
-    }
-    delay(50);
+   }
+   delay(50);
 }
 
-String *ToStringArray(String data){
+String *ToStringArray(char data){
     /*
     Making array of comma-separated string!
     */
     //Counting the number of separators to define array-length
     char separator;
     separator = ','; 
-    int numberOfSeparators = 0;
-    for (int i=0; i <= data.length(); i++){
+    short numberOfSeparators = 0;
+    for (short i=0; i <= data.length(); i++){
         if  (data[i] == separator){
             numberOfSeparators++;
         }
     }
     //Defining Array-length and splitting the string into substrings which are being stored in the array!
-    String *newData = new String[numberOfSeparators + 1];
-    int lastPosition = 0;
-    int counter = 0;
-    for (int i=0; i <= data.length(); i++){
+    int *newData = new String[numberOfSeparators + 1];
+    //int lastPosition = 0;
+    short counter = 0;
+    String tempString;
+    for (short i=0; i <= data.length(); i++){
         //If a separator has been found, the string will be taken from last separator-position to the new position
+        //*new version*: adding characters to a string until there is a ',' beingread. then converting string to int and adding it to int-array
+        tempString += data[i];
         if (data[i] == separator or i==data.length()){
-            newData[counter] = data.substring(lastPosition, i);
+            newData[counter] =  tempString.toInt();     //data.substring(lastPosition, i); //old version
             counter++;
-            lastPosition = i + 1;  //the +1 removes the comma from the string  
+            tempString = "";
+            //lastPosition = i + 1;  //the +1 removes the comma from the next string // old version
         }
     }
     return newData;
 }
 
-void MotorControl(String *arrayData){
+void MotorControl(int *arrayData){
     /*
     Sending PWM-signals to the motor-controllers
     */
     int RMotorValue = 0;
     int LMotorValue = 0;
     //reading the data from array which is being provided through the serial-connection
-    RMotorValue = arrayData[0].toInt();
-    LMotorValue = arrayData[2].toInt();
+    RMotorValue = arrayData[0];
+    LMotorValue = arrayData[2];
 //    Serial.println("RMotor: "+ String(RMotorValue) + " LMotor: " + String(LMotorValue));  // debugging-line
 //    Serial.println("ARRAYDATA: " + arrayData[0] + arrayData[1] + arrayData[2] + arrayData[3]);  // debugging-line
     //data[1] is bool and decides if RMotor is turning clockwise or counterclockwise
-    if (arrayData[1].toInt() == 1){
+    if (arrayData[1] == 1){
         analogWrite(RMotorRPin, RMotorValue);
 //        Serial.println(RMotorValue);  // debugging-line
     }
@@ -105,7 +117,7 @@ void MotorControl(String *arrayData){
 //        Serial.println(RMotorValue);  // debugging-line
     }
     //data[3] is bool and decides if LMotor is turning clockwise or counterclockwise
-    if (arrayData[3].toInt() == 1){
+    if (arrayData[3] == 1){
         analogWrite(LMotorRPin, LMotorValue);
 //        Serial.println(LMotorValue);  // debugging-line
     }
@@ -115,15 +127,15 @@ void MotorControl(String *arrayData){
     }
 }
 
-void ServoControl(String *arrayData) {
+void ServoControl(int *arrayData) {
     /*
     Moving servos with the help of a library which talks to the servos through PWM
     */
     //Setting the values from array which is being provided through the serial-connection
-    int RStickXValuePos = arrayData[4].toInt();
-    int RStickXValueNeg = arrayData[5].toInt();
-    int RStickYValuePos = arrayData[6].toInt();
-    int RStickYValueNeg = arrayData[7].toInt();
+    int RStickXValuePos = arrayData[4];
+    int RStickXValueNeg = arrayData[5];
+    int RStickYValuePos = arrayData[6];
+    int RStickYValueNeg = arrayData[7];
     //XServo.writeMicroseconds(1500);
     //fitting the values from 0-255 to 0-180°
     RStickXValuePos = map(RStickXValuePos, 0, 254, 90, 180);
