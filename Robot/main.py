@@ -6,7 +6,7 @@ import time
 import os
 
 from Arduino.Arduino import Arduino
-from Camera.Camera import Camera
+# from Camera.Camera import Camera
 from Configurations.ConfigReader import ConfigReader
 from Network.SocketController import SocketController
 
@@ -22,16 +22,15 @@ class Main:
         self.socketController = SocketController()
         self.Arduino = Arduino()
         self.Arduino.initArduino()
-        self.__camera = Camera()
+        # self.__camera = Camera()
         self.__threads()
 
     def __serialCommunication(self):
-        self.socketController.startServer('controller')
+        # self.socketController.startServer('controller')
         while True:
-            message = self.socketController.receiveMessage('controller')
-            print(message)
+            message = b"50,0,0,0" #self.socketController.receiveMessage('controller')
             self.Arduino.sendMessage(message)
-            time.sleep(self.__delay)  # sleep is for reducing CPU-load
+            # print(self.Arduino.rcvMessage)
 
     def __threads(self):
         """Any Thread that has to run goes in here!"""
