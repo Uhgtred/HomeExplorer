@@ -23,7 +23,7 @@ class Arduino:
 
     def sendMessage(self, message):
         message += b'&'
-        print(f'sending: {message} to: {self.device}')
+        print(f'sending: {message} length: {len(message)}')# to: {self.device}')
         self.device.reset_output_buffer()
         self.device.write(message)
         time.sleep(self.__delay)

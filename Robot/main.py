@@ -26,9 +26,9 @@ class Main:
         self.__threads()
 
     def __serialCommunication(self):
-        # self.socketController.startServer('controller')
+        self.socketController.startServer('controller')
         while True:
-            message = b"50,0,0,0" #self.socketController.receiveMessage('controller')
+            message = self.socketController.receiveMessage('controller')
             self.Arduino.sendMessage(message)
             # print(self.Arduino.rcvMessage)
 

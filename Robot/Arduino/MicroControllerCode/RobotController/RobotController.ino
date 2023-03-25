@@ -11,9 +11,7 @@ const unsigned short LMotorFPin = 12;
 const unsigned short LMotorRPin = 13;
 const unsigned short MotorEnablePin = 26;
 
-const unsigned short maxMessageSize = 50;
-String serialData[maxMessageSize];
-int serialIntData[maxMessageSize];
+const unsigned short maxMessageSize = 80;
 
 Servo XServo;
 Servo ZServo;
@@ -38,36 +36,53 @@ void setup() {
 }
 
 void loop() {
-    int counter = 0;
+    //Setting the motor-pins low in each iteration. If something gets stuck or communication breaks robot will stop!
+    SetMotorsZero();
+    int*  serialIntData = ReadSerialConnection();
+    //Sending transformed data to motors and servos
+    MotorControl(serialIntData);
+    //ServoControl(serialIntData);
+    delete serialIntData;
+    delay(50);
+}
+
+int* ReadSerialConnection(void){
+    int arrayCounter = 0;
     int iterationCounter = 0;
+    int* serialIntData = new int[maxMessageSize];
+    serialIntData = {0};
+    String serialData[maxMessageSize];
     while (Serial.available() > 0){
       char readByte = Serial.read();
       if (readByte != '&' and iterationCounter <= maxMessageSize){
         if (readByte == ','){
-          serialIntData[counter] = serialData[counter].toInt();
-          counter++;
+            serialIntData[arrayCounter] = serialData[arrayCounter].toInt();
+            Serial.println(String(serialIntData[arrayCounter]));
+            arrayCounter++;
         }
         else{
-          serialData[counter] += readByte;
+            serialData[arrayCounter] += readByte;
         }
         iterationCounter++;
       }
+      // breaking the loop if end of array has been reached or maxlength is exceeded
       else{
-        break;
+            SetMotorsZero();
+            break;
       }
-    }
-    //Setting the motor-pins low in each iteration. If something gets stock or communication breaks robot will stop!
+   }
+   return serialIntData;
+}
+
+void SetMotorsZero(void){
+    //Setting the motor-pins low in each iteration. If something gets stuck or communication breaks robot will stop!
     digitalWrite(LMotorFPin, LOW);
     digitalWrite(LMotorRPin, LOW);
     digitalWrite(RMotorFPin, LOW);
     digitalWrite(RMotorRPin, LOW);
-    //Sending transformed data to motors and servos
-    MotorControl();
-    ServoControl();
-   delay(50);
 }
 
-void MotorControl(){
+void MotorControl(int serialIntData[maxMessageSize]){
     /*
     Sending PWM-signals to the motor-controllers
     */
@@ -98,7 +113,7 @@ void MotorControl(){
     }
 }
 
-void ServoControl() {
+void ServoControl(int serialIntData[maxMessageSize]) {
     /*
     Moving servos with the help of a library which talks to the servos through PWM
     */

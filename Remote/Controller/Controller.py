@@ -5,7 +5,6 @@ from evdev import InputDevice
 import subprocess
 
 from Configurations.ConfigReader import ConfigReader
-from Network.SocketController import SocketController
 
 
 class Controller:
@@ -112,4 +111,3 @@ class Controller:
         contValues = ','.join(tempList)
         """returning controller-output to calling methhod/function"""
         return contValues
-        # self.socketController.sendMessage(contValues, 'controller')
