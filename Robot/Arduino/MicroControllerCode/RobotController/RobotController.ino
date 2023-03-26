@@ -42,7 +42,8 @@ void loop() {
     //Sending transformed data to motors and servos
     MotorControl(serialIntData);
     //ServoControl(serialIntData);
-    delete serialIntData;
+    Serial.println(serialIntData[0], serialIntData[2]);
+    delete[] serialIntData;
     delay(50);
 }
 
@@ -50,7 +51,8 @@ int* ReadSerialConnection(void){
     int arrayCounter = 0;
     int iterationCounter = 0;
     int* serialIntData = new int[maxMessageSize];
-    serialIntData = {0};
+    *serialIntData = {0};
+    Serial.println(serialIntData[0], serialIntData[2]);
     String serialData[maxMessageSize];
     while (Serial.available() > 0){
       char readByte = Serial.read();
@@ -71,6 +73,7 @@ int* ReadSerialConnection(void){
             break;
       }
    }
+   Serial.println(serialIntData[0], serialIntData[2]);
    return serialIntData;
 }
 

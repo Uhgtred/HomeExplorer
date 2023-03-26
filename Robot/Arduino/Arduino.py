@@ -15,30 +15,34 @@ class Arduino:
         self.__baudRate = int(self.__conf.readConfigParameter('ArduinoBaudRate'))
         self.__format = self.__conf.readConfigParameter('MessageFormat')
         self.__delay = float(self.__conf.readConfigParameter('SerialTimeOut'))
-        # self.device = None
+        self.device = None
 
     @property
     def rcvMessage(self):
+        if self.device is None:
+            self.initArduino()
         return self.device.readline()
 
     def sendMessage(self, message):
+        if self.device is None:
+            self.initArduino()
         message += b'&'
-        print(f'sending: {message} length: {len(message)}')# to: {self.device}')
+        # print(f'sending: {message} length: {len(message)}')# to: {self.device}')  # debugging-line
         self.device.reset_output_buffer()
         self.device.write(message)
         time.sleep(self.__delay)
 
     def close(self):
-        self.device.close()
+        if self.device is not None:
+            self.device.close()
 
     def initArduino(self):
         device = serial.Serial()
         device.baud = self.__baudRate
         device.port = self.__Arduino
-        # device.timeout = self.__delay
+        # device.timeout = self.__delay  # not sure if this is needed anymore
         device.open()
         self.device = device
-        #return device
 
 
 if __name__ == '__main__':
