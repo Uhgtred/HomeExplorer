@@ -29,12 +29,11 @@ class Main:
 
     def __threads(self):
         """Any Thread that has to run goes in here!"""
+        __controllerReadThread = threading.Thread(target=self.__cont.readController, name='ControllerReadThread', daemon=True)
+        __controllerReadThread.start()
 
         __controllerThread = threading.Thread(target=self.__readController, name='ControllerThread', daemon=True)
         __controllerThread.start()
-
-        __controllerReadThread = threading.Thread(target=self.__cont.readController, name='ControllerReadThread', daemon=True)
-        __controllerReadThread.start()
 
         # __cameraStreamThread = threading.Thread(target=self.mainGUI.startGUI, name='CameraStreamThread', daemon=True)
         # __cameraStreamThread.start()

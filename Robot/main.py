@@ -21,7 +21,6 @@ class Main:
         self.__delay = float(self.__conf.readConfigParameter('DelayMain'))
         self.socketController = SocketController()
         self.Arduino = Arduino()
-        self.Arduino.initArduino()
         # self.__camera = Camera()
         self.__threads()
 
@@ -29,6 +28,7 @@ class Main:
         self.socketController.startServer('controller')
         while True:
             message = self.socketController.receiveMessage('controller')
+            # print(f'Message received: {message}')
             self.Arduino.sendMessage(message)
             # print(self.Arduino.rcvMessage)
 
