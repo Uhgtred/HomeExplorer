@@ -51,7 +51,7 @@ int* ReadSerialConnection(void){
     int arrayCounter = 0;
     int iterationCounter = 0;
     int* serialIntData = new int[maxMessageSize];
-    memset(serialIntData, 0, sizeof(serialIntData));
+    memset(serialIntData, 0, maxMessageSize);
     //Serial.println(String(serialIntData[0]) + ' ' + String(serialIntData[2]));
     String serialData[maxMessageSize];
     while (Serial.available() > 0){
@@ -59,7 +59,7 @@ int* ReadSerialConnection(void){
       if (readByte != '&' and iterationCounter <= maxMessageSize){
         if (readByte == ','){
             serialIntData[arrayCounter] = serialData[arrayCounter].toInt();
-//            Serial.println(serialData[arrayCounter].toInt());
+            Serial.println(serialData[arrayCounter].toInt());
             arrayCounter++;
         }
         else{
@@ -73,7 +73,7 @@ int* ReadSerialConnection(void){
             break;
       }
    }
-//   Serial.println(String(serialIntData[0]) + ' ' + String(serialIntData[2]));
+   Serial.println(String(serialIntData[0]) + ' ' + String(serialIntData[2]));
    return serialIntData;
 }
 
