@@ -4,7 +4,7 @@
 from evdev import InputDevice
 import subprocess
 
-from Configurations.ConfigReader import ConfigReader
+from Configurations import ConfigReader
 
 
 class Controller:

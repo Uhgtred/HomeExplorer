@@ -28,7 +28,8 @@ class Arduino:
             self.initArduino()
         message += b'&'
         # print(f'sending: {message} length: {len(message)}')# to: {self.device}')  # debugging-line
-        self.device.reset_output_buffer()
+        # self.device.reset_output_buffer()
+        self.device.flushOutput()
         self.device.write(message)
         time.sleep(self.__delay)
 
