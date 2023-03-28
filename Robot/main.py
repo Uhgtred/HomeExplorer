@@ -5,10 +5,10 @@ import threading
 import time
 import os
 
-from Arduino import Arduino
-from Camera import Camera
-from Configurations import ConfigReader
-from Network import SocketController
+from Arduino.Arduino import Arduino
+# from Camera.Camera import Camera
+from Configurations.ConfigReader import ConfigReader
+from Network.SocketController import SocketController
 
 os.chdir(os.path.dirname(os.getcwd()))
 
@@ -20,27 +20,28 @@ class Main:
         self.__conf = ConfigReader()
         self.__delay = float(self.__conf.readConfigParameter('DelayMain'))
         self.socketController = SocketController()
-        # self.socketController.startServer('controller')
         self.Arduino = Arduino()
-        self.__camera = Camera()
+        # self.__camera = Camera()
         self.__threads()
 
     def __serialCommunication(self):
+        self.socketController.startServer('controller')
         while True:
             message = self.socketController.receiveMessage('controller')
+            # print(f'Message received: {message}')
             self.Arduino.sendMessage(message)
-            time.sleep(self.__delay)  # sleep is for reducing CPU-load
+            # print(self.Arduino.rcvMessage)
 
     def __threads(self):
         """Any Thread that has to run goes in here!"""
-        __cameraStreamThread = threading.Thread(target=self.__camera.readCamera, name='CameraReadThread', daemon=True)
-        __cameraStreamThread.start()
+        # __cameraStreamThread = threading.Thread(target=self.__camera.readCamera, name='CameraReadThread', daemon=True)
+        # __cameraStreamThread.start()
 
-        # __serialCommunicationThread = threading.Thread(target=self.__serialCommunication, name='SerialCommunicationThread', daemon=True)
-        # __serialCommunicationThread.start()
+        __serialCommunicationThread = threading.Thread(target=self.__serialCommunication, name='SerialCommunicationThread', daemon=True)
+        __serialCommunicationThread.start()
 
-        __cameraStreamThread.join()
-        # __serialCommunicationThread.join()
+        # __cameraStreamThread.join()
+        __serialCommunicationThread.join()
 
     # def __exit_handler(self):
     #     self.Arduino.close(self.__serial)

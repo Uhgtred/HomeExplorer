@@ -2,8 +2,9 @@
 # @author      Markus Kösters
 
 import serial
+import time
 
-from Configurations import ConfigReader
+from Configurations.ConfigReader import ConfigReader
 
 
 class Arduino:
@@ -14,34 +15,33 @@ class Arduino:
         self.__baudRate = int(self.__conf.readConfigParameter('ArduinoBaudRate'))
         self.__format = self.__conf.readConfigParameter('MessageFormat')
         self.__delay = float(self.__conf.readConfigParameter('SerialTimeOut'))
-        self.__initArduino()
+        self.device = None
 
     @property
     def rcvMessage(self):
-        """Reading a single line from the serial-conncection to the Arduino and returning it!"""
+        if self.device is None:
+            self.initArduino()
         return self.device.readline()
 
-    def sendMessage(self, message:bytes):
-        """Writing a message <bytes> to the Arduino through the serial-connection!"""
+    def sendMessage(self, message):
+        if self.device is None:
+            self.initArduino()
+        message += b'&'
+        # print(f'sending: {message} length: {len(message)}')# to: {self.device}')  # debugging-line
+        # self.device.reset_output_buffer()
+        self.device.flushOutput()
         self.device.write(message)
+        time.sleep(self.__delay)
 
     def close(self):
-        """Closing the connection to the Arduino!"""
-        try:
+        if self.device is not None:
             self.device.close()
-        except Exception as e:
-            print(f'Could not close serial-connection to Arduino: {e}')
 
-    def __initArduino(self):
-        """
-        Initialising the settings of the serial-connection.
-        Settings can be changed in Configurations/Configurations.conf.
-        Make sure settings on the Arduino match the settings in config-file. Arduino-settings can be changed in Arduino/MicrocontrollerCode/RobotController/RobotController.ino!
-        """
+    def initArduino(self):
         device = serial.Serial()
         device.baud = self.__baudRate
         device.port = self.__Arduino
-        device.timeout = self.__delay
+        # device.timeout = self.__delay  # not sure if this is needed anymore
         device.open()
         self.device = device
 

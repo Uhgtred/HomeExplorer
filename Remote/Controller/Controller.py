@@ -5,7 +5,6 @@ from evdev import InputDevice
 import subprocess
 
 from Configurations import ConfigReader
-from Network import SocketController
 
 
 class Controller:
@@ -13,10 +12,9 @@ class Controller:
     def __init__(self):
         self.__conf = ConfigReader()
         self.__deviceVendor = int(self.__conf.readConfigParameter('DeviceVendorID'))
-        self.socketController = SocketController()
         self.defineButtonConfig()
         self.__controller = None
-        self.initController()
+        self.__initController()
 
     def defineButtonConfig(self):
         """Button configuration can be done in the config"""
@@ -44,15 +42,16 @@ class Controller:
         self.__XCross = int(self.__conf.readConfigParameter('XCross'))
         self.__YCross = int(self.__conf.readConfigParameter('YCross'))
         """Defining the values of the buttons. Button-IDs can be changed in the config-file"""
-        self.__buttonDict = {self.__LXAxis: [0, 0],
-                             self.__LYAxis: [0, 0],
+        """ORDER OF THE DICTIONARY DOES MATTER FOR RobotController.ino ON ROBOT!!!"""
+        self.__buttonDict = {self.__RTrigger: 0,
+                             self.__RBtn: 0,
                              self.__LTrigger: 0,
                              self.__LBtn: 0,
-                             self.__L3: 0,
                              self.__RXAxis: [0, 0],
                              self.__RYAxis: [0, 0],
-                             self.__RTrigger: 0,
-                             self.__RBtn: 0,
+                             self.__LXAxis: [0, 0],
+                             self.__LYAxis: [0, 0],
+                             self.__L3: 0,
                              self.__R3: 0,
                              self.__StartBtn: 0,
                              self.__SelectBtn: 0,
@@ -64,7 +63,7 @@ class Controller:
                              self.__YCross: [0, 0]
                              }
 
-    def initController(self):
+    def __initController(self):
         """Automatically detects, connects and returns (object) the controller with the vendor-ID specified in Configurations.conf! Only works on linux!"""
         """Searching for any devices in /dev/..."""
         path = self.__conf.readConfigParameter('ControllerPath')
@@ -81,20 +80,21 @@ class Controller:
 
     def readController(self):
         """Reads controller-output in a loop! Controller-object needed, this is being set by initController!"""
+        """ToDo: hex-values instead of decimal"""
         self.__controller.grab()  # makes the controller only listen to this Code
         for event in self.__controller.read_loop():
             if event.code == self.__LBtn or event.code == self.__RBtn:
-                self.__buttonDict[event.code] = (0 if event.value else 1)
+                self.__buttonDict[event.code] = (0 if not event.value else 1)
             else:
                 if event.value < 0:
-                    self.__buttonDict[event.code][1] = -event.value
+                    self.__buttonDict[event.code][1] = -1 * event.value
                 if type(self.__buttonDict.get(event.code)) is list:
                     self.__buttonDict[event.code][0] = event.value
                 else:
                     self.__buttonDict[event.code] = event.value
-            self.sendControllerValues()
 
-    def sendControllerValues(self):
+    @property
+    def getControllerValues(self):
         """Sending the values for Track-Control to the robot"""
         tempList = []
         """Running through the dictionary, reading all the values and adding them to a csv-string"""
@@ -102,10 +102,12 @@ class Controller:
             keyValue = self.__buttonDict.get(key)
             """Values could be array (1D from AnalogStick)"""
             if type(keyValue) is list:
-                tempList.append(round(keyValue[0] / 128.5) if keyValue[0] != 0 else 0)  # making sure the value is not greater than 255
-                tempList.append(round(keyValue[1] / 128.5) if keyValue[1] != 0 else 0)  # making sure the value is not greater than 255
+                tempList.append(round(keyValue[0] / 128.5) if keyValue[0] != 0 else 0)  # making sure the value is not greater than 255 for analog-sticks
+                tempList.append(round(keyValue[1] / 128.5) if keyValue[1] != 0 else 0)  # making sure the value is not greater than 255 for analog-sticks
             else:
                 tempList.append(keyValue)
+        for counter, element in enumerate(tempList):
+            tempList[counter] = str(element)
         contValues = ','.join(tempList)
-        """Sending csv-string to the robot"""
-        self.socketController.sendMessage(contValues, 'controller')
+        """returning controller-output to calling methhod/function"""
+        return contValues
