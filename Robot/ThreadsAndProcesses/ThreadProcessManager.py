@@ -30,6 +30,7 @@ class ThreadProcessManager:
         return thread_
 
     def __runThreadContinuously(self, object_: object, stopThread):
+        """Running the thread-activities until stopThread <bool> is True"""
         while not stopThread():
             object_()
         return
@@ -45,7 +46,7 @@ class ThreadProcessManager:
         self.__killAllProcesses()
 
     def killAllThreads(self):
-        """Setting the run-argument false for open threads (should kill the thread)"""
+        """Setting the run-variables <bool> of the lambda-function inside the thread-function to True, which causes the loop to stop"""
         for runningThread in self.runningThreads:
             if runningThread[0].isAlive():
                 runningThread[1] = True
