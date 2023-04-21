@@ -8,7 +8,7 @@ from Configurations import ConfigReader
 from Network.SocketMessenger import SocketMessenger
 
 
-class SocketController(Thread):
+class SocketController(SocketMessenger):
     instance = None
     __conf = ConfigReader()
     sockets = {
@@ -51,7 +51,8 @@ class SocketController(Thread):
 
     def sendMessage(self, msg, device: str):
         __socket = self.sockets.get(device)[0]
-        self.messenger.sendMessage(msg, __socket)
+        super(SocketController, self).sendMessage(msg, __socket)
+        #self.messenger.sendMessage(msg, __socket)
 
     def receiveMessage(self, device: str):
         __socket = self.sockets.get(device)[0]

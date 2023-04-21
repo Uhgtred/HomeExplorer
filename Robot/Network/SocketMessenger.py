@@ -12,7 +12,7 @@ class SocketMessenger:
         self.conf = ConfigReader()
         self.__maxMsgSize = self.conf.readConfigParameter('MaxMessageSize')
 
-    def rcvMessageLength(self, socket_: socket.socket):
+    def __rcvMessageLength(self, socket_: socket.socket):
         """
         Receiving the length of the message, which itself has a length of 8 byte and is packed via struct.pack.
         Returns the message-length of the following, incoming message!
@@ -38,7 +38,7 @@ class SocketMessenger:
         Receiving the actual message, depending on the message-length that is being received through rcvMessageLength!
         Returns the ENCODED data from the received message (for decoding use: msgData.decode('utf-8'))!
         """
-        msgLength = self.rcvMessageLength(socket_)
+        msgLength = self.__rcvMessageLength(socket_)
         msgData = b''
         # running loop until size of message-length (msgLength) has been reached
         while len(msgData) < msgLength:
