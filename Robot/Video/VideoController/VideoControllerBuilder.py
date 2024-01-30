@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # @author: Markus Kösters
 
-from Robot.BusTransactions import BusPluginInterface
 from Robot.Video.VideoController.VideoController import VideoController
 
 
@@ -10,23 +9,23 @@ class VideoControllerBuilder:
     def __init__(self):
         self.videoController = VideoController()
         self.__camera = None
-        self.__filtering: Filtering = None
-        self.__compression: VideoCompression = None
-        self.__transmission: BusPluginInterface | FileStorage = None
+        self.__filtering = None
+        self.__compression = None
+        self.__transmission = None
 
-    def addCamera(self, camera):
+    def addCamera(self, camera) -> any:
         self.videoController.setCamera(camera)
         return self
 
-    def addFiltering(self, filtering):
+    def addFiltering(self, filtering) -> any:
         self.videoController.setFiltering(filtering)
         return self
 
-    def addCompression(self, compression):
+    def addCompression(self, compression) -> any:
         self.videoController.setCompression(compression)
         return self
 
-    def addTransmission(self, transmission) -> VideoControllerBuilder:
+    def addTransmission(self, transmission) -> any:
         self.videoController.setTransmission(transmission)
         return self
 
