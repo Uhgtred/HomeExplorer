@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 # @author: Markus Kösters
 
-from abc import ABC, abstractmethod
+from typing import Protocol
 
 
-class VideoFilterInterface(ABC):
+class VideoFilterInterface(Protocol):
 
-    @abstractmethod
     @staticmethod
     def filter(image, *filterArgs: list) -> any:
         """

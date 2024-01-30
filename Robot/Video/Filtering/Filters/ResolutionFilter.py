@@ -1,14 +1,11 @@
 #!/usr/bin/env python3
 # @author: Markus Kösters
-import fileinput
 
 import cv2
 import imutils
 
-from Robot.Video.Filtering.VideoFilterInterface import VideoFilterInterface
 
-
-class ResolutionFilter(VideoFilterInterface):
+class ResolutionFilter:
 
     @staticmethod
     def filter(image: any, *filterArgs: list) -> any:
