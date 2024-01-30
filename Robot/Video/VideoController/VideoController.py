@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # @author: Markus Kösters
+
+from Robot.BusTransactions import Bus
 from Robot.Video.Camera import CameraInterface
 
 
@@ -14,11 +16,11 @@ class VideoController:
     def setCamera(self, camera: CameraInterface) -> None:
         self.__camera = camera
 
-    def setFiltering(self, filtering) -> None:
+    def setFiltering(self, filtering: VideoFiltering) -> None:
         self.__filtering = filtering
 
-    def setCompression(self, compression) -> None:
+    def setCompression(self, compression: Compression) -> None:
         self.__compression = compression
 
-    def setTransmission(self, transmission) -> None:
+    def setTransmission(self, transmission: Bus) -> None:
         self.__transmission = transmission
