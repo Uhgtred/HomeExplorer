@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # @author: Markus Kösters
+
 from dataclasses import dataclass
 
 
@@ -10,3 +11,4 @@ class CameraConfig:
     """
     FPS: int
     Port: int
+    Resolution: list[int, int]

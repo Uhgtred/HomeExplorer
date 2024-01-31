@@ -8,6 +8,24 @@ class CameraInterface(ABC):
 
     @abstractmethod
     @property
+    def resolution(self) -> list:
+        """
+        Getter-Method for getting the current resolution of the camera.
+        :return: List containing the X and the Y-Value of the current resolution [x, y].
+        """
+        pass
+
+    @abstractmethod
+    @resolution.setter
+    def resolution(self, resolution: list[int, int]) -> None:
+        """
+        Setter-Method for the camera-resolution.
+        :param resolution: Resolution that will be set [X, Y]
+        """
+        pass
+
+    @abstractmethod
+    @property
     def FPS(self) -> float:
         """
         Getter-Method for getting the current camera FPS.
