@@ -82,6 +82,7 @@ class Camera(CameraInterface):
             if time.time() - __startTime == self.__videoFPS:
                 # calling the defined callback-method and passing it the frame recorded.
                 callbackMethod(frame)
+                __startTime = time.time()
 
     def stopCamera(self) -> None:
         """
