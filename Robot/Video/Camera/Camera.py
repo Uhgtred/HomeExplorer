@@ -42,7 +42,7 @@ class Camera(CameraInterface):
         Setter-Method for the camera-resolution.
         :param resolution: Resolution that will be set [X, Y]
         """
-        self.__resolution = [0, 0] # make sure that the list exists with 2 values
+        self.__resolution = [0, 0]  # make sure that the list exists with 2 values
         self.__resolution[0] = max(resolution)
         self.__resolution[1] = min(resolution)
         # Setting resolution on camera-instance when setting the values of the variables
@@ -69,6 +69,7 @@ class Camera(CameraInterface):
         Method for reading the camera.
         :param callbackMethod: Method that the output-image shall be passed to for further processing.
         """
+        __startTime = time.time()
         while self.__cam is not None and self.__cam.isOpened():
             # state returns false if the frame could not be read, else returns true.
             state, frame = self.__cam.read()
@@ -76,8 +77,11 @@ class Camera(CameraInterface):
                 # Todo: make a log-entry when a frame could not be read correctly.
                 #       maybe a warning would also be a good idea, depending on the frequency of this happening
                 pass
-            callbackMethod(frame)
-            time.sleep(self.__videoFPS)
+            # executing any 1s/fps so for 1s/30fps it will execute any 0.0333seconds
+            # sleeping the program is no option because the buffer of the camera will then cause lag
+            if time.time() - __startTime == self.__videoFPS:
+                # calling the defined callback-method and passing it the frame recorded.
+                callbackMethod(frame)
 
     def stopCamera(self) -> None:
         """
