@@ -11,6 +11,7 @@ class CameraFactoryTest(unittest.TestCase):
     def test_produceDefaultCameraInstance(self):
         myCamera = CameraFactory.produceDefaultCameraInstance()
         self.assertTrue(isinstance(myCamera, Camera))
+        myCamera.stopCamera()
 
 
 if __name__ == '__main__':

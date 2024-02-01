@@ -69,7 +69,7 @@ class Camera(CameraInterface):
         Method for reading the camera.
         :param callbackMethod: Method that the output-image shall be passed to for further processing.
         """
-        while self.__cam.isOpened():
+        while self.__cam is not None and self.__cam.isOpened():
             # state returns false if the frame could not be read, else returns true.
             state, frame = self.__cam.read()
             if not state:

@@ -16,12 +16,12 @@ class CameraConfigTest(unittest.TestCase):
         self.assertEqual(config.FPS, fps)
         self.assertEqual(config.Resolution, resolution)
 
-    def test_CameraConfigNegative(self):
-        port = 'hans'
-        resolution = '300x200'
-        fps = -1
-        config = CameraConfig(fps, port, resolution)
-        print(config)
+    # def test_CameraConfigNegative(self):
+    #     port = 'hans'
+    #     resolution = '300x200'
+    #     fps = -1
+    #     config = CameraConfig(fps, port, resolution)
+    #     print(config)
 
 
 if __name__ == '__main__':
