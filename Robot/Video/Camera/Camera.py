@@ -13,9 +13,9 @@ class Camera(CameraInterface):
     __cam = None
 
     def __init__(self, config: CameraConfig):
-        self.__videoFPS = float(1 / config.FPS)
-        self.__videoPort = config.Port
-        self.__resolution = config.Resolution
+        self.__videoFPS: float = float(1 / config.FPS)
+        self.__videoPort: int = config.Port
+        self.__resolution: tuple[int, int] = config.Resolution
         # Todo: Not sure if this is a good way to do this here. But don't want an extra class for one line of code.
         self.__setupCamera()
 
@@ -29,7 +29,7 @@ class Camera(CameraInterface):
         self.__setResolution()
 
     @property
-    def resolution(self) -> list:
+    def resolution(self) -> tuple[int, int]:
         """
         Getter-Method for getting the current resolution of the camera.
         :return: List containing the X and the Y-Value of the current resolution [x, y].
@@ -101,7 +101,7 @@ class Camera(CameraInterface):
                 return frame
         return None
 
-    def __setResolution(self):
+    def __setResolution(self) -> None:
         """
         Method for setting the resolution of the camera.
         """
