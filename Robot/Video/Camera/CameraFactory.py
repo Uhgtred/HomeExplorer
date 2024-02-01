@@ -7,7 +7,7 @@ from .CameraConfig import CameraConfig
 class CameraFactory:
 
     @staticmethod
-    def produceCameraInstance():
+    def produceDefaultCameraInstance():
         """
         Method that produces a Camera-instance with a default configuration.
         """

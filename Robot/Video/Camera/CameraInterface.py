@@ -6,8 +6,8 @@ from abc import ABC, abstractmethod
 
 class CameraInterface(ABC):
 
-    @abstractmethod
     @property
+    @abstractmethod
     def resolution(self) -> list:
         """
         Getter-Method for getting the current resolution of the camera.
@@ -15,8 +15,8 @@ class CameraInterface(ABC):
         """
         pass
 
-    @abstractmethod
     @resolution.setter
+    @abstractmethod
     def resolution(self, resolution: list[int, int]) -> None:
         """
         Setter-Method for the camera-resolution.
@@ -24,8 +24,8 @@ class CameraInterface(ABC):
         """
         pass
 
-    @abstractmethod
     @property
+    @abstractmethod
     def FPS(self) -> float:
         """
         Getter-Method for getting the current camera FPS.
@@ -33,8 +33,8 @@ class CameraInterface(ABC):
         """
         pass
 
-    @abstractmethod
     @FPS.setter
+    @abstractmethod
     def FPS(self, fps: int) -> None:
         """
         Setter-Method for setting the camera-FPS.

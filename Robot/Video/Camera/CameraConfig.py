@@ -11,4 +11,4 @@ class CameraConfig:
     """
     FPS: int
     Port: int
-    Resolution: list[int, int]
+    Resolution: tuple[int, int]
