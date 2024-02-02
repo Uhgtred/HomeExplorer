@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # @author      Markus Kösters
-
+import threading
 import time
 import cv2
 
@@ -9,7 +9,6 @@ from .CameraInterface import CameraInterface
 
 
 class Camera(CameraInterface):
-
     __cam = None
 
     def __init__(self, config: CameraConfig):
@@ -49,12 +48,12 @@ class Camera(CameraInterface):
         self.__setResolution()
 
     @property
-    def FPS(self) -> float:
+    def FPS(self) -> int:
         """
         Getter-Method for getting the current camera FPS.
         :return: Float representing the camera-FPS.
         """
-        return self.__videoFPS
+        return int(1/self.__videoFPS)
 
     @FPS.setter
     def FPS(self, fps: int) -> None:
@@ -69,6 +68,15 @@ class Camera(CameraInterface):
         Method for reading the camera.
         :param callbackMethod: Method that the output-image shall be passed to for further processing.
         """
+        self.__cam.set(cv2.CAP_PROP_FPS, 15)
+        threading.Thread(target=self.__readCameraInLoopThread, args=(callbackMethod,), daemon=True).start()
+
+    def __readCameraInLoopThread(self, *args) -> None:
+        """
+        Method for reading the camera in loop and new thread.
+        :param callbackMethod: Method that the output-image shall be passed to for further processing.
+        """
+        callbackMethod = args[0]
         __startTime = time.time()
         while self.__cam is not None and self.__cam.isOpened():
             # state returns false if the frame could not be read, else returns true.
@@ -79,7 +87,7 @@ class Camera(CameraInterface):
                 pass
             # executing any 1s/fps so for 1s/30fps it will execute any 0.0333seconds
             # sleeping the program is no option because the buffer of the camera will then cause lag
-            if time.time() - __startTime == self.__videoFPS:
+            if time.time() - __startTime >= self.__videoFPS:
                 # calling the defined callback-method and passing it the frame recorded.
                 callbackMethod(frame)
                 __startTime = time.time()
