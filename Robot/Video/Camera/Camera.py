@@ -68,6 +68,7 @@ class Camera(CameraInterface):
         Method for reading the camera.
         :param callbackMethod: Method that the output-image shall be passed to for further processing.
         """
+        # Todo: check if this could be a process instead of a thread (pipes would be needed in that case)!
         threading.Thread(target=self.__readCameraInLoopThread, args=(callbackMethod,), daemon=True).start()
 
     def __readCameraInLoopThread(self, *args) -> None:

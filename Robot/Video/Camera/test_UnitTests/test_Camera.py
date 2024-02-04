@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 # @author: Markus Kösters
+
 import time
 import unittest
 import numpy
 
-from Robot.Video.Camera import Camera, CameraFactory
+from Robot.Video.Camera import CameraFactory
 
 
 class CameraTest(unittest.TestCase):
@@ -23,10 +24,11 @@ class CameraTest(unittest.TestCase):
         runTime = 3
         self.camera = CameraFactory.produceDefaultCameraInstance()
         self.camera.readCameraInLoop(self.helper)
+        # waiting the defined amount of time until closing the camera.
         time.sleep(runTime)
         self.assertIs(type(self.frame), numpy.ndarray)
-        # print(self.frameCounter)
         self.camera.stopCamera()
+        print(f'[UnitTest][Video]: {self.frameCounter} frames recorded in {runTime} seconds!')
         self.frameCounter = 0
 
     def test_cameraSingleFrame(self):
