@@ -9,9 +9,9 @@ from .CameraInterface import CameraInterface
 
 
 class Camera(CameraInterface):
-    __cam = None
 
     def __init__(self, config: CameraConfig):
+        self.__cam = None
         self.__videoFPS: float = float(1 / config.FPS)
         self.__videoPort: int = config.Port
         self.__resolution: tuple[int, int] = config.Resolution
