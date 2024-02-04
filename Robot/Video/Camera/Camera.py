@@ -68,7 +68,6 @@ class Camera(CameraInterface):
         Method for reading the camera.
         :param callbackMethod: Method that the output-image shall be passed to for further processing.
         """
-        self.__cam.set(cv2.CAP_PROP_FPS, 15)
         threading.Thread(target=self.__readCameraInLoopThread, args=(callbackMethod,), daemon=True).start()
 
     def __readCameraInLoopThread(self, *args) -> None:

@@ -25,7 +25,7 @@ class CameraTest(unittest.TestCase):
         self.camera.readCameraInLoop(self.helper)
         time.sleep(runTime)
         self.assertIs(type(self.frame), numpy.ndarray)
-        print(self.frameCounter)
+        # print(self.frameCounter)
         self.camera.stopCamera()
         self.frameCounter = 0
 
