@@ -14,3 +14,4 @@ class SerializerInterface(ABC):
         :param imageData: Array containing image-data that will be serialized.
         """
         pass
+
