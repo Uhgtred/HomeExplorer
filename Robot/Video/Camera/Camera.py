@@ -11,7 +11,7 @@ from .CameraInterface import CameraInterface
 class Camera(CameraInterface):
 
     def __init__(self, config: CameraConfig):
-        self.__cam = None
+        self.__cam: cv2.VideoCapture | None = None
         self.__videoFPS: float = float(1 / config.FPS)
         self.__videoPort: int = config.Port
         self.__resolution: tuple[int, int] = config.Resolution
