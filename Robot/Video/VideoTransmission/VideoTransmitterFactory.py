@@ -2,7 +2,7 @@
 # @author: Markus Kösters
 
 from Robot.BusTransactions.BusFactory import BusFactory
-from Robot.Video.VideoTransmission.SerializationNumpySave import SerializationNumpySave
+from Robot.Video.VideoTransmission.Serialization.SerializationNumpySave import SerializationNumpySave
 from Robot.Video.VideoTransmission.VideoTransmitter import VideoTransmitter
 
 

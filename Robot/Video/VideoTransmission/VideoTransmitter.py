@@ -3,7 +3,7 @@
 
 import numpy
 
-from .SerializerInterface import SerializerInterface
+from Robot.Video.VideoTransmission.Serialization.SerializerInterface import SerializerInterface
 from ...BusTransactions import Bus
 
 
