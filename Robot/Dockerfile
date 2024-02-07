@@ -12,7 +12,6 @@ RUN apt-get update && \
 COPY ./requirements.txt /app/
 WORKDIR /app/
 
-
 # open specified port to the outside
 #ENV PORT=2000
 #EXPOSE 2000
