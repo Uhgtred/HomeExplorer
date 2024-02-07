@@ -5,7 +5,7 @@ import time
 import unittest
 import numpy
 
-from Robot.Video.Camera import CameraFactory
+from Video.Camera import CameraFactory
 
 
 class CameraTest(unittest.TestCase):

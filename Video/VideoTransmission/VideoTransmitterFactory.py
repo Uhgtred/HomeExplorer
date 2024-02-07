@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # @author: Markus Kösters
 
-from Robot.BusTransactions.BusFactory import BusFactory
-from Robot.Video.Serialization import SerializationNumpySave
-from Robot.Video.VideoTransmission.VideoTransmitter import VideoTransmitter
+from BusTransactions.BusFactory import BusFactory
+from Video.Serialization import SerializationNumpySave
+from Video.VideoTransmission.VideoTransmitter import VideoTransmitter
 
 
 class VideoTransmitterFactory:

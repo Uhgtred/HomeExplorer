@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # @author: Markus Kösters
 
-from Robot.Video.VideoController import VideoController
+from Video.VideoController import VideoController
 
 
 class VideoControllerBuilder:

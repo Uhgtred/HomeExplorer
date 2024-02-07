@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # @author: Markus Kösters
 
-from Robot.BusTransactions import Bus
-from Robot.Video.Camera import CameraInterface
+from BusTransactions import Bus
+from Video.Camera import CameraInterface
 
 
 class VideoController:

@@ -3,7 +3,7 @@
 
 import unittest
 
-from Robot.Video.Camera import CameraFactory, Camera
+from Video.Camera import CameraFactory, Camera
 
 
 class CameraFactoryTest(unittest.TestCase):

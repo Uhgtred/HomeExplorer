@@ -9,7 +9,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy requirements to app-folder
-COPY ./requirements.txt /app/
+COPY requirements.txt /app/
 WORKDIR /app/
 
 # open specified port to the outside

@@ -3,7 +3,7 @@
 
 import unittest
 
-from Robot.Video.Camera import CameraConfig
+from Video.Camera import CameraConfig
 
 
 class CameraConfigTest(unittest.TestCase):
