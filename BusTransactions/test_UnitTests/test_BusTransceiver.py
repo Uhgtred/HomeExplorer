@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 # @author: Markus Kösters
-import time
+
 import unittest
 
-from BusTransactions import BusInterfaceFactory, SerialBus, SerialBusConfig
-from BusTransactions.Buses.SerialBusModule.test_UnitTests.SerialBusMock import MockSerialBus
+from BusTransactions import BusFactory, SerialBus, SerialBusConfig
+from BusTransactions.BusPlugins.SerialBusModule.test_UnitTests.SerialBusMock import MockSerialBus
 from BusTransactions import Encoding
 
 
 class MyTestCase(unittest.TestCase):
-    transceiver = BusInterfaceFactory()
+    transceiver = BusFactory.BusFactory()
     config = SerialBusConfig('test', 123, MockSerialBus)
     bus = SerialBus(config)
     transceiver = transceiver.produceBusTransceiver(bus, Encoding.EncodingFactory.arduinoSerialEncoding)

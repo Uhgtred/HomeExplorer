@@ -1,21 +1,27 @@
 #!/usr/bin/env python3
 # @author: Markus Kösters
 
-import io
 import numpy
 
+from .SerializerConfig import SerializerConfig
 from .SerializerInterface import SerializerInterface
 
 
 class SerializationNumpySave(SerializerInterface):
+    """
+    Class for serializing numpy array before sending it through socket.
+    """
 
-    __memoryFile = io.BytesIO()
+    def __init__(self, config: SerializerConfig):
+        self.__imageFile = config.storageFile
 
     def serialize(self, imageData: numpy.ndarray) -> bytes:
         """
         Method for serialization of imageData.
         :param imageData: Image data as numpy array that will be serialized.
         :return: Serialized numpy array (image data).
+        Todo: implement this!
         """
-        numpy.save(self.__memoryFile, imageData)
-        return self.__memoryFile.getvalue()
+        numpy.save(self.__imageFile, imageData)
+
+        return pass
