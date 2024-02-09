@@ -1,5 +1,4 @@
 FROM ubuntu:latest
-#FROM python:latest
 LABEL authors="Markus"
 
 # Install python and pip
@@ -13,8 +12,8 @@ COPY requirements.txt /app/
 WORKDIR /app/
 
 # open specified port to the outside
-#ENV PORT=2000
-#EXPOSE 2000
+ENV PORT=2000
+EXPOSE 2000
 
 # Install dependencies
 RUN python3 -m venv /app/venv && \
