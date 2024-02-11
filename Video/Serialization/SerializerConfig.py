@@ -7,4 +7,4 @@ from dataclasses import dataclass
 
 @dataclass
 class SerializerConfig:
-    storageFile: os.PathLike
+    storageFile: os.PathLike | str

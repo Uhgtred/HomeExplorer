@@ -2,4 +2,4 @@
 # @author: Markus Kösters
 
 from .SerializerInterface import SerializerInterface
-from .SerializationNumpySave import SerializationNumpySave
+from .SerializationJoblib import SerializationJoblib

@@ -2,7 +2,7 @@
 # @author: Markus Kösters
 
 from BusTransactions.BusFactory import BusFactory
-from Video.Serialization import SerializationNumpySave
+from Video.Serialization import SerializationJoblib
 from Video.VideoTransmission.VideoTransmitter import VideoTransmitter
 
 
@@ -15,5 +15,4 @@ class VideoTransmitterFactory:
         :return: Video-transmission instance-object.
         """
         bus = BusFactory.produceUDP_Transceiver()
-        serializer = SerializationNumpySave()
-        return VideoTransmitter(serializer, bus)
+        return VideoTransmitter(bus)

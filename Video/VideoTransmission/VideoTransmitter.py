@@ -1,22 +1,36 @@
 #!/usr/bin/env python3
 # @author: Markus Kösters
 
-import numpy
-
-from Video.Serialization import SerializerInterface
 from ...BusTransactions import Bus
 
 
 class VideoTransmitter:
+    """
+    The VideoTransmitter class is responsible for transmitting video frames over a specified bus.
+    """
 
-    def __init__(self, serializer: SerializerInterface, bus: Bus):
-        self.__serializer = serializer
+    def __init__(self, bus: Bus):
+        """
+        Initializes the VideoTransmitter with a serializer and bus.
+        :param bus: The bus used to transmit the serialized video frames.
+        """
         self.__bus = bus
 
-    def transmit(self, image: numpy.ndarray) -> None:
+    def transmit(self, imageFilePath: str) -> None:
         """
-        Protocol for the image transmission to make sure the data is serialized before sending.
-        :param image: Image that will be transmitted. Needs to be serialized before.
+        Protocol for the image transmission. It ensures the image data is read from the file (which is already serialized)
+        and then sent over the bus.
+        :param imageFilePath: str - The absolute file path of the serialized image file.
         """
-        self.__bus.writeSingleMessage(self.__serializer.serialize(image))
+        data = self.__readImageFileData(imageFilePath)
+        self.__bus.writeBus(data)
 
+    def __readImageFileData(self, imageFilePath: str) -> bytes:
+        """
+        Method that reads the data from the image file, which is a serialized numpy array representing a video frame.
+        :param imageFilePath: str - Absolute path to the image file.
+        :return: bytes - Data read from the image file.
+        """
+        with open(imageFilePath, 'rb') as f:
+            data = f.read()
+        return data
