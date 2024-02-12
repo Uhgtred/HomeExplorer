@@ -1,20 +1,18 @@
 #!/usr/bin/env python3
 # @author: Markus Kösters
 
+from Video.Camera import CameraInterface
+from Video.Serialization import SerializerInterface
 from Video.VideoController import VideoController
+from Video.VideoTransmission import VideoTransmitterInterface
 
 
 class VideoControllerBuilder:
 
     def __init__(self):
         self.videoController = VideoController()
-        self.__camera = None
-        self.__filtering = None
-        self.__serialization = None
-        self.__compression = None
-        self.__transmission = None
 
-    def addCamera(self, camera) -> any:
+    def addCamera(self, camera: CameraInterface) -> any:
         self.videoController.setCamera(camera)
         return self
 
@@ -22,7 +20,7 @@ class VideoControllerBuilder:
     #     self.videoController.setFiltering(filtering)
     #     return self
 
-    def addSerialization(self, serialization) -> any:
+    def addSerialization(self, serialization: SerializerInterface) -> any:
         self.videoController.setSerialization(serialization)
         return self
 
@@ -30,7 +28,7 @@ class VideoControllerBuilder:
     #     self.videoController.setCompression(compression)
     #     return self
 
-    def addTransmission(self, transmission) -> any:
+    def addTransmission(self, transmission: VideoTransmitterInterface) -> any:
         self.videoController.setTransmission(transmission)
         return self
 

@@ -2,7 +2,6 @@
 # @author: Markus Kösters
 
 from BusTransactions.BusFactory import BusFactory
-from Video.Serialization import SerializationJoblib
 from Video.VideoTransmission.VideoTransmitter import VideoTransmitter
 
 

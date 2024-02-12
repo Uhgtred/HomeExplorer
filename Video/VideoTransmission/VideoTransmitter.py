@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # @author: Markus Kösters
 
-from ...BusTransactions import Bus
+from BusTransactions import Bus
 
 
 class VideoTransmitter:

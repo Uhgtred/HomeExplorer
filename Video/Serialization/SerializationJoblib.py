@@ -2,6 +2,8 @@
 # @author: Markus Kösters
 
 import fileinput
+import os
+
 import joblib
 import numpy
 
@@ -26,4 +28,5 @@ class SerializationJoblib(SerializerInterface):
         """
         frameFile = self.__imageFile
         joblib.dump(imageFrame, frameFile)
-        return frameFile
+        # returning absolute filepath of the image-file
+        return os.path.abspath(frameFile)
