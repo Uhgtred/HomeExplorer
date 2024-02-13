@@ -3,8 +3,8 @@
 
 import unittest
 
-from BusTransactions.Buses.Ethernet import SocketConfigs, Tcp_Udp_sockets
-from BusTransactions.Buses.Ethernet.test_UnitTests import SocketMock
+from BusTransactions.BusPlugins.EthernetBusPlugin import SocketConfigs, Tcp_Udp_sockets
+from . import SocketMock
 
 
 class MyTestCase(unittest.TestCase):

@@ -3,6 +3,8 @@
 
 from dataclasses import dataclass
 
+import cv2
+
 
 @dataclass(frozen=True)
 class VideoCameraConfig:
@@ -12,3 +14,4 @@ class VideoCameraConfig:
     FPS: int
     Port: int
     Resolution: tuple[int, int]
+    camera: cv2.VideoCapture = cv2.VideoCapture

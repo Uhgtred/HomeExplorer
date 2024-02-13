@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 # @author: Markus Kösters
 
+from . import BusInterface
+from .Bus import Bus
 from .BusPlugins import BusPluginFactory
 from .Encoding import EncodingFactory
-from .Bus import Bus
 
 
 class BusFactory:
@@ -12,7 +13,7 @@ class BusFactory:
     """
 
     @staticmethod
-    def produceBusTransceiver(bus: type(BusPluginFactory), encoding: type(EncodingFactory)) -> Bus:
+    def produceBusTransceiver(bus: type(BusPluginFactory), encoding: type(EncodingFactory)) -> BusInterface:
         """
         Method for producing an instance of a bus-transceiver.
         :param bus: Bus-Class that will be communicated with, produced by Factory-class in BusPlugins-Module.
@@ -25,7 +26,7 @@ class BusFactory:
         return transceiver
 
     @classmethod
-    def produceSerialTransceiver(cls) -> Bus:
+    def produceSerialTransceiver(cls) -> BusInterface:
         """
         Method for creating an instance of a serial-bus transceiver that connects to arduino.
         """
@@ -34,7 +35,7 @@ class BusFactory:
         return cls.produceBusTransceiver(busModule, encoding)
 
     @classmethod
-    def produceUDP_Transceiver(cls) -> Bus:
+    def produceUDP_Transceiver(cls) -> BusInterface:
         """
         Method for creating an instance of an udp-socket.
         :return:
