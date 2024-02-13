@@ -2,5 +2,5 @@
 # @author: Markus Kösters
 
 
-class VideoFiltering:
+class VideoFilter:
     pass

@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 # @author      Markus Kösters
+
 import threading
 import time
 import cv2
 
-from .CameraConfig import CameraConfig
-from .CameraInterface import CameraInterface
+from .VideoCameraConfig import VideoCameraConfig
+from .VideoCameraInterface import VideoCameraInterface
 
 
-class Camera(CameraInterface):
+class VideoCamera(VideoCameraInterface):
 
-    def __init__(self, config: CameraConfig):
+    def __init__(self, config: VideoCameraConfig):
         self.__cam: cv2.VideoCapture | None = None
         self.__videoFPS: float = float(1 / config.FPS)
         self.__videoPort: int = config.Port
@@ -69,6 +70,7 @@ class Camera(CameraInterface):
         :param callbackMethod: Method that the output-image shall be passed to for further processing.
         """
         # Todo: check if this could be a process instead of a thread (pipes would be needed in that case)!
+        #       Or check if Python 3.13 would give this a performance-boost by deactivating GIL.
         threading.Thread(target=self.__readCameraInLoopThread, args=(callbackMethod,), daemon=True).start()
 
     def __readCameraInLoopThread(self, *args) -> None:

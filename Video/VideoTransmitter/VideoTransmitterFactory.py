@@ -2,7 +2,7 @@
 # @author: Markus Kösters
 
 from BusTransactions.BusFactory import BusFactory
-from Video.VideoTransmission.VideoTransmitter import VideoTransmitter
+from Video.VideoTransmitter.VideoTransmitter import VideoTransmitter
 
 
 class VideoTransmitterFactory:

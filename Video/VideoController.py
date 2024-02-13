@@ -3,10 +3,10 @@
 
 import numpy
 
-from Video.Camera import CameraInterface
-from Video.Filtering import VideoFilterInterface
-from Video.Serialization import SerializerInterface
-from Video.VideoTransmission import VideoTransmitterInterface
+from Video.VideoCamera import VideoCameraInterface
+from Video.VideoFilter import VideoFilterInterface
+from Video.Serializer import SerializerInterface
+from Video.VideoTransmitter import VideoTransmitterInterface
 
 
 class VideoController:
@@ -22,10 +22,10 @@ class VideoController:
         self.__compression = None
         self.__transmission = None
 
-    def setCamera(self, camera: CameraInterface) -> None:
+    def setCamera(self, camera: VideoCameraInterface) -> None:
         """
         Setter-Method for the camera interface.
-        :param camera: Camera interface that will be used to read video data.
+        :param camera: VideoCamera interface that will be used to read video data.
         """
         self.__camera = camera
 
@@ -43,13 +43,13 @@ class VideoController:
     def setFiltering(self, filtering: VideoFilterInterface) -> None:
         """
         Setter-Method for the filtering of video data.
-        :param filtering: Filter that will be applied to the video data.
+        :param filtering: VideoFilter that will be applied to the video data.
         """
 
     def setCompression(self, compression) -> None:
         """
         Setter-Method for the compression of video data.
-        :param compression: Compression that will be used to compress video data.
+        :param compression: Compressor that will be used to compress video data.
         """
         if self.__compression is not None:
             # TODO: implement compression if needed. Else remove this.
@@ -70,7 +70,7 @@ class VideoController:
             self.__camera.readCameraInLoop(self.__processFrame)
             self.isRunning = True
         elif self.__camera is None:
-            raise Exception("Camera not initialized! Cannot start video stream!")
+            raise Exception("VideoCamera not initialized! Cannot start video stream!")
 
     def stop(self) -> None:
         """

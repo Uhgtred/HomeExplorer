@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 # @author: Markus Kösters
 
-from Video.Serialization import SerializationJoblib
-from Video.Serialization.SerializerConfig import SerializerConfig
+from Video.Serializer import SerializerJoblib
+from Video.Serializer.SerializerConfig import SerializerConfig
 
 
 class SerializerFactory:
 
     @staticmethod
     def produceSerializationJoblib():
-        """ Produces a Serialization Joblib"""
+        """ Produces a Serializer Joblib"""
         file = './tmp/imageFile.pkl'
         config = SerializerConfig(file)
-        return SerializationJoblib(config)
+        return SerializerJoblib(config)

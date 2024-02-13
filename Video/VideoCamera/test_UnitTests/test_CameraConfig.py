@@ -3,7 +3,7 @@
 
 import unittest
 
-from Video.Camera import CameraConfig
+from Video.VideoCamera import VideoCameraConfig
 
 
 class CameraConfigTest(unittest.TestCase):
@@ -11,7 +11,7 @@ class CameraConfigTest(unittest.TestCase):
         fps = 30
         port = 0
         resolution = (640, 480)
-        config = CameraConfig(fps, port, resolution)
+        config = VideoCameraConfig(fps, port, resolution)
         self.assertEqual(config.Port, port)
         self.assertEqual(config.FPS, fps)
         self.assertEqual(config.Resolution, resolution)

@@ -5,9 +5,9 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
-class CameraConfig:
+class VideoCameraConfig:
     """
-    Camera configuration.
+    VideoCamera configuration.
     """
     FPS: int
     Port: int

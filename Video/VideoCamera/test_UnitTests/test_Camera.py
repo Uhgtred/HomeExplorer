@@ -5,7 +5,7 @@ import time
 import unittest
 import numpy
 
-from Video.Camera import CameraFactory
+from Video.VideoCamera import VideoCameraFactory
 
 
 class CameraTest(unittest.TestCase):
@@ -22,7 +22,7 @@ class CameraTest(unittest.TestCase):
 
     def test_cameraTest(self):
         runTime = 3
-        self.camera = CameraFactory.produceDefaultCameraInstance()
+        self.camera = VideoCameraFactory.produceDefaultCameraInstance()
         self.camera.readCameraInLoop(self.helper)
         # waiting the defined amount of time until closing the camera.
         time.sleep(runTime)
@@ -32,13 +32,13 @@ class CameraTest(unittest.TestCase):
         self.frameCounter = 0
 
     def test_cameraSingleFrame(self):
-        camera = CameraFactory.produceDefaultCameraInstance()
+        camera = VideoCameraFactory.produceDefaultCameraInstance()
         frame = camera.readSingleFrame()
         self.assertIs(type(frame), numpy.ndarray)
         camera.stopCamera()
 
     def test_stopCamera(self):
-        camera = CameraFactory.produceDefaultCameraInstance()
+        camera = VideoCameraFactory.produceDefaultCameraInstance()
         camera.stopCamera()
         self.assertIs(camera._Camera__cam, None)
 

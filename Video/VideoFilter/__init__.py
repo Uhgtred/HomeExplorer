@@ -2,4 +2,4 @@
 # @author: Markus Kösters
 
 from VideoFilterInterface import VideoFilterInterface
-from VideoFiltering import VideoFiltering
+from VideoFilter import VideoFilter

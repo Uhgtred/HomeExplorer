@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # @author: Markus Kösters
 
-from Video.Camera import CameraInterface
-from Video.Serialization import SerializerInterface
+from Video.VideoCamera import VideoCameraInterface
+from Video.Serializer import SerializerInterface
 from Video.VideoController import VideoController
-from Video.VideoTransmission import VideoTransmitterInterface
+from Video.VideoTransmitter import VideoTransmitterInterface
 
 
 class VideoControllerBuilder:
@@ -12,7 +12,7 @@ class VideoControllerBuilder:
     def __init__(self):
         self.videoController = VideoController()
 
-    def addCamera(self, camera: CameraInterface) -> any:
+    def addCamera(self, camera: VideoCameraInterface) -> any:
         self.videoController.setCamera(camera)
         return self
 

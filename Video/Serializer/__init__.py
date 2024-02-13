@@ -2,4 +2,4 @@
 # @author: Markus Kösters
 
 from .SerializerInterface import SerializerInterface
-from .SerializationJoblib import SerializationJoblib
+from .SerializerJoblib import SerializerJoblib

@@ -10,7 +10,7 @@ class ResolutionFilter:
     @staticmethod
     def filter(image: any, *filterArgs: list) -> any:
         """
-        Filter method that rescales the image.
+        VideoFilter method that rescales the image.
         :param image: Image that will be rescaled.
         :param filterArgs: X-axis and Y-axis resolution in a list.
         :return: Rescaled image.

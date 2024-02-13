@@ -11,7 +11,7 @@ from .SerializerConfig import SerializerConfig
 from .SerializerInterface import SerializerInterface
 
 
-class SerializationJoblib(SerializerInterface):
+class SerializerJoblib(SerializerInterface):
     """
     Class for serializing numpy array before sending it through socket.
     """

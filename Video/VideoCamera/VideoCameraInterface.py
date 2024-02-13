@@ -4,7 +4,7 @@
 from abc import ABC, abstractmethod
 
 
-class CameraInterface(ABC):
+class VideoCameraInterface(ABC):
 
     @property
     @abstractmethod

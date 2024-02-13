@@ -7,7 +7,7 @@ from typing import Protocol
 class VideoFilterInterface(Protocol):
 
     @staticmethod
-    def filter(image, *filterArgs: list) -> any:
+    def filterFrame(image, *filterArgs: list) -> any:
         """
         Interface for Method that filter video data.
         :param image: Image-object.

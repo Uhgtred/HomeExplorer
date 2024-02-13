@@ -3,14 +3,14 @@
 
 import unittest
 
-from Video.Camera import CameraFactory, Camera
+from Video.VideoCamera import VideoCameraFactory, VideoCamera
 
 
 class CameraFactoryTest(unittest.TestCase):
 
     def test_produceDefaultCameraInstance(self):
-        myCamera = CameraFactory.produceDefaultCameraInstance()
-        self.assertTrue(isinstance(myCamera, Camera))
+        myCamera = VideoCameraFactory.produceDefaultCameraInstance()
+        self.assertTrue(isinstance(myCamera, VideoCamera))
         myCamera.stopCamera()
 
 
