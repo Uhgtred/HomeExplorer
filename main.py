@@ -6,7 +6,7 @@ import time
 import os
 
 from Arduino.Arduino import Arduino
-# from Camera.Camera import Camera
+# from VideoCamera.VideoCamera import VideoCamera
 from Configurations.ConfigReader import ConfigReader
 from Network.SocketController import SocketController
 
@@ -21,7 +21,7 @@ class Main:
         self.__delay = float(self.__conf.readConfigParameter('DelayMain'))
         self.socketController = SocketController()
         self.Arduino = Arduino()
-        # self.__camera = Camera()
+        # self.__camera = VideoCamera()
         self.__threads()
 
     def __serialCommunication(self):
