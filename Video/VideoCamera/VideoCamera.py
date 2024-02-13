@@ -24,11 +24,9 @@ class VideoCamera(VideoCameraInterface):
         """
         Method for setting up the camera.
         """
+        # opening camera if the object is callable (not instanced yet).
         if callable(self.__cam):
             self.__cam = self.__cam(self.__videoPort)
-        # if not self.__cam.isOpened():
-        #     # Creating an instance of a camera-object.
-        #     self.__cam = self.__cam(self.__videoPort)
         self.__setResolution()
 
     @property
@@ -102,7 +100,6 @@ class VideoCamera(VideoCameraInterface):
         Method for releasing the camera.
         """
         self.__cam.release()
-        # self.__cam = None
 
     def readSingleFrame(self) -> object:
         """
