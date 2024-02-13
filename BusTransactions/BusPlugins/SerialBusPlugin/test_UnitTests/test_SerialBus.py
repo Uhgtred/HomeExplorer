@@ -3,8 +3,8 @@
 
 import unittest
 
-from BusTransactions import SerialBusConfig
-from BusTransactions import SerialBus
+from ..SerialBusConfig import SerialBusConfig
+from ..SerialBus import SerialBus
 from .SerialBusMock import MockSerialBus
 
 
