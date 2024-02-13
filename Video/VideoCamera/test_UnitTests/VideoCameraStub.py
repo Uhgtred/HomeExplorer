@@ -31,7 +31,7 @@ class VideoCameraStub:
         :return: numpy array with random data and shape of (height, width, channels).
         """
         frame = np.random.randint(0, 255, (self.height, self.width, self.channels), dtype=np.uint8)
-        return frame
+        return True, frame
 
     def release(self):
         self.isOpen = False
