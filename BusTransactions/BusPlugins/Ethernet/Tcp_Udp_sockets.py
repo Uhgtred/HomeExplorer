@@ -4,11 +4,11 @@
 import socket
 import struct
 
-from BusTransactions.Bus import Bus
 from . import SocketConfigs
+from BusTransactions import BusPluginInterface
 
 
-class UdpSocket(Bus):
+class UdpSocket(BusPluginInterface):
 
     # Todo: Implement possibility to close Socket. It will be necessary to remove it from the openPorts list as well.
     #       Also there needs to be a limit on how many sockets can be opened simultaneously!

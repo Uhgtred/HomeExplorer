@@ -3,16 +3,16 @@
 
 import unittest
 
-from BusTransactions import BusInterfaceFactory, BusInterface
-from BusTransactions import SerialBusConfig
+from BusTransactions import SerialBusConfig, BusPluginInterface
 from BusTransactions import SerialBus
-from BusTransactions.Buses.SerialBusModule.test_UnitTests.SerialBusMock import MockSerialBus
+from BusTransactions.BusPlugins.SerialBusModule.test_UnitTests.SerialBusMock import MockSerialBus
 from BusTransactions import Encoding
+from BusTransactions.BusFactory import BusFactory
 
 
 class MyTestCase(unittest.TestCase):
 
-    busFactory = BusInterfaceFactory()
+    busFactory = BusFactory()
     mockLibrary = MockSerialBus
 
     def test_produceBusTransceiver(self):
@@ -20,7 +20,8 @@ class MyTestCase(unittest.TestCase):
         encoding = Encoding.EncodingFactory.arduinoSerialEncoding
         bus = SerialBus(config)
         transceiver = self.busFactory.produceBusTransceiver(bus, encoding)
-        assert isinstance(transceiver, BusInterface)
+        print(transceiver)
+        assert isinstance(transceiver, BusPluginInterface)
 
 
 if __name__ == '__main__':

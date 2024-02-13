@@ -7,25 +7,15 @@ from BusTransactions.BusPlugins.BusPluginInterface import BusPluginInterface
 
 class Bus:
     """
-    Class for communication with a variety of bus-systems.
+    Interface-Class for communication with a variety of bus-systems.
     """
-
-    def __init__(self, bus: BusPluginInterface, encoding: EncodingProtocol):
-        """
-        :param bus: Bus that shall be communicated with. Needs to follow the protocol Bus.
-        :param encoding: Encoding that will be used to make the messages compliant to the bus.
-        """
-        self.__stopFlag: bool = False
-        self.encoding = encoding
-        self.bus = bus
 
     def readSingleMessage(self) -> EncodingProtocol.decode:
         """
         Read and decode a single message from the bus.
         :return: Decoded message in string format.
         """
-        message = self.bus.readBus()
-        return self.encoding.decode(message)
+        pass
 
     def readBusUntilStopFlag(self, callbackMethod: callable, stopFlag: bool = False) -> None:
         """
@@ -34,18 +24,14 @@ class Bus:
                                 Needs to accept one argument which is the message read from the bus.
         :param stopFlag: When true reading-loop stops.
         """
-        if not stopFlag:
-            message = self.bus.readBus()
-            callbackMethod(self.encoding.decode(message))
-            self.readBusUntilStopFlag(callbackMethod, self.stopFlag)
+        pass
 
     def writeSingleMessage(self, message: any) -> None:
         """
         Sending an encoded message to the bus.
         :param message: Message that will be sent to the bus.
         """
-        encodedMessage = self.encoding.encode(message)
-        self.bus.writeBus(encodedMessage)
+        pass
 
     @property
     def stopFlag(self) -> bool:
@@ -53,7 +39,7 @@ class Bus:
         Getter-Method for the stop-flag.
         :return: Stop-flag.
         """
-        return self.__stopFlag
+        pass
 
     @stopFlag.setter
     def stopFlag(self, state: bool) -> None:
@@ -61,4 +47,4 @@ class Bus:
         Setter-method for the stop-flag.
         :param state: Stop-flag state that will be set.
         """
-        self.__stopFlag = state
+        pass
