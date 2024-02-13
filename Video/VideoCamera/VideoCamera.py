@@ -12,7 +12,8 @@ from .VideoCameraInterface import VideoCameraInterface
 class VideoCamera(VideoCameraInterface):
 
     def __init__(self, config: VideoCameraConfig):
-        self.__cam: cv2.VideoCapture | None = None
+        self.__cam: callable = config.camera
+        self.__isRunning: bool = False
         self.__videoFPS: float = float(1 / config.FPS)
         self.__videoPort: int = config.Port
         self.__resolution: tuple[int, int] = config.Resolution
@@ -23,9 +24,11 @@ class VideoCamera(VideoCameraInterface):
         """
         Method for setting up the camera.
         """
-        if not self.__cam:
-            # Creating an instance of a camera-object.
-            self.__cam = cv2.VideoCapture(self.__videoPort)
+        if callable(self.__cam):
+            self.__cam = self.__cam(self.__videoPort)
+        # if not self.__cam.isOpened():
+        #     # Creating an instance of a camera-object.
+        #     self.__cam = self.__cam(self.__videoPort)
         self.__setResolution()
 
     @property
@@ -99,7 +102,7 @@ class VideoCamera(VideoCameraInterface):
         Method for releasing the camera.
         """
         self.__cam.release()
-        self.__cam = None
+        # self.__cam = None
 
     def readSingleFrame(self) -> object:
         """
