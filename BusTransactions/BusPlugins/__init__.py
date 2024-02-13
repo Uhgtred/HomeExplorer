@@ -4,3 +4,4 @@
 from .SerialBusModule import SerialBus, SerialBusConfig
 from .Ethernet import Tcp_Udp_sockets, SocketConfigs
 from .BusPluginFactory import BusPluginFactory
+from .BusPluginInterface import BusPluginInterface

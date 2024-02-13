@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 # @author: Markus Kösters
 
+from .BusPlugins import BusPluginInterface
 from .Encoding.BusEncodings import EncodingProtocol
-from BusTransactions.BusPlugins.BusPluginInterface import BusPluginInterface
+
 
 
 class Bus:
