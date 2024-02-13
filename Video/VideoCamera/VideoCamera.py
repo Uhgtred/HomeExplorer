@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # @author      Markus Kösters
 
-import threading
 import time
 import cv2
 
+import Runners.threadRunner
 from .VideoCameraConfig import VideoCameraConfig
 from .VideoCameraInterface import VideoCameraInterface
 
@@ -17,6 +17,7 @@ class VideoCamera(VideoCameraInterface):
         self.__videoFPS: float = float(1 / config.FPS)
         self.__videoPort: int = config.Port
         self.__resolution: tuple[int, int] = config.Resolution
+        self.__runner = Runners.threadRunner.Threads()
         # Todo: Not sure if this is a good way to do this here. But don't want an extra class for one line of code.
         self.__setupCamera()
 
@@ -72,7 +73,7 @@ class VideoCamera(VideoCameraInterface):
         """
         # Todo: check if this could be a process instead of a thread (pipes would be needed in that case)!
         #       Or check if Python 3.13 would give this a performance-boost by deactivating GIL.
-        threading.Thread(target=self.__readCameraInLoopThread, args=(callbackMethod,), daemon=True).start()
+        self.__runner.runTask(self.__readCameraInLoopThread, (callbackMethod,))
 
     def __readCameraInLoopThread(self, *args) -> None:
         """
