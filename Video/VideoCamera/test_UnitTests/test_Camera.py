@@ -24,7 +24,7 @@ class CameraTest(unittest.TestCase):
 
     def test_cameraTest(self):
         runTime = 3
-        self.camera = VideoCameraFactory.produceDefaultCameraInstance()
+        self.camera = VideoCameraFactory.produceStubCameraInstance()
         self.camera.readCameraInLoop(self.helper)
         # waiting the defined amount of time until closing the camera.
         time.sleep(runTime)
