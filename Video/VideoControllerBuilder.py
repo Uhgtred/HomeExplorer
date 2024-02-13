@@ -5,6 +5,7 @@ from Video.VideoCamera import VideoCameraInterface
 from Video.Serializer import SerializerInterface
 from Video.VideoController import VideoController
 from Video.VideoTransmitter import VideoTransmitterInterface
+from Video.VideoController import VideoController
 
 
 class VideoControllerBuilder:
