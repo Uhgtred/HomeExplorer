@@ -5,6 +5,7 @@ LABEL authors="Markus"
 RUN apt-get update && \
     apt-get install -y python3 python3-pip && \
     apt-get install -y python3-venv && \
+    apt-get install -y libgl1-mesa-glx && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy requirements to app-folder
