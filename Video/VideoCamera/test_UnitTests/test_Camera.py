@@ -36,7 +36,7 @@ class CameraTest(unittest.TestCase):
     def test_cameraSingleFrame(self):
         camera = VideoCameraFactory.produceStubCameraInstance()
         frame = camera.readSingleFrame()
-        self.assertIs(type(frame), numpy.ndarray)
+        self.assertIs(type(frame), type(numpy.ndarray([])))
         camera.stopCamera()
 
     def test_stopCamera(self):
