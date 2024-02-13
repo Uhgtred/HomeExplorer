@@ -19,8 +19,8 @@ EXPOSE 2000
 
 # Install dependencies
 RUN python3 -m venv /app/venv && \
-    /app/venv/bin/pip install --upgrade pip && \
-    /app/venv/bin/pip install -r /app/requirements.txt
+    /app/venv/bin/pip3 install --upgrade pip && \
+    /app/venv/bin/pip3 install -r /app/requirements.txt
 
 # Copy SourceCode to app-folder
 COPY ../ /app/

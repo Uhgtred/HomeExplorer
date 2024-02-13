@@ -18,15 +18,15 @@ jobs:
       - name: Build Docker image
         run: docker build . --file Dockerfile --tag robot_image
 
-      - name: Install dependencies
-        run: |
-            python -m venv venv
-            source venv/bin/activate
-            pip3 install --upgrade pip
-            pip3 install -r requirements.txt
+#      - name: Install dependencies
+#        run: |
+#            python -m venv venv
+#            source venv/bin/activate
+#            pip3 install --upgrade pip
+#            pip3 install -r requirements.txt
 
       - name: Set PATH environment variable
         run: echo "PATH=$PATH:/app/venv/bin" >> $GITHUB_ENV
 
       - name: Run unit tests in Docker container
-        run: docker run --rm robot_image sh -c "python -m unittest discover -v"
+        run: docker run --rm robot_image sh -c "python3 -m unittest discover -v"
