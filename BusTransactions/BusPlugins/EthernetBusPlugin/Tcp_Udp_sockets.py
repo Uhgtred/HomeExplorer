@@ -5,7 +5,7 @@ import socket
 import struct
 
 from . import SocketConfigs
-from BusTransactions import BusPluginInterface
+from ..BusPluginInterface import BusPluginInterface
 
 
 class UdpSocket(BusPluginInterface):

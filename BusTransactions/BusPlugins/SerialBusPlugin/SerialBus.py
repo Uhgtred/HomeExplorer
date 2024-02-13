@@ -5,7 +5,7 @@ import atexit
 import serial
 
 from .SerialBusConfig import SerialBusConfig
-from BusTransactions import BusPluginInterface
+from ..BusPluginInterface import BusPluginInterface
 
 
 class SerialBus(BusPluginInterface):

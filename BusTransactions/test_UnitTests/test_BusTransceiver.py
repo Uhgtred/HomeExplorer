@@ -4,7 +4,7 @@
 import unittest
 
 from BusTransactions import BusFactory, SerialBus, SerialBusConfig
-from BusTransactions.BusPlugins.SerialBusModule.test_UnitTests.SerialBusMock import MockSerialBus
+from BusTransactions.BusPlugins.SerialBusPlugin.test_UnitTests.SerialBusMock import MockSerialBus
 from BusTransactions import Encoding
 
 
