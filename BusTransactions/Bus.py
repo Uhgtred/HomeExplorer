@@ -5,7 +5,6 @@ from .BusPlugins import BusPluginInterface
 from .Encoding.BusEncodings import EncodingProtocol
 
 
-
 class Bus:
     """
     Class for communication with a variety of bus-systems.
