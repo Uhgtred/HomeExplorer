@@ -18,7 +18,7 @@ Servo ZServo;
 
 void setup() {
     //Setting up serial parameters
-    Serial.begin(9600);
+    Serial.begin(115200);
     //Setting up Servos
     XServo.attach(ServoXPin);
     ZServo.attach(ServoZPin);
@@ -37,44 +37,42 @@ void setup() {
 
 void loop() {
     //Setting the motor-pins low in each iteration. If something gets stuck or communication breaks robot will stop!
+    static byte serialIntData[maxMessageSize];
     SetMotorsZero();
-    int*  serialIntData = ReadSerialConnection();
+    ReadSerialConnection(serialIntData);
     //Sending transformed data to motors and servos
     MotorControl(serialIntData);
     //ServoControl(serialIntData);
     //Serial.println(String(serialIntData[0]) + ' ' + String(serialIntData[2]));
-    delete[] serialIntData;
     delay(50);
 }
 
-int* ReadSerialConnection(void){
-    int arrayCounter = 0;
-    int iterationCounter = 0;
-    int* serialIntData = new int[maxMessageSize];
-    memset(serialIntData, 0, maxMessageSize);
-    //Serial.println(String(serialIntData[0]) + ' ' + String(serialIntData[2]));
-    String serialData[maxMessageSize];
-    while (Serial.available() > 0){
-      char readByte = Serial.read();
-      if (readByte != '&' and iterationCounter <= maxMessageSize){
-        if (readByte == ','){
-            serialIntData[arrayCounter] = serialData[arrayCounter].toInt();
-            Serial.println(serialData[arrayCounter].toInt());
-            arrayCounter++;
+void ReadSerialConnection(byte* serialIntData){
+    char serialData[5]; // assuming max 4 digits number and 1 place for null character
+    byte serialDataIndex = 0;
+
+    while(Serial.available()){
+        char incomingByte = Serial.read();
+
+        // Check if incoming byte is a delimiter.
+        if(incomingByte == ',' || incomingByte == '&'){
+            // Null-terminate the temporary character array and convert it to integer.
+            serialData[serialDataIndex] = '\0';
+            serialIntData[serialDataIndex] = atoi(serialData);
+
+            // Clean up for the next integer.
+            memset(serialData, 0, sizeof(serialData));
+            serialDataIndex = 0;
+        }else{
+            // Add incoming byte to our temporary array.
+            serialData[serialDataIndex++] = incomingByte;
         }
-        else{
-            serialData[arrayCounter] += readByte;
-        }
-        iterationCounter++;
-      }
-      // breaking the loop if end of array has been reached or maxlength is exceeded
-      else{
-            SetMotorsZero();
+
+        // Break if you've reached the end of the message.
+        if(incomingByte == '&'){
             break;
-      }
-   }
-   Serial.println(String(serialIntData[0]) + ' ' + String(serialIntData[2]));
-   return serialIntData;
+        }
+    }
 }
 
 void SetMotorsZero(void){
