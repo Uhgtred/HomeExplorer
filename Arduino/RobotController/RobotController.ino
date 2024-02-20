@@ -37,28 +37,28 @@ void setup() {
 
 void loop() {
     //Setting the motor-pins low in each iteration. If something gets stuck or communication breaks robot will stop!
-    static byte serialIntData[maxMessageSize];
+    static byte serialByteData[maxMessageSize];
     SetMotorsZero();
-    ReadSerialConnection(serialIntData);
+    ReadSerialConnection(serialByteData);
     //Sending transformed data to motors and servos
-    MotorControl(serialIntData);
-    //ServoControl(serialIntData);
-    //Serial.println(String(serialIntData[0]) + ' ' + String(serialIntData[2]));
+    MotorControl(serialByteData);
+    //ServoControl(serialByteData);
+    //Serial.println(String(serialByteData[0]) + ' ' + String(serialByteData[2]));
     delay(50);
 }
 
-void ReadSerialConnection(byte* serialIntData){
+void ReadSerialConnection(byte* serialByteData){
     char serialData[5]; // assuming max 4 digits number and 1 place for null character
     byte serialDataIndex = 0;
 
     while(Serial.available()){
         char incomingByte = Serial.read();
 
-        // Check if incoming byte is a delimiter.
+        // Check if incoming byte is separator or end of message.
         if(incomingByte == ',' || incomingByte == '&'){
             // Null-terminate the temporary character array and convert it to integer.
             serialData[serialDataIndex] = '\0';
-            serialIntData[serialDataIndex] = atoi(serialData);
+            serialByteData[serialDataIndex] = atoi(serialData);
 
             // Clean up for the next integer.
             memset(serialData, 0, sizeof(serialData));
@@ -83,19 +83,19 @@ void SetMotorsZero(void){
     digitalWrite(RMotorRPin, LOW);
 }
 
-void MotorControl(int serialIntData[maxMessageSize]){
+void MotorControl(byte serialByteData[maxMessageSize]){
     /*
     Sending PWM-signals to the motor-controllers
     */
-    int RMotorValue = 0;
-    int LMotorValue = 0;
+    byte RMotorValue = 0;
+    byte LMotorValue = 0;
     //reading the data from array which is being provided through the serial-connection
-    RMotorValue = serialIntData[0];
-    LMotorValue = serialIntData[2];
+    RMotorValue = serialByteData[0];
+    LMotorValue = serialByteData[2];
 //    Serial.println("RMotor: "+ String(RMotorValue) + " LMotor: " + String(LMotorValue));  // debugging-line
 //    Serial.println("ARRAYDATA: " + arrayData[0] + arrayData[1] + arrayData[2] + arrayData[3]);  // debugging-line
     //data[1] is bool and decides if RMotor is turning clockwise or counterclockwise
-    if (serialIntData[1] == 1){
+    if (serialByteData[1] == 1){
         analogWrite(RMotorRPin, RMotorValue);
 //        Serial.println(RMotorValue);  // debugging-line
     }
@@ -104,7 +104,7 @@ void MotorControl(int serialIntData[maxMessageSize]){
 //        Serial.println(RMotorValue);  // debugging-line
     }
     //data[3] is bool and decides if LMotor is turning clockwise or counterclockwise
-    if (serialIntData[3] == 1){
+    if (serialByteData[3] == 1){
         analogWrite(LMotorRPin, LMotorValue);
 //        Serial.println(LMotorValue);  // debugging-line
     }
@@ -114,15 +114,15 @@ void MotorControl(int serialIntData[maxMessageSize]){
     }
 }
 
-void ServoControl(int serialIntData[maxMessageSize]) {
+void ServoControl(byte serialByteData[maxMessageSize]) {
     /*
     Moving servos with the help of a library which talks to the servos through PWM
     */
     //Setting the values from array which is being provided through the serial-connection
-    int RStickXValuePos = serialIntData[4];
-    int RStickXValueNeg = serialIntData[5];
-    int RStickYValuePos = serialIntData[6];
-    int RStickYValueNeg = serialIntData[7];
+    byte RStickXValuePos = serialByteData[4];
+    byte RStickXValueNeg = serialByteData[5];
+    byte RStickYValuePos = serialByteData[6];
+    byte RStickYValueNeg = serialByteData[7];
     //XServo.writeMicroseconds(1500);
     //fitting the values from 0-255 to 0-180°
     RStickXValuePos = map(RStickXValuePos, 0, 254, 90, 180);
