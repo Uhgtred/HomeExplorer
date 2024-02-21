@@ -17,6 +17,7 @@ class UdpSocket(BusPluginInterface):
     def __init__(self, config: SocketConfigs.UdpSocketConfig):
         sockLibrary = config.busLibrary
         self.sock = None
+        self.__port = config.startPort
         self.__messageSize = config.messageSize
         self.__address = config.IPAddress
         self._setupSocket(sockLibrary)
@@ -51,7 +52,7 @@ class UdpSocket(BusPluginInterface):
         :param sock: socket that will be setup and bound.
         """
         # dynamically providing socket-ports for requested sockets.
-        sockPort = 2001
+        sockPort = self.__port
         while sockPort in self.__openSocketPorts:
             sockPort += 1
         self.sock = sock.socket(sock.AF_INET, sock.SOCK_DGRAM)

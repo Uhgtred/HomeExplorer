@@ -13,7 +13,7 @@ class BusFactory:
     """
 
     @staticmethod
-    def produceBusTransceiver(bus: type(BusPluginFactory), encoding: type(EncodingFactory)) -> BusInterface:
+    def produceBusTransceiver(bus: type(BusPluginFactory), encoding: type(EncodingFactory)) -> Bus:
         """
         Method for producing an instance of a bus-transceiver.
         :param bus: Bus-Class that will be communicated with, produced by Factory-class in BusPlugins-Module.
@@ -26,20 +26,20 @@ class BusFactory:
         return transceiver
 
     @classmethod
-    def produceSerialTransceiver(cls) -> BusInterface:
+    def produceSerialTransceiver(cls) -> Bus:
         """
         Method for creating an instance of a serial-bus transceiver that connects to arduino.
         """
         encoding = EncodingFactory.arduinoSerialEncoding
-        busModule = BusPluginFactory.produceSerialBusArduinoPlugin()
-        return cls.produceBusTransceiver(busModule, encoding)
+        busPlugin = BusPluginFactory.produceSerialBusArduinoPlugin()
+        return cls.produceBusTransceiver(busPlugin, encoding)
 
     @classmethod
-    def produceUDP_Transceiver(cls) -> BusInterface:
+    def produceUDP_Transceiver(cls) -> Bus:
         """
         Method for creating an instance of an udp-socket.
         :return:
         """
         encoding = EncodingFactory.socketEncoding()
-        busModule = BusPluginFactory.produceUdpSocketPlugin()  # Todo: make check if some socket is already running on that port, could be the wrong location for that here!
-        return cls.produceBusTransceiver(busModule, encoding)
+        busPlugin = BusPluginFactory.produceUdpSocketPlugin()  # Todo: make check if some socket is already running on that port, could be the wrong location for that here!
+        return cls.produceBusTransceiver(busPlugin, encoding)
