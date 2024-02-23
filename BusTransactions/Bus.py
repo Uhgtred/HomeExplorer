@@ -24,20 +24,17 @@ class Bus:
         Read and decode a single message from the bus.
         :return: Decoded message in string format.
         """
-        message = self.bus.readBus()
-        return self.encoding.decode(message)
+        return self.encoding.decode(self.bus.readBus())
 
     def readBusUntilStopFlag(self, callbackMethod: callable, stopFlag: bool = False) -> None:
         """
-        Reading messages from a bus in a loop until stopFlag is raised.
+        Reads and decodes messages from a bus in a loop until stopFlag is True.
         :param callbackMethod: Method that the received messages shall be sent to.
                                 Needs to accept one argument which is the message read from the bus.
         :param stopFlag: When true reading-loop stops.
         """
-        if not stopFlag:
-            message = self.bus.readBus()
-            callbackMethod(self.encoding.decode(message))
-            self.readBusUntilStopFlag(callbackMethod, self.stopFlag)
+        while not stopFlag:
+            callbackMethod(self.readSingleMessage())
 
     def writeSingleMessage(self, message: any) -> None:
         """
