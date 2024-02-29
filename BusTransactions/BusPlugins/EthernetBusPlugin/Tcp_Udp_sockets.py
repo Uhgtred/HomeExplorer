@@ -11,7 +11,7 @@ from ..BusPluginInterface import BusPluginInterface
 class UdpSocket(BusPluginInterface):
 
     # Todo: Implement possibility to close Socket. It will be necessary to remove it from the openPorts list as well.
-    __openSocketPorts: list = []
+    __openSocketPorts: set = set()
 
     def __init__(self, config: SocketConfigs.UdpSocketConfig):
         self.sock = None
