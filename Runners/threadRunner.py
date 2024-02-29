@@ -11,7 +11,7 @@ class ThreadRunner(Runner):
     Method for organizing threads and keeping track of opened tracks.
     """
 
-    __threads: list = []
+    __threads: set = set()
     __running: bool = False
 
     def addTask(self, task, *args) -> None:
@@ -21,7 +21,7 @@ class ThreadRunner(Runner):
         :param args: Arguments, that shall be passed to the thread.
         """
         thread = threading.Thread(target=task, args=args, name=f'{str(task).split(" ")[1]}_thread')
-        self.__threads.append(thread)
+        self.__threads.add(thread)
 
     def runTasks(self) -> None:
         """

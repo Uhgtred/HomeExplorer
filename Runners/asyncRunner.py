@@ -13,7 +13,7 @@ class AsyncRunner:
     """
 
     __tasks: list = []
-    __asyncTasks: list = []
+    __asyncTasks: set = set()
     __running: bool = False
 
     def addTask(self, task, *args) -> None:
@@ -50,10 +50,10 @@ class AsyncRunner:
         while self.__running and len(self.__tasks) > 0:
             # converting tasks into async tasks and throwing them into a list.
             task = self.__tasks.pop(0)
-            self.__asyncTasks.append(asyncio.create_task(self.__asyncTask(task, *task.args)))
+            self.__asyncTasks.add(asyncio.create_task(self.__asyncTask(task, *task.args)))
         # running and awaiting async tasks.
         while len(self.__asyncTasks):
-            await self.__asyncTasks.pop(0)
+            await self.__asyncTasks.pop()
         self.__running = False
 
     async def __asyncTask(self, task: callable, *args):

@@ -54,7 +54,7 @@ class UdpSocket(BusPluginInterface):
         self.sock = sock.socket(sock.AF_INET, sock.SOCK_DGRAM)
         if host:
             self.sock.bind((self.__address, port))
-            self.__openSocketPorts.append(port)
+            self.__openSocketPorts.add(port)
 
     def __receiver(self, msgLength: int) -> bytes:
         """
