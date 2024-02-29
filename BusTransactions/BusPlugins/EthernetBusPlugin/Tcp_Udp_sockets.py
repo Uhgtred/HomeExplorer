@@ -14,12 +14,10 @@ class UdpSocket(BusPluginInterface):
     __openSocketPorts: list = []
 
     def __init__(self, config: SocketConfigs.UdpSocketConfig):
-        sockLibrary = config.busLibrary
         self.sock = None
-        self.__port = config.port
-        self.__messageSize = config.messageSize
+        self.__maxMessageSize = config.messageSize
         self.__address = config.IPAddress
-        self._setupSocket(sockLibrary)
+        self._setupSocket(config.host, config.busLibrary, config.port)
 
     def readBus(self) -> bytes:
         """
@@ -45,19 +43,18 @@ class UdpSocket(BusPluginInterface):
         __message = struct.pack('Q', __msgLength) + message
         self.sock.sendto(__message, self.__address)
 
-    def _setupSocket(self, host:bool, sock: socket) -> None:
+    def _setupSocket(self, host: bool, sock: socket, port: int) -> None:
         """
         Private Method for setting up UDP-socket.
         :param sock: socket that will be setup and bound.
         """
         # dynamically providing socket-ports for requested sockets.
-        sockPort = self.__port
-        if self.__port in self.__openSocketPorts:
+        if port in self.__openSocketPorts:
             raise BaseException('Port already in use')
         self.sock = sock.socket(sock.AF_INET, sock.SOCK_DGRAM)
         if host:
-            self.sock.bind((self.__address, sockPort))
-            self.__openSocketPorts.append(sockPort)
+            self.sock.bind((self.__address, port))
+            self.__openSocketPorts.append(port)
 
     def __receiver(self, msgLength: int) -> bytes:
         """
@@ -68,8 +65,8 @@ class UdpSocket(BusPluginInterface):
         """
         data = b''
         while len(data) < msgLength:
-            # varying receive-length to only receive the bytes of this specific message
-            rcvSize = msgLength - len(data)
+            # Varying receive-length to only receive the bytes of this specific message but max. self.__maxMessageSize!
+            rcvSize = self.__maxMessageSize if (msgLength-len(data)) > self.__maxMessageSize else (msgLength - len(data))
             # receiving dynamic size of packets until every byte has been received
             packet = self.sock.recvfrom(rcvSize if rcvSize <= msgLength else msgLength)
             if not packet:
