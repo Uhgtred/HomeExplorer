@@ -11,13 +11,12 @@ from ..BusPluginInterface import BusPluginInterface
 class UdpSocket(BusPluginInterface):
 
     # Todo: Implement possibility to close Socket. It will be necessary to remove it from the openPorts list as well.
-    #       Also there needs to be a limit on how many sockets can be opened simultaneously!
     __openSocketPorts: list = []
 
     def __init__(self, config: SocketConfigs.UdpSocketConfig):
         sockLibrary = config.busLibrary
         self.sock = None
-        self.__port = config.startPort
+        self.__port = config.port
         self.__messageSize = config.messageSize
         self.__address = config.IPAddress
         self._setupSocket(sockLibrary)
@@ -46,18 +45,19 @@ class UdpSocket(BusPluginInterface):
         __message = struct.pack('Q', __msgLength) + message
         self.sock.sendto(__message, self.__address)
 
-    def _setupSocket(self, sock: socket) -> None:
+    def _setupSocket(self, host:bool, sock: socket) -> None:
         """
         Private Method for setting up UDP-socket.
         :param sock: socket that will be setup and bound.
         """
         # dynamically providing socket-ports for requested sockets.
         sockPort = self.__port
-        while sockPort in self.__openSocketPorts:
-            sockPort += 1
+        if self.__port in self.__openSocketPorts:
+            raise BaseException('Port already in use')
         self.sock = sock.socket(sock.AF_INET, sock.SOCK_DGRAM)
-        self.sock.bind((self.__address, sockPort))
-        self.__openSocketPorts.append(sockPort)
+        if host:
+            self.sock.bind((self.__address, sockPort))
+            self.__openSocketPorts.append(sockPort)
 
     def __receiver(self, msgLength: int) -> bytes:
         """

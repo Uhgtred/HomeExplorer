@@ -2,69 +2,34 @@
 # @author   Markus Kösters
 
 import threading
-import time
 import os
 
-from Arduino.Arduino import Arduino
-# from VideoCamera.VideoCamera import VideoCamera
-from Configurations.ConfigReader import ConfigReader
-from Network.SocketController import SocketController
+import Runners
+from BusTransactions.BusFactory import BusFactory
+from Events import EventFactory
+
+# from Configurations.ConfigReader import ConfigReader
 
 os.chdir(os.path.dirname(os.getcwd()))
 
 
 class Main:
 
+    __ports: dict = {'controllerPort': 2001}
+
     def __init__(self):
         """Starting the Robot-Program and configuring everything"""
-        self.__conf = ConfigReader()
-        self.__delay = float(self.__conf.readConfigParameter('DelayMain'))
-        self.socketController = SocketController()
-        self.Arduino = Arduino()
-        # self.__camera = VideoCamera()
-        self.__threads()
+        self.__asyncRunner = Runners.asyncRunner.AsyncRunner()
+        self.__setup()
+        self.__asyncRunner.runTasks()
 
-    def __serialCommunication(self):
-        self.socketController.startServer('controller')
-        while True:
-            message = self.socketController.receiveMessage('controller')
-            # print(f'Message received: {message}')
-            self.Arduino.sendMessage(message)
-            # print(self.Arduino.rcvMessage)
+    def __setup(self):
+        remoteControlSocket = BusFactory.produceUDP_Transceiver(host=True, port=self.__ports.get('controllerPort'))
+        arduinoSerial = BusFactory.produceSerialTransceiver()
+        remoteControlEvent = EventFactory.produceEvent('controllerEvent')
+        remoteControlEvent.subscribe(arduinoSerial.writeSingleMessage)
+        self.__asyncRunner.addTask(remoteControlSocket.readBusUntilStopFlag(remoteControlEvent.notifySubscribers))
 
-    def __threads(self):
-        """Any Thread that has to run goes in here!"""
-        # __cameraStreamThread = threading.Thread(target=self.__camera.readCamera, name='CameraReadThread', daemon=True)
-        # __cameraStreamThread.start()
-
-        __serialCommunicationThread = threading.Thread(target=self.__serialCommunication, name='SerialCommunicationThread', daemon=True)
-        __serialCommunicationThread.start()
-
-        # __cameraStreamThread.join()
-        __serialCommunicationThread.join()
-
-    # def __exit_handler(self):
-    #     self.Arduino.close(self.__serial)
 
 if __name__ == '__main__':
     main = Main()
-    # ((0-255),(0/1),(0-255),(0/1),(-32768-32767),y)
-#     import serial
-#     device = serial.Serial()
-#     device.baud = 9600
-#     device.port = '/dev/ttyACM0'
-#     device.timeout = 0.05
-#     device.open()
-#     
-#     answer = ''
-#     while True:
-#         device.write('bla'.encode())
-#         time.sleep(0.05)
-#         answer = device.readline().decode()
-#         print(answer.rstrip())
-#     try:
-#         answer = answer.decode('utf-8')
-#     except:
-#         pass
-#     print(answer)
-#     device.close()

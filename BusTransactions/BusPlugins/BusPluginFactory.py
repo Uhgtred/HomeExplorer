@@ -28,15 +28,15 @@ class BusPluginFactory:
         return SerialBus(config)
 
     @staticmethod
-    def produceUdpSocketPlugin(ipAddress: str = '127.0.0.1', messageSize: int = 4096, startPort: int = 2001) -> Tcp_Udp_sockets:
+    def produceUdpSocketPlugin(port: int, host: bool, ipAddress: str = '127.0.0.1', messageSize: int = 4096) -> Tcp_Udp_sockets.UdpSocket:
         """
         Method for creating an instance of an Udp-socket connection.
         :return: Socket-instance.
         """
-        config = SocketConfigs.UdpSocketConfig(IPAddress=ipAddress, messageSize=messageSize, startPort=startPort)
+        config = SocketConfigs.UdpSocketConfig(IPAddress=ipAddress, messageSize=messageSize, port=port, host=host)
         return Tcp_Udp_sockets.UdpSocket(config)
 
     @staticmethod
-    def produceUdpStubPlugin(ipAddress='127.0.0.1', messageSize=4096) -> Tcp_Udp_sockets:
-        config = SocketConfigs.UdpSocketConfig(IPAddress=ipAddress, messageSize=messageSize, startPort=2001, busLibrary=MockSocket)
+    def produceUdpStubPlugin(port: int, host: bool, ipAddress='127.0.0.1', messageSize=4096) -> Tcp_Udp_sockets:
+        config = SocketConfigs.UdpSocketConfig(host=host, IPAddress=ipAddress, messageSize=messageSize, port=port, busLibrary=MockSocket)
         return Tcp_Udp_sockets.UdpSocket(config)
