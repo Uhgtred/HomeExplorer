@@ -12,23 +12,25 @@ from .VideoCameraInterface import VideoCameraInterface
 class VideoCamera(VideoCameraInterface):
 
     def __init__(self, config: VideoCameraConfig):
-        self.__cam: callable = config.camera
-        self.__isRunning: bool = False
+        self.__cam: callable = config.cameraModule
         self.__videoFPS: float = float(1 / config.FPS)
-        self.__videoPort: int = config.Port
         self.__resolution: tuple[int, int] = config.Resolution
         self.__runner = Runners.threadRunner.ThreadRunner()
-        # Todo: Not sure if this is a good way to do this here. But don't want an extra class for one line of code.
-        self.__setupCamera()
+        self.__setupCamera(config.cameraModule, config.Port)
 
-    def __setupCamera(self) -> None:
+    def __setupCamera(self, cam: callable, port: int) -> None:
         """
         Method for setting up the camera.
         """
+        if type(port) is not int:
+            raise TypeError("Camera port must be an integer")
         # opening camera if the object is callable (not instanced yet).
-        if callable(self.__cam):
-            self.__cam = self.__cam(self.__videoPort)
-        self.__setResolution()
+        try:
+            if callable(cam):
+                self.__cam = cam(port)
+            self.__setResolution()
+        except Exception as e:
+            raise BaseException(f'Error while trying to setup camera with port {port}: {e}')
 
     @property
     def resolution(self) -> tuple[int, int]:
@@ -44,6 +46,11 @@ class VideoCamera(VideoCameraInterface):
         Setter-Method for the camera-resolution.
         :param resolution: Resolution that will be set [X, Y]
         """
+        if type(resolution) is not list:
+            raise TypeError("Video-resolution has to be a list of 2 integers(e.g [1920, 1080])!")
+        for element in resolution:
+            if not isinstance(element, int):
+                raise TypeError("Each element of resolution must be an integer!")
         self.__resolution = [0, 0]  # make sure that the list exists with 2 values
         self.__resolution[0] = max(resolution)
         self.__resolution[1] = min(resolution)
