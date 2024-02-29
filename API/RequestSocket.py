@@ -17,7 +17,7 @@ class RequestSocket(Resource):
         Method to create a direct socket-connection to the server.
         :return: List containing the ip and port that the connection will run on if connection is successful. Else returns None.
         """
-        socket = BusFactory.produceUDP_Transceiver()
+        socket = BusFactory.produceUDP_Transceiver(host=True, port=3001)
         # returning socket-address and port if socket does exist (from open socket)
         if socket is not None:
             return jsonify(socket.bus.sock.getsockname()[0], socket.bus.sock.getsockname()[1])
