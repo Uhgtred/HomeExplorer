@@ -16,7 +16,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_threadOpening(self):
         self.testRunner.addTask(testTask, ['test', 'test2'])
-        assert 'testTask_thread' in self.testRunner._ThreadRunner__threads
+        self.assertIn('testTask_thread', (task.name for task in self.testRunner._ThreadRunner__threads))
 
 
 if __name__ == '__main__':

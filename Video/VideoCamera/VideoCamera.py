@@ -80,7 +80,7 @@ class VideoCamera(VideoCameraInterface):
         """
         # Todo: check if this could be a process instead of a thread (pipes would be needed in that case)!
         #       Or check if Python 3.13 would give this a performance-boost by deactivating GIL.
-        self.__runner.addTask(self.__readCameraInLoopThread, (callbackMethod,))
+        self.__runner.addTask(self.__readCameraInLoopThread, callbackMethod)
         self.__runner.runTasks()
 
     def __readCameraInLoopThread(self, *args) -> None:

@@ -12,7 +12,7 @@ class AsyncRunner:
     Class for running async tasks. Can add multiple tasks before running the task-list.
     """
 
-    __tasks: list = []
+    __tasks: dict = {}
     __asyncTasks: list = []
     __running: bool = False
 
@@ -24,8 +24,8 @@ class AsyncRunner:
                         Needs at least a callback-method if there is any return expected.
         """
         # Adding the arguments of a task as an attribute to this task.
-        task.args = [*args]
-        self.__tasks.append(task)
+        # task.args = [*args]
+        self.__tasks[task] = args
         # self.__asyncTasks.append(asyncio.create_task(self.__asyncTask(task, *task.args)))
 
     def runTasks(self) -> None:
@@ -49,8 +49,8 @@ class AsyncRunner:
         """
         while self.__running and len(self.__tasks) > 0:
             # converting tasks into async tasks and throwing them into a list.
-            task = self.__tasks.pop(0)
-            self.__asyncTasks.append(asyncio.create_task(self.__asyncTask(task, *task.args)))
+            task, args = self.__tasks.popitem()
+            self.__asyncTasks.append(asyncio.create_task(self.__asyncTask(task, *args)))
         # running and awaiting async tasks.
         while len(self.__asyncTasks):
             await self.__asyncTasks.pop(0)
