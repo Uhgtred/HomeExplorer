@@ -24,10 +24,16 @@ def test(sleepTime):
     # print('end from 0')
 
 
-class MyTestCase(unittest.TestCase):
+class test_AsyncRunner(unittest.TestCase):
     obj = AsyncRunner()
 
-    def test_something(self):
+    def test_addTask(self):
+        self.obj.addTask(test, 1)
+        self.obj.addTask(test2, 2)
+        self.assertEqual(len(self.obj._AsyncRunner__tasks), 2)
+        self.obj._AsyncRunner__tasks.clear()
+
+    def test_runTask(self):
         start = time.time()
         times = [.1, .2, .3]
         self.obj.addTask(test, times[2])
