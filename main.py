@@ -12,6 +12,12 @@ os.chdir(os.path.dirname(os.getcwd()))
 
 
 class Main:
+    """
+    Main program for managing the process and starting the program.
+    """
+    """
+    TODO: Now that the ports used for the sockets are self-managed there needs to be a way to keep track of it.
+    """
     __ports: dict = {'controllerPort': 2001}
 
     def __init__(self):
