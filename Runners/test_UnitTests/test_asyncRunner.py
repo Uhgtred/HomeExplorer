@@ -7,21 +7,21 @@ from Runners.asyncRunner import AsyncRunner
 
 
 def test1(sleepTime):
-    print('test from 1')
+    # print('test from 1')
     time.sleep(sleepTime)
-    print('end from 1')
+    # print('end from 1')
 
 
 def test2(sleepTime):
-    print('test from 2')
+    # print('test from 2')
     time.sleep(sleepTime)
-    print('end from 2')
+    # print('end from 2')
 
 
 def test(sleepTime):
-    print('test from 0')
+    # print('test from 0')
     time.sleep(sleepTime)
-    print('end from 0')
+    # print('end from 0')
 
 
 class MyTestCase(unittest.TestCase):
