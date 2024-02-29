@@ -25,6 +25,7 @@ class Main:
     def __init__(self):
         self.__app = Flask('InfotainmentAPI')
         self.api = Api(self.__app)
+        self.__port = 3000
 
     def __addRoutes(self) -> None:
         """
@@ -53,7 +54,7 @@ class Main:
         """
         Internal method to setup server-credentials.
         """
-        self.__app.run(host='127.0.0.1', port=2000)
+        self.__app.run(host='127.0.0.1', port=self.__port)
 
     @classmethod
     def stopServer(cls) -> None:

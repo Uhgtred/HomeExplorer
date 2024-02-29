@@ -11,6 +11,7 @@ def testTask(*args):
     # print(f"Testing {args}")
     time.sleep(1)
 
+
 def test2Task():
     time.sleep(1)
 
@@ -23,6 +24,7 @@ class test_ThreadRunner(unittest.TestCase):
         self.assertIn('testTask_thread', (task.name for task in self.testRunner._ThreadRunner__threads))
         self.testRunner.addTask(test2Task)
         self.assertEqual(len(self.testRunner._ThreadRunner__threads), 2)
+
     def test_runTasks(self):
         self.testRunner.addTask(test2Task)
         thread = self.testRunner._ThreadRunner__threads[0]
