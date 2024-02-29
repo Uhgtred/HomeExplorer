@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 # @author: Markus Kösters
 
-from . import BusInterface
 from .Bus import Bus
+from .BusPlugins import BusPluginInterface
 from .BusPlugins import BusPluginFactory
 from .Encoding import EncodingFactory
+from .Encoding.BusEncodings import EncodingProtocol
 
 
 class BusFactory:
@@ -21,7 +22,7 @@ class BusFactory:
         """
         # check if encoding has already been instanced
         if callable(encoding):
-            encoding = encoding()
+            encoding: EncodingProtocol = encoding()
         transceiver = Bus(bus, encoding)
         return transceiver
 
@@ -30,8 +31,8 @@ class BusFactory:
         """
         Method for creating an instance of a serial-bus transceiver that connects to arduino.
         """
-        encoding = EncodingFactory.arduinoSerialEncoding
-        busPlugin = BusPluginFactory.produceSerialBusArduinoPlugin()
+        encoding: EncodingProtocol = EncodingFactory.arduinoSerialEncoding()
+        busPlugin: BusPluginInterface = BusPluginFactory.produceSerialBusArduinoPlugin()
         return cls.produceBusTransceiver(busPlugin, encoding)
 
     @classmethod
@@ -40,6 +41,6 @@ class BusFactory:
         Method for creating an instance of an udp-socket.
         :return:
         """
-        encoding = EncodingFactory.socketEncoding()
-        busPlugin = BusPluginFactory.produceUdpSocketPlugin(host=host, port=port)
+        encoding: EncodingProtocol = EncodingFactory.socketEncoding()
+        busPlugin: BusPluginInterface = BusPluginFactory.produceUdpSocketPlugin(host=host, port=port)
         return cls.produceBusTransceiver(busPlugin, encoding)

@@ -18,8 +18,8 @@ class Bus:
         :param encoding: Encoding that will be used to make the messages compliant to the bus.
         """
         self.__stopFlag: bool = False
-        self.encoding = encoding
-        self.bus = bus
+        self.encoding: EncodingProtocol = encoding
+        self.bus: BusPluginInterface = bus
 
     def readSingleMessage(self) -> EncodingProtocol.decode:
         """
@@ -40,7 +40,7 @@ class Bus:
             callbackMethod(self.readSingleMessage())
 
     @staticmethod
-    def __callBackHasInputArg(callbackMethod: callable):
+    def __callBackHasInputArg(callbackMethod: callable) -> None:
         """
         Method that is making sure, the callback-method provided to the bus fulfills the requirements.
         :param callbackMethod: Method that will be checked for compliance.
