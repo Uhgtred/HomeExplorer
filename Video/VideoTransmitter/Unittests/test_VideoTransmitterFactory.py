@@ -8,7 +8,7 @@ from Video.VideoTransmitter import VideoTransmitterFactory, VideoTransmitter
 
 class test_VideoTransmitterFactory(unittest.TestCase):
     def test_produceDefaultVideoTransmitter(self):
-        videoTransmitter = VideoTransmitterFactory.produceDefaultVideoTransmitter(2002)
+        videoTransmitter = VideoTransmitterFactory.produceDefaultVideoTransmitter(2003)
         self.assertIsInstance(videoTransmitter, VideoTransmitter)
 
 if __name__ == '__main__':
