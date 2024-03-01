@@ -5,7 +5,6 @@ import unittest
 
 from Video.VideoTransmitter import VideoTransmitterFactory
 
-
 class test_VideoTransmitter(unittest.TestCase):
 
     transmitter = VideoTransmitterFactory.produceVideoTransmitterStub(port=2002)

@@ -17,7 +17,7 @@ class Main:
 
     __app: Flask = Flask(__name__)
     __resources: dict = {
-        RequestSocket: '/getSocketAddress',
+        RequestSocket: '/getSocketAddress/<int:port>',
         RestartServer: '/restartAPIServer'
     }
     __process: Process = None
