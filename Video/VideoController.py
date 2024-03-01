@@ -67,8 +67,8 @@ class VideoController:
         Method that starts the VideoController and starts the video processing.
         """
         if not self.isRunning and self.__camera is not None:
-            self.__camera.readCameraInLoop(self.__processFrame)
             self.isRunning = True
+            self.__camera.readCameraInLoop(self.__processFrame)
         elif self.__camera is None:
             raise Exception("VideoCamera not initialized! Cannot start video stream!")
 

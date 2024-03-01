@@ -22,15 +22,14 @@ class VideoTransmitter:
         and then sent over the bus.
         :param imageFilePath: str - The absolute file path of the serialized image file.
         """
-        data = self.__readImageFileData(imageFilePath)
-        self.__bus.writeBus(data)
+        self.__bus.writeSingleMessage(self.__readImageFileData(imageFilePath))
 
-    def __readImageFileData(self, imageFilePath: str) -> bytes:
+    @staticmethod
+    def __readImageFileData(imageFilePath: str) -> bytes:
         """
         Method that reads the data from the image file, which is a serialized numpy array representing a video frame.
         :param imageFilePath: str - Absolute path to the image file.
         :return: bytes - Data read from the image file.
         """
         with open(imageFilePath, 'rb') as f:
-            data = f.read()
-        return data
+            return f.read()

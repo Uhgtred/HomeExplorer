@@ -15,17 +15,17 @@ class Main:
     Main class for setting up and starting the Flask application and API.
     """
 
-    __app = Flask(__name__)
+    __app: Flask = Flask(__name__)
     __resources: dict = {
         RequestSocket: '/getSocketAddress',
         RestartServer: '/restartAPIServer'
     }
     __process: Process = None
 
-    def __init__(self):
-        self.__app = Flask('InfotainmentAPI')
-        self.api = Api(self.__app)
-        self.__port = 3000
+    def __init__(self, port: int) -> None:
+        self.__app: Flask = Flask('RobotAPI')
+        self.api: Api = Api(self.__app)
+        self.__port: int = port
 
     def __addRoutes(self) -> None:
         """
