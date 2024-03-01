@@ -10,17 +10,18 @@ from API.main import Main
 
 class test_RequestSocket(unittest.TestCase):
     mainObject = None
+    port = 3000
 
     def setUp(self):
-        self.mainObject = Main(3000)
+        self.mainObject = Main(self.port)
 
     def test_get(self):
         self.mainObject.runServer()
         time.sleep(5)
-        sock = requests.get('http://127.0.0.1:2000/getSocketAddress')
+        sock = requests.get(f'http://127.0.0.1:{self.port}/getSocketAddress')
         sockResponse = json.loads(sock.content)
         # self.assertListEqual(sockResponse, ['127.0.0.1', 2001])
-        self.assertIs(sockResponse[1], 3000)
+        self.assertIs(sockResponse[1], self.port)
         self.assertEqual(sockResponse[0], '127.0.0.1')
         Main.stopServer()
 
