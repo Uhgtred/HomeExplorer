@@ -59,7 +59,10 @@ class Bus:
         Sending an encoded message to the bus.
         :param message: Message that will be sent to the bus.
         """
-        self.bus.writeBus(self.encoding.encode(message))
+        if type(message) is not bytes:
+            self.bus.writeBus(self.encoding.encode(message))
+        else:
+            self.bus.writeBus(message)
 
     @property
     def stopFlag(self) -> bool:

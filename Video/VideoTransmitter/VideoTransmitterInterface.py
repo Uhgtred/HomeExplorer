@@ -12,4 +12,3 @@ class VideoTransmitterInterface(ABC):
         Interface-Method for transmitting an image-file to a client.
         :param imageFilePath: Filepath of the image-file that will be transmitted.
         """
-        pass

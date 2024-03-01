@@ -17,6 +17,7 @@ class UdpSocket(BusPluginInterface):
         self.sock = None
         self.__maxMessageSize = config.messageSize
         self.__address = config.IPAddress
+        self.__port = config.port
         self._setupSocket(config.host, config.busLibrary, config.port)
 
     def readBus(self) -> bytes:
@@ -41,7 +42,7 @@ class UdpSocket(BusPluginInterface):
         """
         __msgLength = len(message)
         __message = struct.pack('Q', __msgLength) + message
-        self.sock.sendto(__message, self.__address)
+        self.sock.sendto(__message, (self.__address, self.__port))
 
     def _setupSocket(self, host: bool, sock: socket, port: int) -> None:
         """
@@ -51,7 +52,9 @@ class UdpSocket(BusPluginInterface):
         # dynamically providing socket-ports for requested sockets.
         if port in self.__openSocketPorts:
             raise BaseException('Port already in use')
+            # check if the busLibrary-object has already been instanced
         self.sock = sock.socket(sock.AF_INET, sock.SOCK_DGRAM)
+        # self.sock = sock.socket(sock.AF_INET, sock.SOCK_DGRAM)
         if host:
             self.sock.bind((self.__address, port))
             self.__openSocketPorts.add(port)

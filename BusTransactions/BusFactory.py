@@ -44,3 +44,12 @@ class BusFactory:
         encoding: EncodingProtocol = EncodingFactory.socketEncoding()
         busPlugin: BusPluginInterface = BusPluginFactory.produceUdpSocketPlugin(host=host, port=port)
         return cls.produceBusTransceiver(busPlugin, encoding)
+
+    @classmethod
+    def produceUDP_TransceiverStub(cls, port: int, host: bool) -> Bus:
+        """
+        Method for creating an instance of a UDP socket stub for testing purposes.
+        """
+        encoding: EncodingProtocol = EncodingFactory.socketEncoding()
+        busPlugin: BusPluginInterface = BusPluginFactory.produceUdpStubPlugin(host=host, port=port)
+        return cls.produceBusTransceiver(busPlugin, encoding)

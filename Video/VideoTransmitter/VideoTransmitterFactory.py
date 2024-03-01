@@ -15,3 +15,8 @@ class VideoTransmitterFactory:
         """
         bus = BusFactory.produceUDP_Transceiver(host=True, port=port)
         return VideoTransmitter(bus)
+
+    @staticmethod
+    def produceVideoTransmitterStub(port: int) -> VideoTransmitter:
+        bus = BusFactory.produceUDP_TransceiverStub(host=True, port=port)
+        return VideoTransmitter(bus)
