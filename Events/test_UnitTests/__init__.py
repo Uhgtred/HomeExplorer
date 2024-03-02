@@ -1,4 +1,4 @@
 #!/usr/bin/env python3
 # @author: Markus Kösters
 
-from .test_EventFactory import MyTestCase
+from .test_EventManager import test_EventManager
