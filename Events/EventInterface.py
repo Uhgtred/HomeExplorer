@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # @author: Markus Kösters
 
-from Events.EventManager import EventFactory
+from Events.EventManager import EventManager
 
 
 class EventInterface:
@@ -13,7 +13,7 @@ class EventInterface:
         :param eventName: Clear name of the event. Existing events can be received by calling getEventsList.
         :param callbackMethod: Method that is going to be used to call back when event-update occurs.
         """
-        event = EventFactory.produceEvent(name=eventName)
+        event = EventManager.produceEvent(name=eventName)
         event.subscribe(callbackMethod=callbackMethod)
 
     @staticmethod
@@ -23,5 +23,5 @@ class EventInterface:
         :param eventName: Clear name of the event. Existing events can be received by calling getEventsList.
         :param data: Data that will be shared to the subscribers.
         """
-        event = EventFactory.produceEvent(name=eventName)
+        event = EventManager.produceEvent(name=eventName)
         event.notifySubscribers(data=data)

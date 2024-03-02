@@ -7,8 +7,7 @@ class Event:
     Class that represents an event which can be subscribed to and posted to.
     """
 
-    def __init__(self):
-        self.__subscribers: set = set()
+    __subscribers: set = set()
 
     def subscribe(self, callbackMethod: callable) -> None:
         """

@@ -4,7 +4,7 @@
 from .Event import Event
 
 
-class EventFactory:
+class EventManager:
     """
     Factory-class for EventUser.
     """
@@ -18,8 +18,8 @@ class EventFactory:
         :return:    An instance of an Event, that can be used to create an update
                     for the subscribers and for subscribing to this event.
         """
-        if name not in cls.__events:
-            cls.__events[name].append(Event())
+        # Only adds the key to the dictionary if it does not already exist!
+        cls.__events.setdefault(name, Event())
         return cls.__events.get(name)
 
     @property

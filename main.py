@@ -6,7 +6,7 @@ import os
 import API
 import Runners
 from BusTransactions.BusFactory import BusFactory
-from Events import EventFactory
+from Events import EventManager
 from Video import VideoController, VideoControllerBuilder
 from Video.Serializer.SerializerFactory import SerializerFactory
 from Video.VideoCamera import VideoCameraFactory
@@ -48,7 +48,7 @@ class Main:
         """
         remoteControlSocket = BusFactory.produceUDP_Transceiver(host=True, port=self.__ports.get('controllerPort'))
         arduinoSerial = BusFactory.produceSerialTransceiver()
-        remoteControlEvent = EventFactory.produceEvent('controllerEvent')
+        remoteControlEvent = EventManager.produceEvent('controllerEvent')
         remoteControlEvent.subscribe(arduinoSerial.writeSingleMessage)
         self.__asyncRunner.addTask(remoteControlSocket.readBusUntilStopFlag(remoteControlEvent.notifySubscribers))
 

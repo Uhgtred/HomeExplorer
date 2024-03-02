@@ -2,5 +2,5 @@
 # @author: Markus Kösters
 
 from .Event import Event
-from .EventManager import EventFactory
+from .EventManager import EventManager
 from .EventInterface import EventInterface
