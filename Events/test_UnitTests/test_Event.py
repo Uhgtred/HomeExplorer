@@ -21,7 +21,7 @@ class test_Event(unittest.TestCase):
 
     def test_subscribe(self):
         self.event.subscribe(self.myEvent.myFunction)
-        self.assertTrue(self.myEvent.myFunction in event._Event__subscribers)
+        self.assertTrue(self.myEvent.myFunction in self.event._Event__subscribers)
 
     def test_notifySubscribers(self):
         self.event.subscribe(self.myEvent.myFunction)
