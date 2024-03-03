@@ -18,7 +18,7 @@ class VideoCamera(VideoCameraInterface):
         self.__runner = Runners.threadRunner.ThreadRunner()
         self.__setupCamera(config.cameraModule, config.Port)
 
-    def __setupCamera(self, cam: callable, port: int) -> None:
+    def __setupCamera(self, cam: cv2.VideoCapture, port: int) -> None:
         """
         Method for setting up the camera.
         """
