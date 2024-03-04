@@ -10,6 +10,6 @@ class SerializerFactory:
     @staticmethod
     def produceSerializationJoblib():
         """ Produces a Serializer Joblib"""
-        file = './tmp/imageFile.pkl'
+        file = './tmpVideoData/imageFile.pkl'
         config = SerializerConfig(file)
         return SerializerJoblib(config)

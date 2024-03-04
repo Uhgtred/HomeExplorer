@@ -8,10 +8,18 @@ import numpy
 class SerializerInterface(ABC):
 
     @abstractmethod
-    def serialize(self, imageData: numpy.ndarray) -> bytes:
+    def serialize(self, imageData: numpy.ndarray) -> str:
         """
         Interface for serialization of image-arrays.
         :param imageData: Array containing image-data that will be serialized.
+        :return: File-path of serialized image.
         """
-        pass
+
+    @abstractmethod
+    def deserialize(self, imageData: bytes) -> numpy.ndarray:
+        """
+        Interface for deserialization of image-data.
+        :param imageData: Serialized image-data.
+        :return: np.ndarray containing image-data.
+        """
 
