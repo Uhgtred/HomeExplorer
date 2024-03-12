@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # @author: Markus Kösters
 
+from abc import ABC, abstractmethod
+
 from .Encoding.BusEncodings import EncodingProtocol
 from BusTransactions.BusPlugins.BusPluginInterface import BusPluginInterface
 

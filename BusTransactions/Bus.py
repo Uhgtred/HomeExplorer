@@ -48,7 +48,7 @@ class Bus(BusInterface):
         :param args: Further positional arguments to the callback method.
         :param kwargs: Further keyword arguments to the callback method.
         """
-        while not self.stopFlag:
+        while not self.__stopFlag:
             try:
                 callbackMethod(self.readSingleMessage(), *args, **kwargs)
             except Exception as e:
