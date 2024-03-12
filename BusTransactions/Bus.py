@@ -14,7 +14,7 @@ class Bus:
 
     def __init__(self, bus: BusPluginInterface, encoding: EncodingProtocol):
         """
-        :param bus: Bus that shall be communicated with. Needs to follow the protocol Bus.
+        :param bus: Bus that will be communicated with. Needs to follow the protocol Bus.
         :param encoding: Encoding that will be used to make the messages compliant to the bus.
         """
         self.__stopFlag: bool = False
