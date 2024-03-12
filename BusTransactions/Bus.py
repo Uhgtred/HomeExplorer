@@ -6,9 +6,10 @@ import threading
 
 from .BusPlugins import BusPluginInterface
 from .Encoding.BusEncodings import EncodingProtocol
+from .BusInterface import BusInterface
 
 
-class Bus:
+class Bus(BusInterface):
     """
     Class for communication with a variety of bus-systems.
     """
@@ -47,7 +48,7 @@ class Bus:
         :param args: Further positional arguments to the callback method.
         :param kwargs: Further keyword arguments to the callback method.
         """
-        while not self.__stopFlag:
+        while not self.stopFlag:
             try:
                 callbackMethod(self.readSingleMessage(), *args, **kwargs)
             except Exception as e:
