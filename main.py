@@ -62,6 +62,9 @@ class Main:
         videoController = VideoControllerBuilder().addCamera(camera).addSerialization(serializer).addTransmitter(transmitter).build()
         self.__threadRunner.addTask(videoController)
 
+    def __steeringControl(self) -> None:
+        
+
 
 
 if __name__ == '__main__':
