@@ -6,8 +6,8 @@ from pathlib import Path
 
 from Video.VideoTransmitter import VideoTransmitterFactory
 
-class test_VideoTransmitter(unittest.TestCase):
 
+class test_VideoTransmitter(unittest.TestCase):
     transmitter = VideoTransmitterFactory.produceVideoTransmitterStub(port=2002)
 
     def test_transmit(self):
