@@ -15,7 +15,7 @@ class test_VideoTransmitter(unittest.TestCase):
         with open(path, 'rb') as image_file:
             image_data = image_file.read()
         self.transmitter.transmit(path)
-        transmitterBuffer = self.transmitter._VideoTransmitter__bus.bus.sock.recvfrom(4096)[-len(image_data):]
+        transmitterBuffer = self.transmitter._VideoTransmitter__bus.bus.sock.recvfrom(4096)
         print(transmitterBuffer)
         print(image_data)
         self.assertEqual(image_data, transmitterBuffer)  # add assertion here
