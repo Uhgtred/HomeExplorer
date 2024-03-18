@@ -8,15 +8,13 @@ from Video.VideoTransmitter.VideoTransmitter import VideoTransmitter
 class VideoTransmitterFactory:
 
     @staticmethod
-    def produceDefaultVideoTransmitter(port: int) -> VideoTransmitter:
+    def produceDefaultVideoTransmitter(port: int, stub: bool = False) -> VideoTransmitter:
         """
         Factory method for producing an instance of a default video-transmission object.
         :return: Video-transmission instance-object.
         """
-        bus = BusFactory.produceUDP_Transceiver(host=True, port=port)
-        return VideoTransmitter(bus)
-
-    @staticmethod
-    def produceVideoTransmitterStub(port: int) -> VideoTransmitter:
-        bus = BusFactory.produceUDP_TransceiverStub(host=True, port=port)
+        if stub:
+            bus = BusFactory.produceUDP_Transceiver(host=True, port=port, stub=True)
+        else:
+            bus = BusFactory.produceUDP_Transceiver(host=True, port=port)
         return VideoTransmitter(bus)
