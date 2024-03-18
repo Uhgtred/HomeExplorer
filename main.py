@@ -36,17 +36,17 @@ class Main:
         Catches exceptions that may occur during the setup process.
         """
         try:
-            self.__arduinoConnection()
+            self.__steeringControl()
             self.__videoControl()
             self.__threadRunner.addTask(API.Main(self.__ports.get('APIPort')))
         except Exception as e:
             raise BaseException(f'An error occurred during setup: {e}')
 
-    def __arduinoConnection(self) -> None:
+    def __steeringControl(self) -> None:
         """
         Method that sets up connection and communication to the Arduino.
         """
-        remoteControlSocket = BusFactory.produceUDP_Transceiver(host=True, port=self.__ports.get('controllerPort'))
+        remoteControlSocket = BusFactory.produceUDP_Transceiver(host=True, port=self.__ports.get('controllerPort'), pickle=True)
         arduinoSerial = BusFactory.produceSerialTransceiver()
         remoteControlEvent = EventManager.produceEvent('controllerEvent')
         remoteControlEvent.subscribe(arduinoSerial.writeSingleMessage)
@@ -61,10 +61,6 @@ class Main:
         transmitter = VideoTransmitterFactory.produceDefaultVideoTransmitter(self.__ports.get('videoPort'))
         videoController = VideoControllerBuilder().addCamera(camera).addSerialization(serializer).addTransmitter(transmitter).build()
         self.__threadRunner.addTask(videoController)
-
-    def __steeringControl(self) -> None:
-        
-
 
 
 if __name__ == '__main__':
