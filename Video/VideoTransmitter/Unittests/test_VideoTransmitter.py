@@ -15,7 +15,7 @@ class test_VideoTransmitter(unittest.TestCase):
         with open(path, 'rb') as image_file:
             image_data = image_file.read()
         self.transmitter.transmit(path)
-        time.sleep(0.01)
+        # time.sleep(0.01)
         transmitterBuffer = self.transmitter._VideoTransmitter__bus.bus.sock.recvfrom(4096)
         self.assertIn(image_data, transmitterBuffer)  # add assertion here
 
