@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # @author: Markus Kösters
-
+import time
 import unittest
 from pathlib import Path
 
@@ -15,6 +15,7 @@ class test_VideoTransmitter(unittest.TestCase):
         with open(path, 'rb') as image_file:
             image_data = image_file.read()
         self.transmitter.transmit(path)
+        time.sleep(0.01)
         transmitterBuffer = self.transmitter._VideoTransmitter__bus.bus.sock.recvfrom(4096)
         print(self.transmitter._VideoTransmitter__bus.bus.sock.buffer)
         self.assertIn(image_data, transmitterBuffer)  # add assertion here
