@@ -38,8 +38,8 @@ class Buttons:
 class ActorControlInterface(ABC):
 
     @abstractmethod
-    def setInputValues(self, inputValues: Buttons) -> None:
+    def processInput(self, buttons: Buttons) -> None:
         """
         Interface-method for describing how the input can be set.
-        :param inputValues:
+        :param buttons: Buttons-object containing information about the buttons.
         """

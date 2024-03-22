@@ -12,41 +12,43 @@ class ActorController:
 
     def __init__(self, transmitter: BusFactory):
         self.__transmitter = transmitter.produceSerialTransceiver()
-        self.__actors = {Buttons.LTrigger.ID: 0, Buttons.LBtn.ID: LeftMotor}
-        self.__jsonMessage = {Buttons.LTrigger.ID: 0, Buttons.LBtn.ID: 0}
+        self.__jsonMessage = {Buttons.LTrigger.ID: 0}
         # the key is the negator, and the value is the button-value that will be negated
-        self.__negatorButtons = {Buttons.LBtn.ID: Buttons.LTrigger.ID, Buttons.RBtn.ID: Buttons.RTrigger.ID}
+        self.__negatorButtons = {Buttons.LBtn.ID: [Buttons.LTrigger.ID, False], Buttons.RBtn.ID: [Buttons.RTrigger.ID, False]}
 
     def processInput(self, buttons: Buttons) -> None:
         """
         Method for processing input-object.
         :return:
         """
-        self.getValuesFromObject(buttons)
+        self.__getValuesFromObject(buttons)
         jsonMessage = self.__transformValuesToJson(self.__jsonMessage)
         self.__transmitter.writeSingleMessage(jsonMessage)
 
 
-    def getValuesFromObject(self, buttons: Buttons) -> dict:
+    def __getValuesFromObject(self, buttons: Buttons) -> dict:
+        """
+        Extract all the values from the buttons-object.
+        :param buttons: Object that stores information about the buttons pushed on the remote-side.
+        :return: Dictionary containing the id of the buttons as key and their value as value.
+        """
         for field in fields(buttons):
             attributes = getattr(buttons, field.name)
-            # if the button is a negator, negate the value. else
+            # if the button is a negator, negate the assigned value if its own value is 1.
             if attributes.ID in self.__negatorButtons.keys():
-                self.negateActorValue(self.__negatorButtons.get(attributes.ID))
+                self.__negatorButtons.get(attributes.ID)[1] = attributes.value
                 continue
-            if self.__jsonMessage.get(attributes.ID) == -1:
-                self.negateActorValue(attributes.ID)
-            else:
-                self.__jsonMessage[attributes.ID] = attributes.value
+            self.__jsonMessage[attributes.ID] = attributes.value
+        self.__negateActorValues()
 
-    def negateActorValue(self, buttonID: Buttons.name.ID) -> None:
+    def __negateActorValues(self) -> None:
         """
         Method for negating the value of a button.
-        :param buttonID: ID of the button whose value will be negated.
         """
-        if self.__jsonMessage[buttonID] == 0:
-            self.__jsonMessage[buttonID] = -1
-        self.__jsonMessage[buttonID] = -self.__jsonMessage[buttonID]
+        # if buttonNegator is true setting the value in the message to negativ!
+        for buttonNegator in self.__negatorButtons:
+            if buttonNegator[1]:
+                self.__jsonMessage[buttonNegator[0]] = -self.__jsonMessage[buttonNegator[0]]
 
     @staticmethod
     def __transformValuesToJson(message: dict) -> json:
