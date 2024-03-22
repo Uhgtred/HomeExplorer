@@ -25,8 +25,7 @@ class ActorController:
         jsonMessage = self.__transformValuesToJson(self.__jsonMessage)
         self.__transmitter.writeSingleMessage(jsonMessage)
 
-
-    def __getValuesFromObject(self, buttons: Buttons) -> dict:
+    def __getValuesFromObject(self, buttons: Buttons) -> None:
         """
         Extract all the values from the buttons-object.
         :param buttons: Object that stores information about the buttons pushed on the remote-side.
