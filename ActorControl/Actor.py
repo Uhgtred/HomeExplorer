@@ -2,10 +2,10 @@
 # @author: Markus Kösters
 
 import json
-from abc import ABC, abstractmethod
-from dataclasses import dataclass, fields, asdict
+from dataclasses import fields
 
 from ActorControl.ActorControlInterface import Buttons
+from BusTransactions.BusFactory import BusFactory
 
 
 class ActorController:
@@ -13,7 +13,7 @@ class ActorController:
     def __init__(self, transmitter: BusFactory):
         self.__transmitter = transmitter.produceSerialTransceiver()
         self.__jsonMessage = {Buttons.LTrigger.ID: 0}
-        # the key is the negator, and the value is the button-value that will be negated
+        # The key is the negator, and the value[0] is the button that will be negated and value[1] is the state of the negation.
         self.__negatorButtons = {Buttons.LBtn.ID: [Buttons.LTrigger.ID, False], Buttons.RBtn.ID: [Buttons.RTrigger.ID, False]}
 
     def processInput(self, buttons: Buttons) -> None:
@@ -46,8 +46,8 @@ class ActorController:
         """
         # if buttonNegator is true setting the value in the message to negativ!
         for buttonNegator in self.__negatorButtons:
-            if buttonNegator[1]:
-                self.__jsonMessage[buttonNegator[0]] = -self.__jsonMessage[buttonNegator[0]]
+            if self.__negatorButtons.get(buttonNegator)[1]:
+                self.__jsonMessage[self.__negatorButtons.get(buttonNegator)[0]] = -self.__jsonMessage[self.__negatorButtons.get(buttonNegator)[0]]
 
     @staticmethod
     def __transformValuesToJson(message: dict) -> json:
