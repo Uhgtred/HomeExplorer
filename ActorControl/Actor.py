@@ -5,16 +5,16 @@ import json
 from dataclasses import fields
 
 from ActorControl.ActorControlInterface import Buttons
-from BusTransactions.BusFactory import BusFactory
+from ActorControl.Controller import Controller
+from BusTransactions import Bus
 
 
 class ActorController:
 
-    def __init__(self, transmitter: BusFactory):
-        self.__transmitter = transmitter.produceSerialTransceiver()
+    def __init__(self, transmitter: Bus, device: Controller):
+        self.__transmitter = transmitter
+        self.__device = device
         self.__jsonMessage = {Buttons.LTrigger.ID: 0}
-        # The key is the negator, and the value[0] is the button that will be negated and value[1] is the state of the negation.
-        self.__negatorButtons = {Buttons.LBtn.ID: [Buttons.LTrigger.ID, False], Buttons.RBtn.ID: [Buttons.RTrigger.ID, False]}
 
     def processInput(self, buttons: Buttons) -> None:
         """
@@ -34,8 +34,8 @@ class ActorController:
         for field in fields(buttons):
             attributes = getattr(buttons, field.name)
             # if the button is a negator, negate the assigned value if its own value is 1.
-            if attributes.ID in self.__negatorButtons.keys():
-                self.__negatorButtons.get(attributes.ID)[1] = attributes.value
+            if attributes.ID in self.__device.negationButtons.keys():
+                self.__device.negationButtons.get(attributes.ID)[1] = attributes.value
                 continue
             self.__jsonMessage[attributes.ID] = attributes.value
         self.__negateActorValues()
@@ -45,9 +45,9 @@ class ActorController:
         Method for negating the value of a button.
         """
         # if buttonNegator is true setting the value in the message to negativ!
-        for buttonNegator in self.__negatorButtons:
-            if self.__negatorButtons.get(buttonNegator)[1]:
-                self.__jsonMessage[self.__negatorButtons.get(buttonNegator)[0]] = -self.__jsonMessage[self.__negatorButtons.get(buttonNegator)[0]]
+        for buttonNegator in self.__device.negationButtons:
+            if self.__device.negationButtons.get(buttonNegator)[1]:
+                self.__jsonMessage[self.__device.negationButtons.get(buttonNegator)[0]] = -self.__jsonMessage[self.__device.negationButtons.get(buttonNegator)[0]]
 
     @staticmethod
     def __transformValuesToJson(message: dict) -> json:
