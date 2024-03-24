@@ -10,11 +10,10 @@ class ButtonData:
     # Defining the attributes of a single button.
     ID: int
     value: int
-    Actor: str
-
 
 @dataclass
 class Buttons:
+    ActorType: str
     LXAxis: ButtonData
     LYAxis: ButtonData
     LTrigger: ButtonData
