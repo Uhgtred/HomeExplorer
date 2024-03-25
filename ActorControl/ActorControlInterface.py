@@ -1,27 +1,16 @@
 #!/usr/bin/env python3
 # @author: Markus Kösters
-
+import json
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
 
-
-@dataclass
-class ButtonData:
-    # Defining the attributes of a single button.
-    ID: int
-    value: int
-
-
-@dataclass
-class Buttons:
-    ActorType: str
-    Example: ButtonData = field(default_factory=lambda: ButtonData(0, 0))
+from .ButtonConfig import ButtonConfig
+from .ControlDevice import ControlDevice
 
 
 class ActorControlInterface(ABC):
 
     @abstractmethod
-    def processInput(self, buttons: Buttons) -> None:
+    def processInput(self, buttons: ButtonConfig) -> None:
         """
         Interface-method for describing how the input can be set.
         :param buttons: Buttons-object containing information about the buttons.
@@ -37,7 +26,7 @@ class ActorControlInterface(ABC):
         """
 
     @abstractmethod
-    def __decideControlDevice(self, buttons: Buttons) -> ControlDevice:
+    def __decideControlDevice(self, buttons: ButtonConfig) -> ControlDevice:
         """
         Interface-method for determining the device that the Buttons-object is connected to.
         :param buttons: Buttons-object containing information about the buttons.
