@@ -11,27 +11,11 @@ class ButtonData:
     ID: int
     value: int
 
+
 @dataclass
 class Buttons:
     ActorType: str
-    LXAxis: ButtonData
-    LYAxis: ButtonData
-    LTrigger: ButtonData
-    LBtn: ButtonData
-    L3: ButtonData
-    RXAxis: ButtonData
-    RYAxis: ButtonData
-    RTrigger: ButtonData
-    RBtn: ButtonData
-    R3: ButtonData
-    StartBtn: ButtonData
-    SelectBtn: ButtonData
-    ABtn: ButtonData
-    BBtn: ButtonData
-    XBtn: ButtonData
-    YBtn: ButtonData
-    XCross: ButtonData
-    YCross: ButtonData
+    Example: ButtonData = field(default_factory=lambda: ButtonData(0, 0))
 
 
 class ActorControlInterface(ABC):
@@ -41,4 +25,21 @@ class ActorControlInterface(ABC):
         """
         Interface-method for describing how the input can be set.
         :param buttons: Buttons-object containing information about the buttons.
+        """
+
+    @staticmethod
+    @abstractmethod
+    def __transformValuesToJson(message: dict) -> json:
+        """
+        Interface-method for transforming the message into json-format.
+        :param message: Dictionary containing information about the buttons pressed and their value.
+        :return: Json-formatted message.
+        """
+
+    @abstractmethod
+    def __decideControlDevice(self, buttons: Buttons) -> ControlDevice:
+        """
+        Interface-method for determining the device that the Buttons-object is connected to.
+        :param buttons: Buttons-object containing information about the buttons.
+        :return: ControlDevice-object containing information about the way that the button-inputs will be processed.
         """
