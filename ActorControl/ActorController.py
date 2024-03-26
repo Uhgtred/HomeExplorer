@@ -2,11 +2,10 @@
 # @author: Markus Kösters
 
 import json
-from dataclasses import fields
 
-from .ActorControlInterface import ButtonConfig, ActorControlInterface
-import ControlDevice
+from . import ControlDevice
 from BusTransactions import Bus
+from .ActorControlInterface import ButtonConfig, ActorControlInterface
 
 
 class ActorController(ActorControlInterface):

@@ -63,6 +63,28 @@ class SocketEncoding(EncodingProtocol):
         :param message: Message from socket that needs to be decoded.
         """
         if isinstance(message, bytes):
+            message = message.decode()
+        return message
+
+    def encode(self, message: str) -> bytes:
+        """
+        Method for encoding a message that will be sent to a socket.
+        :param message: Message that needs to be encoded.
+        """
+        if not isinstance(message, bytes):
+            return message.encode()
+        return message
+
+
+class SocketEncodingPickle(EncodingProtocol):
+
+    @staticmethod
+    def decode(message: any) -> str:
+        """
+        Method for decoding a message received from a socket.
+        :param message: Message from socket that needs to be decoded.
+        """
+        if isinstance(message, bytes):
             message = pickle.loads(message)
         return message
 
@@ -72,5 +94,5 @@ class SocketEncoding(EncodingProtocol):
         :param message: Message that needs to be encoded.
         """
         if not isinstance(message, bytes):
-            message = pickle.dumps(message)
+            return pickle.dumps(message)
         return message

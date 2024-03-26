@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 # @author: Markus Kösters
 
-from dataclasses import dataclass, field
-
-from ActorControl import Motors
+from dataclasses import dataclass
 
 
 @dataclass
