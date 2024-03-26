@@ -22,7 +22,7 @@ class ActorController(ActorControlInterface):
         jsonMessage = buttonProcessingClass.getButtonDict(buttons)
         self.__transmitterMethod(self.__transformValuesToJson(jsonMessage))
 
-    def __decideControlDevice(self, buttons: ButtonConfig) -> ControlDevice.ControlDevice:
+    def decideControlDevice(self, buttons: ButtonConfig) -> ControlDevice.ControlDevice:
         """
         Method for determining the device that the Buttons-object is connected to.
         :param buttons: Buttons-object containing information about the buttons.
@@ -37,7 +37,7 @@ class ActorController(ActorControlInterface):
                 raise BaseException(f'No supported controller! {buttons.ActorType}')
 
     @staticmethod
-    def __transformValuesToJson(message: dict) -> json:
+    def transformValuesToJson(message: dict) -> json:
         """
         Method for transforming values to json.
         :param message: Dictionary containing the values to be transformed to json.

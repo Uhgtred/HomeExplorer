@@ -18,7 +18,7 @@ class ActorControlInterface(ABC):
 
     @staticmethod
     @abstractmethod
-    def __transformValuesToJson(message: dict) -> json:
+    def transformValuesToJson(message: dict) -> json:
         """
         Interface-method for transforming the message into json-format.
         :param message: Dictionary containing information about the buttons pressed and their value.
@@ -26,7 +26,7 @@ class ActorControlInterface(ABC):
         """
 
     @abstractmethod
-    def __decideControlDevice(self, buttons: ButtonConfig) -> ControlDevice:
+    def decideControlDevice(self, buttons: ButtonConfig) -> ControlDevice:
         """
         Interface-method for determining the device that the Buttons-object is connected to.
         :param buttons: Buttons-object containing information about the buttons.
