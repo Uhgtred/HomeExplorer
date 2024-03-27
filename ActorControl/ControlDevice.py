@@ -31,9 +31,9 @@ class Controller(ControlDevice):
         :return: Dictionary containing the id of the buttons as key and their value as value.
         """
         buttonDict: dict = {
-                                buttons.LTrigger: buttons.LTrigger.value if buttons.LBtn.value == 0 else -buttons.LTrigger.value,
-                                buttons.RTrigger.ID: buttons.RTrigger.value if buttons.RBtn.value == 0 else -buttons.RTrigger.value,
-                                buttons.RXAxis.ID: buttons.RXAxis.value,
-                                buttons.RYAxis.ID: buttons.RYAxis.value
+                                str(buttons.LTrigger): buttons.LTrigger.value if buttons.LBtn.value == 0 else -buttons.LTrigger.value,
+                                str(buttons.RTrigger.ID): buttons.RTrigger.value if buttons.RBtn.value == 0 else -buttons.RTrigger.value,
+                                str(buttons.RXAxis.ID): buttons.RXAxis.value,
+                                str(buttons.RYAxis.ID): buttons.RYAxis.value
                             }
         return buttonDict

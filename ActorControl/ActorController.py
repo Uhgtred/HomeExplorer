@@ -18,9 +18,9 @@ class ActorController(ActorControlInterface):
         Method to decide over which device will handle the control-values.
         :param buttons: Object containing information about the control device and the values of the readings.
         """
-        buttonProcessingClass = self.__decideControlDevice(buttons)
+        buttonProcessingClass = self.decideControlDevice(buttons)
         jsonMessage = buttonProcessingClass.getButtonDict(buttons)
-        self.__transmitterMethod(self.__transformValuesToJson(jsonMessage))
+        self.__transmitterMethod(self.transformValuesToJson(jsonMessage))
 
     def decideControlDevice(self, buttons: ButtonConfig) -> ControlDevice.ControlDevice:
         """
