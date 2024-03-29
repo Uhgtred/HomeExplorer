@@ -3,15 +3,21 @@
 
 import json
 
-from . import ControlDevice
 from BusTransactions import Bus
+from . import ControlDevice
 from .ActorControlInterface import ButtonConfig, ActorControlInterface
+from .ControlDevice import Controller, mockController
 
 
 class ActorController(ActorControlInterface):
 
     def __init__(self, transmitterMethod: Bus.writeSingleMessage):
+        """
+        Todo: let devices be a dictionary that is being provided by the factory.
+        :param transmitterMethod:
+        """
         self.__transmitterMethod = transmitterMethod
+        self.__devices = {'xbox_controller': Controller(), 'test': mockController(), 'keyboard_controller': mockController()}
 
     def processInput(self, buttons: ButtonConfig) -> None:
         """
@@ -28,13 +34,7 @@ class ActorController(ActorControlInterface):
         :param buttons: Buttons-object containing information about the buttons.
         :return: ControlDevice-object containing information about the way that the button-inputs will be processed.
         """
-        match buttons.ActorType:
-            case 'xbox_controller':
-                return ControlDevice.Controller()
-            case 'keyboard':
-                pass
-            case other:
-                raise BaseException(f'No supported controller! {buttons.ActorType}')
+        return self.__devices.get(buttons.ActorType)
 
     @staticmethod
     def transformValuesToJson(message: dict) -> json:
