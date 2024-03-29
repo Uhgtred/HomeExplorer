@@ -16,7 +16,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_produceBusTransceiver(self):
         encoding = Encoding.EncodingFactory.arduinoSerialEncoding
-        bus = BusPluginFactory.produceSerialBusStubPlugin()
+        bus = BusPluginFactory.produceSerialBusArduinoPlugin(stub=True)
         transceiver = self.busFactory.produceBusTransceiver(bus, encoding)
         self.assertIsInstance(transceiver, Bus)
 
