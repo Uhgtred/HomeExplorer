@@ -52,3 +52,40 @@ class ActorController(ActorControlInterface):
         :return: Message that will be sent to
         """
         return json.dumps(message)
+
+Maybe better use this:
+"""
+from abc import ABC, abstractmethod
+
+
+# Define a family of algorithms (ControlDeviceProcessing)
+class ControlDeviceProcessing(ABC):
+    @abstractmethod
+    def process(self, buttons: ButtonConfig):
+        pass
+
+
+# Each algorithm is encapsulated in its own class
+class XboxControllerProcessing(ControlDeviceProcessing):
+    def process(self, buttons: ButtonConfig):
+        # logic for Xbox Controller
+        pass
+
+
+class KeyboardControllerProcessing(ControlDeviceProcessing):
+    def process(self, buttons: ButtonConfig):
+        # logic for Keyboard Controller
+        pass
+
+
+# The ActorController now uses composition to use the strategy
+class ActorController:
+The device_processing_strategy could be provided by the buttons-object
+Maybe the buttons-object needs to be a normal class then, including methods that allow to process the data. 
+    def __init__(self, device_processing_strategy: ControlDeviceProcessing):
+        self.device_processing_strategy = device_processing_strategy
+
+    def processInput(self, buttons: ButtonConfig) -> None:
+        jsonMessage = self.device_processing_strategy.process(buttons)
+        self.__transmitterMethod(self.transformValuesToJson(jsonMessage))
+"""
