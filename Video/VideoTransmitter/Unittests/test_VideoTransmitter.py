@@ -8,7 +8,7 @@ from Video.VideoTransmitter import VideoTransmitterFactory
 
 
 class test_VideoTransmitter(unittest.TestCase):
-    transmitter = VideoTransmitterFactory.produceVideoTransmitterStub(port=2002)
+    transmitter = VideoTransmitterFactory.produceDefaultVideoTransmitter(port=2002, stub=True)
 
     def test_transmit(self):
         path = str(Path(__file__).parent) + '/testImage'

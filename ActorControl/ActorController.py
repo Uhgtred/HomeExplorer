@@ -34,7 +34,15 @@ class ActorController(ActorControlInterface):
         :param buttons: Buttons-object containing information about the buttons.
         :return: ControlDevice-object containing information about the way that the button-inputs will be processed.
         """
-        return self.__devices.get(buttons.ActorType)
+        match buttons.ActorType:
+            case 'xbox_controller':
+                return self.__devices.get('xbox_controller')
+            case 'test':
+                return self.__devices.get('test')
+            case 'keyboard_controller':
+                return self.__devices.get('keyboard_controller')
+            case other:
+                raise BaseException(f'Unsupported device type: {buttons.ActorType}, please choose from: {self.__devices.keys()}')
 
     @staticmethod
     def transformValuesToJson(message: dict) -> json:
