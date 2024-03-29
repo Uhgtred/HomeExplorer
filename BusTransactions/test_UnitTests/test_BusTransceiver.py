@@ -26,7 +26,7 @@ class helperClass:
 
 
 class test_BusTransceiver(unittest.TestCase):
-    bus = BusPluginFactory.produceSerialBusStubPlugin()
+    bus = BusPluginFactory.produceSerialBusArduinoPlugin(stub=True)
     serialTransceiver = BusFactory.BusFactory.produceBusTransceiver(bus, Encoding.EncodingFactory.arduinoSerialEncoding)
     testString = 'Hello World'
     messages = []
