@@ -10,7 +10,6 @@ from BusTransactions.BusPlugins.SerialBusPlugin.test_UnitTests.SerialBusMock imp
 
 
 class MyTestCase(unittest.TestCase):
-
     busFactory = BusFactory()
     mockLibrary = MockSerialBus
 
@@ -19,6 +18,7 @@ class MyTestCase(unittest.TestCase):
         bus = BusPluginFactory.produceSerialBusArduinoPlugin(stub=True)
         transceiver = self.busFactory.produceBusTransceiver(bus, encoding)
         self.assertIsInstance(transceiver, Bus)
+
 
 if __name__ == '__main__':
     unittest.main()
