@@ -2,8 +2,9 @@
 # @author: Markus Kösters
 
 class MockSerialBus:
-    buffer = []
-    state = False
+    def __init__(self):
+        self.buffer = []
+        self.state = False
 
     def read(self):
         if self.buffer:
@@ -12,9 +13,8 @@ class MockSerialBus:
     def write(self, message):
         self.buffer.append(message)
 
-    @classmethod
-    def is_open(cls):
-        return cls.state
+    def is_open(self):
+        return self.state
 
     def open(self):
         self.state = True

@@ -25,7 +25,8 @@ class test_SerialBus(unittest.TestCase):
     def test_read(self):
         bus = BusPluginFactory.produceSerialBusPlugin(self.path, self.baudRate, stub=True)
         bus.writeBus(self.testString)
-        print(bus.bus.buffer)
+        print(bus.bus)
+        print(bus.bus.getBuffer)
         message = bus.readBus()
         print(bus.bus.buffer)
         print(message)
