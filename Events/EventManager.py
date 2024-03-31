@@ -2,9 +2,10 @@
 # @author      Markus Kösters
 
 from .Event import Event
+from .EventInterface import EventInterface
 
 
-class EventManager:
+class EventManager(EventInterface):
     """
     Factory-class for EventUser.
     """

@@ -47,7 +47,7 @@ class UdpSocket(BusPluginInterface):
     def _setupSocket(self, host: bool, sock: socket, port: int) -> None:
         """
         Private Method for setting up UDP-socket.
-        :param sock: socket that will be setup and bound.
+        :param sock: Socket that will be setup and bound.
         """
         # dynamically providing socket-ports for requested sockets.
         if port in self.__openSocketPorts:
