@@ -13,8 +13,5 @@ class VideoTransmitterFactory:
         Factory method for producing an instance of a default video-transmission object.
         :return: Video-transmission instance-object.
         """
-        if stub:
-            bus = BusFactory.produceUDP_Transceiver(host=True, port=port, stub=True)
-        else:
-            bus = BusFactory.produceUDP_Transceiver(host=True, port=port)
+        bus = BusFactory.produceUDP_Transceiver(host=True, port=port, stub=stub)
         return VideoTransmitter(bus)

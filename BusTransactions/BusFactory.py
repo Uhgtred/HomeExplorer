@@ -27,12 +27,12 @@ class BusFactory:
         return transceiver
 
     @staticmethod
-    def produceSerialTransceiver() -> Bus:
+    def produceSerialTransceiver(path: str = '/dev/ttyACM0', baudRate: int = 115200, stub: bool = False) -> Bus:
         """
         Method for creating an instance of a serial-bus transceiver that connects to arduino.
         """
         encoding: EncodingProtocol = EncodingFactory.arduinoSerialEncoding()
-        busPlugin: BusPluginInterface = BusPluginFactory.produceSerialBusArduinoPlugin()
+        busPlugin: BusPluginInterface = BusPluginFactory.produceSerialBusPlugin(path, baudRate, stub=stub)
         return Bus(busPlugin, encoding)
 
     @staticmethod
@@ -42,8 +42,5 @@ class BusFactory:
         :return:
         """
         encoding: EncodingProtocol = EncodingFactory.socketEncoding(pickle)
-        if stub:
-            busPlugin: BusPluginInterface = BusPluginFactory.produceUdpStubPlugin(host=host, port=port)
-        else:
-            busPlugin: BusPluginInterface = BusPluginFactory.produceUdpSocketPlugin(host=host, port=port)
+        busPlugin: BusPluginInterface = BusPluginFactory.produceUdpSocketPlugin(host=host, port=port, stub=stub)
         return Bus(busPlugin, encoding)

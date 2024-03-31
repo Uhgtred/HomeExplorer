@@ -9,16 +9,16 @@ from BusTransactions.BusFactory import BusFactory
 from BusTransactions.BusPlugins.SerialBusPlugin.test_UnitTests.SerialBusMock import MockSerialBus
 
 
-class MyTestCase(unittest.TestCase):
-
+class test_BusFactory(unittest.TestCase):
     busFactory = BusFactory()
     mockLibrary = MockSerialBus
 
     def test_produceBusTransceiver(self):
         encoding = Encoding.EncodingFactory.arduinoSerialEncoding
-        bus = BusPluginFactory.produceSerialBusStubPlugin()
+        bus = BusPluginFactory.produceSerialBusPlugin(path='test', baudRate=1234, stub=True)
         transceiver = self.busFactory.produceBusTransceiver(bus, encoding)
         self.assertIsInstance(transceiver, Bus)
+
 
 if __name__ == '__main__':
     unittest.main()
