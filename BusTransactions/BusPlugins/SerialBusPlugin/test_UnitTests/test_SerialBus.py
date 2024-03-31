@@ -23,7 +23,7 @@ class MyTestCase(unittest.TestCase):
     def test_read(self):
         self.bus.writeBus(self.testString)
         message = self.bus.readBus()
-        assert message == self.testString
+        self.assertEqual(message, self.testString)
 
 
 if __name__ == '__main__':

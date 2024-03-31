@@ -13,15 +13,15 @@ class BusPluginFactory:
     """
 
     @staticmethod
-    def produceSerialBusArduinoPlugin(stub: bool = False) -> SerialBus:
+    def produceSerialBusPlugin(path: str, baudRate: int, stub: bool = False) -> SerialBus:
         """
         Method for creating an instance of a SerialBus.
         :return: SerialBus-instance.
         """
         if stub:
-            config = SerialBusConfig('/dev/ttyACM0', 115200, MockSerialBus)
+            config = SerialBusConfig(path, baudRate, MockSerialBus)
         else:
-            config = SerialBusConfig('/dev/ttyACM0', 115200)
+            config = SerialBusConfig(path, baudRate)
         return SerialBus(config)
 
     @staticmethod
