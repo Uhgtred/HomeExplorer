@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 # @author: Markus Kösters
+
 import json
 from abc import ABC, abstractmethod
 
-from .ButtonConfig import ButtonConfig
-from .ControlDevice import ControlDevice
+from ActorControl.ButtonsInterface import ButtonsInterface
 
 
 class ActorControlInterface(ABC):
 
     @abstractmethod
-    def processInput(self, buttons: ButtonConfig) -> None:
+    def processInput(self, buttons: ButtonsInterface) -> None:
         """
         Interface-method for describing how the input can be set.
         :param buttons: Buttons-object containing information about the buttons.
@@ -18,17 +18,18 @@ class ActorControlInterface(ABC):
 
     @staticmethod
     @abstractmethod
-    def transformValuesToJson(message: dict) -> json:
+    def _transformValuesToJson(message: dict) -> json:
         """
         Interface-method for transforming the message into json-format.
         :param message: Dictionary containing information about the buttons pressed and their value.
         :return: Json-formatted message.
         """
 
+    @staticmethod
     @abstractmethod
-    def decideControlDevice(self, buttons: ButtonConfig) -> ControlDevice:
+    def _getButtonDict(buttons: ButtonsInterface) -> dict:
         """
-        Interface-method for determining the device that the Buttons-object is connected to.
-        :param buttons: Buttons-object containing information about the buttons.
-        :return: ControlDevice-object containing information about the way that the button-inputs will be processed.
+        Interface-Method for retrieving button-data from a button-object.
+        :param buttons: Button-object that contains button information and state.
+        :return: Dictionary containing button information and state.
         """

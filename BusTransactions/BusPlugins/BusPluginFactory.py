@@ -19,9 +19,9 @@ class BusPluginFactory:
         :return: SerialBus-instance.
         """
         if stub:
-            config = SerialBusConfig(path, baudRate, MockSerialBus)
+            config = SerialBusConfig(port=path, baudRate=baudRate, busLibrary=MockSerialBus)
         else:
-            config = SerialBusConfig(path, baudRate)
+            config = SerialBusConfig(port=path, baudRate=baudRate)
         return SerialBus(config)
 
     @staticmethod
