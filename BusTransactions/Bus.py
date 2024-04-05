@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # @author: Markus Kösters
-
+import asyncio
 import inspect
 import threading
 
@@ -23,6 +23,7 @@ class Bus(BusInterface):
         self.__stopFlag: bool = False
         self.encoding: EncodingProtocol = encoding
         self.bus: BusPluginInterface = bus
+        self.eventLoop: asyncio.get_event_loop = None
 
     def readSingleMessage(self) -> EncodingProtocol.decode:
         """
@@ -37,23 +38,28 @@ class Bus(BusInterface):
         :param callbackMethod: Method that the received messages shall be sent to.
                                 Needs to accept one argument which is the message read from the bus.
         """
-        self.__callBackHasInputArg(callbackMethod)
-        thread = threading.Thread(target=self.__readLoop, args=(callbackMethod, *args), kwargs=kwargs)
-        thread.start()
+        self.eventLoop = asyncio.get_event_loop()
+        # self.eventLoop.run_forever()
+        asyncio.ensure_future(self.__readLoop(callbackMethod, *args, **kwargs))
 
-    def __readLoop(self, callbackMethod: callable, *args, **kwargs) -> None:
+
+        #
+        # self.__callBackHasInputArg(callbackMethod)
+        # thread = threading.Thread(target=self.__readLoop, args=(callbackMethod, *args), kwargs=kwargs)
+        # thread.start()
+
+    async def __readLoop(self, callbackMethod: callable, *args, **kwargs) -> None:
         """
         Method that includes the logic to read a message from the bus in a loop until stopFlag is raised.
         :param callbackMethod: Method that the received messages will be sent to.
         :param args: Further positional arguments to the callback method.
         :param kwargs: Further keyword arguments to the callback method.
         """
-        while not self.__stopFlag:
-            try:
-                callbackMethod(self.readSingleMessage(), *args, **kwargs)
-            except Exception as e:
-                # Todo: Log-warning for this case!
-                pass
+        try:
+            callbackMethod(self.readSingleMessage(), *args, **kwargs)
+        except Exception as e:
+            # Todo: Log-warning for this case!
+            pass
 
     @staticmethod
     def __callBackHasInputArg(callbackMethod: callable) -> None:
@@ -92,3 +98,5 @@ class Bus(BusInterface):
         :param state: Stop-flag state that will be set.
         """
         self.__stopFlag = state
+        if state:
+            self.eventLoop.stop()

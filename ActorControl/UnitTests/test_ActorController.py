@@ -15,6 +15,7 @@ class ButtonData:
     ID: int
     value: int
 
+
 @dataclass
 class Buttons:
     LTrigger: ButtonData = field(default_factory=lambda: ButtonData(2, 20))  # max value: ButtonData = ButtonDef(255
