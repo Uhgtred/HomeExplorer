@@ -1,24 +1,24 @@
 #!/usr/bin/env python3
 # @author: Markus Kösters
-from abc import ABC, abstractmethod
+
 from dataclasses import dataclass
+from typing import Protocol
 
 
 @dataclass
-class ButtonData(ABC):
+class ButtonData(Protocol):
     # Defining the attributes of a single button.
     ID: int
     value: int
 
+
 @dataclass
-class ButtonsInterface(ABC):
+class ButtonsInterface(Protocol):
     buttonData: ButtonData
 
     @property
-    @abstractmethod
     def getButtonDict(self) -> dict:
         """
         Interface-Method for the process-method of a Buttons-object.
         :return:
         """
-
