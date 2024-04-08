@@ -11,9 +11,8 @@ const unsigned short RMotorRPin = 11;
 const unsigned short LMotorFPin = 12;
 const unsigned short LMotorRPin = 13;
 const unsigned short MotorEnablePin = 26;
-StaticJsonDocument<80> jsonDocument;
 
-const unsigned short maxMessageSize = 80;
+StaticJsonDocument<80> jsonDocument;
 
 Servo XServo;
 Servo ZServo;
@@ -60,36 +59,6 @@ void readSerialJson(){
         deserializeJson(jsonDocument, jsonData);
     }
 }
-
-
-
-//void ReadSerialConnection(byte* serialByteData){
-//    char serialData[5]; // assuming max 4 digits number and 1 place for null character
-//    byte serialDataIndex = 0;
-//
-//    while(Serial.available()){
-//        char incomingByte = Serial.read();
-//
-//        // Check if incoming byte is separator or end of message.
-//        if(incomingByte == ',' || incomingByte == '&'){
-//            // Null-terminate the temporary character array and convert it to integer.
-//            serialData[serialDataIndex] = '\0';
-//            serialByteData[serialDataIndex] = atoi(serialData);
-//
-//            // Clean up for the next integer.
-//            memset(serialData, 0, sizeof(serialData));
-//            serialDataIndex = 0;
-//        }else{
-//            // Add incoming byte to our temporary array.
-//            serialData[serialDataIndex++] = incomingByte;
-//        }
-//
-//        // Break if you've reached the end of the message.
-//        if(incomingByte == '&'){
-//            break;
-//        }
-//    }
-//}
 
 void SetMotorsZero(void){
     //Setting the motor-pins low in each iteration. If something gets stuck or communication breaks robot will stop!
