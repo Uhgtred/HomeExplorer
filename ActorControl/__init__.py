@@ -3,3 +3,4 @@
 
 from .ActorController import ActorController
 from .ActorControlInterface import ActorControlInterface
+from .ButtonsInterface import ButtonsInterface

@@ -12,10 +12,17 @@ const unsigned short LMotorFPin = 12;
 const unsigned short LMotorRPin = 13;
 const unsigned short MotorEnablePin = 26;
 
-StaticJsonDocument<80> jsonDocument;
-
 Servo XServo;
 Servo ZServo;
+
+/*
+Declaring and defining global Variables.
+*/
+StaticJsonDocument<80> jsonDocument;
+struct actorMapDataType {
+    String actorName;
+    String actorID;
+}
 
 void setup() {
     //Setting up serial parameters
@@ -33,7 +40,7 @@ void setup() {
     digitalWrite(MotorEnablePin, HIGH);
     //Making sure Servos are in default-position
     XServo.write(90);
-    //ZServo.write(90);
+    ZServo.write(90);
 }
 
 void loop() {
@@ -55,7 +62,7 @@ int readJsonValue(String key){
 void readSerialJson(){
     if (Serial.available()){
         String jsonData = Serial.readStringUntil('&');
-        // storing json into global json document
+        // storing jsonData into global json document
         deserializeJson(jsonDocument, jsonData);
     }
 }
@@ -75,11 +82,9 @@ void MotorControl(){
     int RMotorValue = 0;
     int LMotorValue = 0;
     //reading the data from array which is being provided through the serial-connection
-    RMotorValue = readJsonValue("5");
-    LMotorValue = readJsonValue("2");
-//    Serial.println("RMotor: "+ String(RMotorValue) + " LMotor: " + String(LMotorValue));  // debugging-line
-//    Serial.println("ARRAYDATA: " + arrayData[0] + arrayData[1] + arrayData[2] + arrayData[3]);  // debugging-line
-    //data[1] is bool and decides if RMotor is turning clockwise or counterclockwise
+    RMotorValue = readJsonValue("RightMotor");
+    LMotorValue = readJsonValue("LeftMotor");
+    //Motor turns clockwise if value is greater 0 else turns counterclockwise. Those are different pins though.
     if (RMotorValue < 0){
         analogWrite(RMotorRPin, RMotorValue);
 //        Serial.println(RMotorValue);  // debugging-line
@@ -103,10 +108,9 @@ void ServoControl() {
     /*
     Moving servos with the help of a library which talks to the servos through PWM
     */
-    //Setting the values from array which is being provided through the serial-connection
-    int RStickXValue = readJsonValue("3");
-    //XServo.writeMicroseconds(1500);
-    //fitting the values from 0-255 to 0-180°
+    //Setting the values from Json-document which is being provided through the serial-connection
+    int CameraXValue = readJsonValue("CameraXServo");
+    //fitting the values from -255 - 255 to 0-180°
     RStickXValue = map(RStickXValue, -254, 254, 0, 180);
     //Turning the servos
     XServo.write(RStickXValue);
