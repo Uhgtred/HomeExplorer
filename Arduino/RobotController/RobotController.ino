@@ -1,7 +1,8 @@
 #include <Servo.h>
+#include <ArduinoJson.h>
 
 /*
-Declaring and defining Pins (could also be data-type short to safe some memory)
+Declaring and defining Pins
 */
 const unsigned short ServoXPin = 2;
 const unsigned short ServoZPin = 3;
@@ -11,10 +12,17 @@ const unsigned short LMotorFPin = 12;
 const unsigned short LMotorRPin = 13;
 const unsigned short MotorEnablePin = 26;
 
-const unsigned short maxMessageSize = 80;
-
 Servo XServo;
 Servo ZServo;
+
+/*
+Declaring and defining global Variables.
+*/
+StaticJsonDocument<80> jsonDocument;
+struct actorMapDataType {
+    String actorName;
+    String actorID;
+}
 
 void setup() {
     //Setting up serial parameters
@@ -32,46 +40,30 @@ void setup() {
     digitalWrite(MotorEnablePin, HIGH);
     //Making sure Servos are in default-position
     XServo.write(90);
-    //ZServo.write(90);
+    ZServo.write(90);
 }
 
 void loop() {
     //Setting the motor-pins low in each iteration. If something gets stuck or communication breaks robot will stop!
-    static byte serialByteData[maxMessageSize];
     SetMotorsZero();
-    ReadSerialConnection(serialByteData);
+    String jsonData = readSerialJson();
     //Sending transformed data to motors and servos
-    MotorControl(serialByteData);
-    //ServoControl(serialByteData);
+    MotorControl();
+    //ServoControl();
     //Serial.println(String(serialByteData[0]) + ' ' + String(serialByteData[2]));
     delay(50);
 }
 
-void ReadSerialConnection(byte* serialByteData){
-    char serialData[5]; // assuming max 4 digits number and 1 place for null character
-    byte serialDataIndex = 0;
+int readJsonValue(String key){
+    int value = jsonDocument[key];
+    return value;
+}
 
-    while(Serial.available()){
-        char incomingByte = Serial.read();
-
-        // Check if incoming byte is separator or end of message.
-        if(incomingByte == ',' || incomingByte == '&'){
-            // Null-terminate the temporary character array and convert it to integer.
-            serialData[serialDataIndex] = '\0';
-            serialByteData[serialDataIndex] = atoi(serialData);
-
-            // Clean up for the next integer.
-            memset(serialData, 0, sizeof(serialData));
-            serialDataIndex = 0;
-        }else{
-            // Add incoming byte to our temporary array.
-            serialData[serialDataIndex++] = incomingByte;
-        }
-
-        // Break if you've reached the end of the message.
-        if(incomingByte == '&'){
-            break;
-        }
+void readSerialJson(){
+    if (Serial.available()){
+        String jsonData = Serial.readStringUntil('&');
+        // storing jsonData into global json document
+        deserializeJson(jsonDocument, jsonData);
     }
 }
 
@@ -83,19 +75,17 @@ void SetMotorsZero(void){
     digitalWrite(RMotorRPin, LOW);
 }
 
-void MotorControl(byte serialByteData[maxMessageSize]){
+void MotorControl(){
     /*
     Sending PWM-signals to the motor-controllers
     */
-    byte RMotorValue = 0;
-    byte LMotorValue = 0;
+    int RMotorValue = 0;
+    int LMotorValue = 0;
     //reading the data from array which is being provided through the serial-connection
-    RMotorValue = serialByteData[0];
-    LMotorValue = serialByteData[2];
-//    Serial.println("RMotor: "+ String(RMotorValue) + " LMotor: " + String(LMotorValue));  // debugging-line
-//    Serial.println("ARRAYDATA: " + arrayData[0] + arrayData[1] + arrayData[2] + arrayData[3]);  // debugging-line
-    //data[1] is bool and decides if RMotor is turning clockwise or counterclockwise
-    if (serialByteData[1] == 1){
+    RMotorValue = readJsonValue("RightMotor");
+    LMotorValue = readJsonValue("LeftMotor");
+    //Motor turns clockwise if value is greater 0 else turns counterclockwise. Those are different pins though.
+    if (RMotorValue < 0){
         analogWrite(RMotorRPin, RMotorValue);
 //        Serial.println(RMotorValue);  // debugging-line
     }
@@ -104,7 +94,7 @@ void MotorControl(byte serialByteData[maxMessageSize]){
 //        Serial.println(RMotorValue);  // debugging-line
     }
     //data[3] is bool and decides if LMotor is turning clockwise or counterclockwise
-    if (serialByteData[3] == 1){
+    if (LMotorValue < 0){
         analogWrite(LMotorRPin, LMotorValue);
 //        Serial.println(LMotorValue);  // debugging-line
     }
@@ -114,27 +104,14 @@ void MotorControl(byte serialByteData[maxMessageSize]){
     }
 }
 
-void ServoControl(byte serialByteData[maxMessageSize]) {
+void ServoControl() {
     /*
     Moving servos with the help of a library which talks to the servos through PWM
     */
-    //Setting the values from array which is being provided through the serial-connection
-    byte RStickXValuePos = serialByteData[4];
-    byte RStickXValueNeg = serialByteData[5];
-    byte RStickYValuePos = serialByteData[6];
-    byte RStickYValueNeg = serialByteData[7];
-    //XServo.writeMicroseconds(1500);
-    //fitting the values from 0-255 to 0-180°
-    RStickXValuePos = map(RStickXValuePos, 0, 254, 90, 180);
-    RStickXValueNeg = map(RStickXValueNeg, 0, 255, 90, 0);
+    //Setting the values from Json-document which is being provided through the serial-connection
+    int CameraXValue = readJsonValue("CameraXServo");
+    //fitting the values from -255 - 255 to 0-180°
+    RStickXValue = map(RStickXValue, -254, 254, 0, 180);
     //Turning the servos
-    if (RStickXValuePos > 90){
-        XServo.write(RStickXValuePos);
-    }
-    else if (RStickXValueNeg < 90){
-        XServo.write(RStickXValueNeg);
-    }
-    else{
-        XServo.write(90);
-    }
+    XServo.write(RStickXValue);
 }
