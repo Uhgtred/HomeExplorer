@@ -12,7 +12,8 @@ class RestartServer(Resource):
     Source: https://gist.github.com/eyJhb/9668061f06163421b5b46b61f41d2c48
     """
 
-    def get(self) -> Response:
+    @staticmethod
+    def get() -> Response:
         """
         Method for shutting down the flask server.
         :return: A response informing about restarting the server.

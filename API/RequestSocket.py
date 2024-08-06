@@ -12,7 +12,8 @@ class RequestSocket(Resource):
     Class to create a direct socket-connection to the server.
     """
 
-    def get(self, port: int) -> Response:
+    @staticmethod
+    def get(port: int) -> Response:
         """
         Method to create a direct socket-connection to the server.
         :return: List containing the ip and port that the connection will run on if connection is successful. Else returns None.
