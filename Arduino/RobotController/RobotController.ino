@@ -46,7 +46,7 @@ void setup() {
 void loop() {
     //Setting the motor-pins low in each iteration. If something gets stuck or communication breaks robot will stop!
     SetMotorsZero();
-    String jsonData = readSerialJson();
+    readSerialJson();
     //Sending transformed data to motors and servos
     MotorControl();
     //ServoControl();
