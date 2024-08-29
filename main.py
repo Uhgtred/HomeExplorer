@@ -59,7 +59,7 @@ class Main:
         camera = VideoCameraFactory.produceDefaultCameraInstance()
         serializer = SerializerFactory.produceSerializationJoblib()
         transmitter = VideoTransmitterFactory.produceDefaultVideoTransmitter(self.__ports.get('videoPort'))
-        videoController = VideoControllerBuilder().addCamera(camera).addSerialization(serializer).addTransmitter(transmitter).build()
+        videoController = VideoControllerBuilder().addCamera(camera).addSerialization(serializer).addTransmission(transmitter).build()
         self.__threadRunner.addTask(videoController)
 
 
