@@ -30,3 +30,8 @@ class EventManager(EventInterface):
         :return: List of available Events.
         """
         return list(self.__events.keys())
+    
+    def subscribeEvent(self, eventName: str, callbackMethod: callable) -> None: 
+        if not callable(callbackMethod):
+            return
+        self.__events.get(eventName).subscribe(callbackMethod)
