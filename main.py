@@ -38,7 +38,7 @@ class Main:
         try:
             self.__steeringControl()
             self.__videoControl()
-            self.__threadRunner.addTask(API.Main, self.__ports.get('APIPort'))
+            self.__apiSetup()
         except Exception as e:
             raise BaseException(f'An error occurred during setup: {e}')
 
@@ -51,6 +51,17 @@ class Main:
         remoteControlEvent = EventManager.produceEvent('controllerEvent')
         remoteControlEvent.subscribe(arduinoSerial.writeSingleMessage)
         self.__asyncRunner.addTask(remoteControlSocket.readBusUntilStopFlag, remoteControlEvent.notifySubscribers)
+        self.logger()
+
+    def __apiSetup(self):
+        apiObject = API.Main(port=self.__ports.get('APIPort'))
+        apiObject.runServer()
+
+    def logger(self):
+        EventManager().subscribeEvent('controllerEvent', self.print_)
+
+    def print_(self,messsage):
+        print(messsage)
 
     def __videoControl(self) -> None:
         """

@@ -22,10 +22,11 @@ class Main:
     }
     __process: Process = None
 
-    def __init__(self, port: int) -> None:
+    def __init__(self, port: int, ipAddress: str = '127.0.0.1') -> None:
         self.__app: Flask = Flask('RobotAPI')
         self.api: Api = Api(self.__app)
         self.__port: int = port
+        self.__ip = ipAddress
 
     def __addRoutes(self) -> None:
         """
@@ -49,12 +50,13 @@ class Main:
         self.__addRoutes()
         self.__process = Process(target=self.__serverSetup, daemon=True)
         self.__process.start()
+        print(f'[API]: Server running on port {self.__ip}:{self.__port}')
 
     def __serverSetup(self) -> None:
         """
         Internal method to setup server-credentials.
         """
-        self.__app.run(host='127.0.0.1', port=self.__port)
+        self.__app.run(host=self.__ip, port=self.__port)
 
     @classmethod
     def stopServer(cls) -> None:
