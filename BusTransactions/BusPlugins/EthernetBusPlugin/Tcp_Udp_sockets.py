@@ -67,6 +67,7 @@ class UdpSocket(BusPluginInterface):
         :return: Message in bytes format.
         """
         data = b''
+        print(f'Receive-size is: {msgLength}, max-size is: {self.__maxMessageSize}')
         while len(data) < msgLength:
             # Varying receive-length to only receive the bytes of this specific message but max. self.__maxMessageSize!
             rcvSize = self.__maxMessageSize if (msgLength-len(data)) > self.__maxMessageSize else (msgLength - len(data))
