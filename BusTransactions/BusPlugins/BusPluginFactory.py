@@ -31,7 +31,7 @@ class BusPluginFactory:
         :return: Socket-instance.
         """
         if ipAddress:
-            config = SocketConfigs.UdpSocketConfig(host=host, ipAddress=ipAddress, messageSize=messageSize, port=port)
+            config = SocketConfigs.UdpSocketConfig(host=host, IPAddress=ipAddress, messageSize=messageSize, port=port)
         else:
             config = SocketConfigs.UdpSocketConfig(host=host, messageSize=messageSize, port=port)
         if stub:
