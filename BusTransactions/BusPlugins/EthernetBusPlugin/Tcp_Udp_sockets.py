@@ -16,7 +16,8 @@ class UdpSocket(BusPluginInterface):
     def __init__(self, config: SocketConfigs.UdpSocketConfig):
         self.sock = None
         self.__maxMessageSize = config.messageSize
-        self.__address = config.IPAddress
+        self.__hostAddress = config.HostIPAddress
+        self.__clientAddress = config.ClientIPAddress
         self.__port = config.port
         self._setupSocket(config.host, config.busLibrary, config.port)
 
@@ -42,11 +43,13 @@ class UdpSocket(BusPluginInterface):
         """
         __msgLength = len(message)
         __message = struct.pack('Q', __msgLength) + message
-        self.sock.sendto(__message, (self.__address, self.__port))
+        self.sock.sendto(__message, (self.__clientAddress, self.__port))
 
     def _setupSocket(self, host: bool, sock: socket, port: int) -> None:
         """
         Private Method for setting up UDP-socket.
+        This method is being called on instancing this class.
+        There should be no reason to call it directly.
         :param sock: Socket that will be setup and bound.
         """
         # dynamically providing socket-ports for requested sockets.
@@ -56,7 +59,7 @@ class UdpSocket(BusPluginInterface):
         self.sock = sock.socket(sock.AF_INET, sock.SOCK_DGRAM)
         # self.sock = sock.socket(sock.AF_INET, sock.SOCK_DGRAM)
         if host:
-            self.sock.bind((self.__address, port))
+            self.sock.bind((self.__hostAddress, port))
             self.__openSocketPorts.add(port)
 
     def __receiver(self, msgLength: int) -> bytes:
