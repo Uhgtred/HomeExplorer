@@ -24,6 +24,7 @@ class Main:
 
     def __init__(self):
         """Starting the Robot-Program and configuring everything"""
+        # Todo: System test for communication between remote-control and robot.
         self.__asyncRunner = Runners.asyncRunner.AsyncRunner()
         self.__threadRunner = Runners.threadRunner.ThreadRunner()
         self.__setup()

@@ -27,7 +27,7 @@ class UdpSocket(BusPluginInterface):
         """
         # --- Receiving header containing message-length --- #
         headerLength = struct.calcsize('Q')
-        # running loop until size of message-length (headerLength (8byte)) has been reached
+        # running loop until the size of message-length (headerLength (8 byte)) has been reached
         msgLength = self.__receiver(headerLength)
         # unpacking the message-length
         msgLength = int(struct.unpack('Q', msgLength)[0])
@@ -67,7 +67,7 @@ class UdpSocket(BusPluginInterface):
         :return: Message in bytes format.
         """
         data = b''
-        print(f'Receive-size is: {msgLength}, max-size is: {self.__maxMessageSize}')
+        print(f'Receive-size is: {msgLength}, max-size is: {self.__maxMessageSize}') # This line is just for testing and debugging.
         while len(data) < msgLength:
             # Varying receive-length to only receive the bytes of this specific message but max. self.__maxMessageSize!
             rcvSize = self.__maxMessageSize if (msgLength-len(data)) > self.__maxMessageSize else (msgLength - len(data))
