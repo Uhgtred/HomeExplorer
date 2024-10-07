@@ -25,6 +25,8 @@ class Main:
     def __init__(self):
         """Starting the Robot-Program and configuring everything"""
         # Todo: System test for communication between remote-control and robot.
+        # Todo: After Systemtest check the versions of the code in BusTransactions repository vs the versions in HomeExplorer and RobotRemote
+        # Most importantly, there needs to be the close function inside the all ethernet plugins
         self.__asyncRunner = Runners.asyncRunner.AsyncRunner()
         self.__threadRunner = Runners.threadRunner.ThreadRunner()
         self.__setup()
