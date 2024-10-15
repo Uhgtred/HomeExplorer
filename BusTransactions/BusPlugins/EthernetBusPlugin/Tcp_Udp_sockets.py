@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # @author: Markus Kösters
-
+import atexit
 import socket
 import struct
 
@@ -10,16 +10,16 @@ from ..BusPluginInterface import BusPluginInterface
 
 class UdpSocket(BusPluginInterface):
 
-    # Todo: Implement possibility to close Socket. It will be necessary to remove it from the openPorts list as well.
     __openSocketPorts: set = set()
 
     def __init__(self, config: SocketConfigs.UdpSocketConfig):
         self.sock = None
         self.__maxMessageSize = config.messageSize
-        self.__hostAddress = config.HostIPAddress
-        self.__clientAddress = config.ClientIPAddress
+        self.__myIPAddress = config.MyIPAddress
+        self.__yourIPAddress = config.YourIPAddress
         self.__port = config.port
         self._setupSocket(config.host, config.busLibrary, config.port)
+        atexit.register(self.close)
 
     def readBus(self) -> bytes:
         """
@@ -43,7 +43,7 @@ class UdpSocket(BusPluginInterface):
         """
         __msgLength = len(message)
         __message = struct.pack('Q', __msgLength) + message
-        self.sock.sendto(__message, (self.__clientAddress, self.__port))
+        self.sock.sendto(__message, (self.__yourIPAddress, self.__port))
 
     def _setupSocket(self, host: bool, sock: socket, port: int) -> None:
         """
@@ -59,7 +59,7 @@ class UdpSocket(BusPluginInterface):
         self.sock = sock.socket(sock.AF_INET, sock.SOCK_DGRAM)
         # self.sock = sock.socket(sock.AF_INET, sock.SOCK_DGRAM)
         if host:
-            self.sock.bind((self.__hostAddress, port))
+            self.sock.bind((self.__myIPAddress, port))
             self.__openSocketPorts.add(port)
 
     def __receiver(self, msgLength: int) -> bytes:
@@ -70,7 +70,6 @@ class UdpSocket(BusPluginInterface):
         :return: Message in bytes format.
         """
         data = b''
-        print(f'Receive-size is: {msgLength}, max-size is: {self.__maxMessageSize}') # This line is just for testing and debugging.
         while len(data) < msgLength:
             # Varying receive-length to only receive the bytes of this specific message but max. self.__maxMessageSize!
             rcvSize = self.__maxMessageSize if (msgLength-len(data)) > self.__maxMessageSize else (msgLength - len(data))
@@ -80,3 +79,10 @@ class UdpSocket(BusPluginInterface):
                 break
             data += packet
         return data
+
+    def close(self) -> None:
+        """
+        Method for closing the socket.
+        """
+        self.sock.close()
+        self.__openSocketPorts.remove(self.__port)

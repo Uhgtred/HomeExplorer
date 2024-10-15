@@ -13,6 +13,6 @@ class UdpSocketConfig:
     messageSize: int
     port: int
     host: bool
-    HostIPAddress: str = 'localhost'
-    ClientIPAddress: str = ''
+    MyIPAddress: str = '192.168.178.36'
+    YourIPAddress: str = '192.168.178.44'
     busLibrary: socket = socket
