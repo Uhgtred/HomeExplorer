@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # @author Markus Kösters
+import json
 import pickle
 from typing import Protocol
 
@@ -79,20 +80,30 @@ class SocketEncoding(EncodingProtocol):
 class SocketEncodingPickle(EncodingProtocol):
 
     @staticmethod
-    def decode(message: any) -> str:
+    def decode(message: json) -> dict:
         """
         Method for decoding a message received from a socket.
         :param message: Message from socket that needs to be decoded.
         """
-        if isinstance(message, bytes):
-            message = pickle.loads(message)
+        print(f'message-length: {len(message)}')
+        print(f'last sign of the message is: {message[-1]}.')
+        print(f'message-type is: {type(message)}')
+        print(f'message is: {message}')
+        # if isinstance(message, bytes):
+        #     message = pickle.loads(message)
+        message = json.loads(message.decode())
         return message
 
-    def encode(self, message: str) -> bytes:
+    def encode(self, message: str) -> json:
         """
         Method for encoding a message that will be sent to a socket.
         :param message: Message that needs to be encoded.
         """
-        if not isinstance(message, bytes):
-            return pickle.dumps(message)
+        print(f'message-length: {len(message)}')
+        print(f'last sign of the message is: {message[-1]}.')
+        print(f'message-type is: {type(message)}')
+        print(f'message is: {message}')
+        # if not isinstance(message, bytes):
+        #     return pickle.dumps(message)
+        message = json.dumps(message).encode()
         return message

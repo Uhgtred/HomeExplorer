@@ -36,11 +36,16 @@ class BusFactory:
         return Bus(busPlugin, encoding)
 
     @staticmethod
-    def produceUDP_Transceiver(port: int, host: bool, pickle: bool = False, stub: bool = False) -> Bus:
+    def produceUDP_Transceiver(port: int, host: bool, pickle: bool = True, stub: bool = False, noEncoding: bool = False) -> Bus:
         """
         Method for creating an instance of an udp-socket.
-        :return:
+        :return: Bus-object.
+        Todo: don't use pickle anymore, it is not safe to use.
+        Todo: integrate noEncoding if needed.
         """
+        if noEncoding:
+            busPlugin: BusPluginInterface = BusPluginFactory.produceUdpSocketPlugin(host=host, port=port, stub=stub)
+            return Bus(busPlugin)
         encoding: EncodingProtocol = EncodingFactory.socketEncoding(pickle)
         busPlugin: BusPluginInterface = BusPluginFactory.produceUdpSocketPlugin(host=host, port=port, stub=stub)
         return Bus(busPlugin, encoding)

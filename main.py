@@ -5,6 +5,8 @@ import os
 
 import API
 import Runners
+from ActorControl import ActorController
+from ActorControl.ActorControlFactory import ActorControlFactory
 from BusTransactions.BusFactory import BusFactory
 from Events import EventManager
 from Video import VideoController, VideoControllerBuilder
@@ -49,22 +51,19 @@ class Main:
         """
         Method that sets up connection and communication to the Arduino.
         """
-        remoteControlSocket = BusFactory.produceUDP_Transceiver(host=True, port=self.__ports.get('controllerPort'), pickle=True)
-        arduinoSerial = BusFactory.produceSerialTransceiver()
+        remoteControlSocket = BusFactory.produceUDP_Transceiver(host=True, port=self.__ports.get('controllerPort'))
+        actorController = ActorControlFactory.produceActorControl()
         remoteControlEvent = EventManager.produceEvent('controllerEvent')
-        remoteControlEvent.subscribe(arduinoSerial.writeSingleMessage)
+        remoteControlEvent.subscribe(actorController.processInput)
+        remoteControlEvent.subscribe(self.print_)
         self.__asyncRunner.addTask(remoteControlSocket.readBusUntilStopFlag, remoteControlEvent.notifySubscribers)
-        self.logger()
 
     def __apiSetup(self):
         apiObject = API.Main(port=self.__ports.get('APIPort'))
         apiObject.runServer()
 
-    def logger(self):
-        EventManager().subscribeEvent('controllerEvent', self.print_)
-
-    def print_(self,messsage):
-        print(messsage)
+    def print_(self, message):
+        print(message)
 
     def __videoControl(self) -> None:
         """
