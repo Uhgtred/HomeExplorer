@@ -77,7 +77,7 @@ class SocketEncoding(EncodingProtocol):
         return message
 
 
-class SocketEncodingPickle(EncodingProtocol):
+class SocketEncodingJson(EncodingProtocol):
 
     @staticmethod
     def decode(message: json) -> dict:
@@ -85,13 +85,17 @@ class SocketEncodingPickle(EncodingProtocol):
         Method for decoding a message received from a socket.
         :param message: Message from socket that needs to be decoded.
         """
-        print(f'message-length: {len(message)}')
-        print(f'last sign of the message is: {message[-1]}.')
-        print(f'message-type is: {type(message)}')
-        print(f'message is: {message}')
+        # print(f'message-length: {len(message)}')
+        # print(f'last sign of the message is: {message[-1]}.')
+        # print(f'message-type is: {type(message)}')
+        # print(f'message is: {message}')
         # if isinstance(message, bytes):
         #     message = pickle.loads(message)
-        message = json.loads(message.decode())
+        try:
+            message = json.loads(message.decode())
+        except Exception as e:
+            print(e)
+        print(f'message received is: {message}')
         return message
 
     def encode(self, message: str) -> json:
@@ -99,11 +103,12 @@ class SocketEncodingPickle(EncodingProtocol):
         Method for encoding a message that will be sent to a socket.
         :param message: Message that needs to be encoded.
         """
-        print(f'message-length: {len(message)}')
-        print(f'last sign of the message is: {message[-1]}.')
-        print(f'message-type is: {type(message)}')
-        print(f'message is: {message}')
+        # print(f'message-length: {len(message)}')
+        # print(f'last sign of the message is: {message[-1]}.')
+        # print(f'message-type is: {type(message)}')
+        # print(f'message is: {message}')
         # if not isinstance(message, bytes):
         #     return pickle.dumps(message)
         message = json.dumps(message).encode()
+        print(f'message sent is: {message}')
         return message

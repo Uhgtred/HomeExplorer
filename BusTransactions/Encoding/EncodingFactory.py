@@ -16,6 +16,6 @@ class EncodingFactory:
     @staticmethod
     def socketEncoding(pickle=False):
         if pickle:
-            return BusEncodings.SocketEncodingPickle()
+            return BusEncodings.SocketEncodingJson()
         else:
             return BusEncodings.SocketEncoding()
