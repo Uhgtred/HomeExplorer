@@ -73,11 +73,14 @@ class UdpSocket(BusPluginInterface):
         while len(data) < msgLength:
             # Varying receive-length to only receive the bytes of this specific message but max. self.__maxMessageSize!
             rcvSize = self.__maxMessageSize if (msgLength - len(data)) > self.__maxMessageSize else (msgLength - len(data))
+            print(f'Receiving: {rcvSize} bytes. Missing bytes: {msgLength - len(data)}')
             # receiving dynamic size of packets until every byte has been received
             packet = self.sock.recvfrom(rcvSize)
+            print(f'Information contained in the received Packet: {packet}, Package-length: {len(packet)}')
             if not packet[0]:
                 break
             data += packet[0]
+        print(f'The total length of the data that has been received: {len(data)}, Data received: {data}')
         return data
 
     def close(self) -> None:
