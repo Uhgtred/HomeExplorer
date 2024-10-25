@@ -27,7 +27,7 @@ class UdpSocket(BusPluginInterface):
         :return: Message read from the UDP socket.
         """
         headerLength = struct.calcsize('Q') # Todo: This is not a real header for udp. look at this: https://abdesol.medium.com/udp-protocol-with-a-header-implementation-in-python-b3d8dae9a74b
-        header, data = self.__receiver(1024, headerLength)
+        header, data = self.__receiver(self.__maxMessageSize, headerLength)
         return data
 
     def writeBus(self, message: bytes) -> None:
@@ -48,10 +48,9 @@ class UdpSocket(BusPluginInterface):
         """
         # dynamically providing socket-ports for requested sockets.
         if port in self.__openSocketPorts:
-            raise BaseException('Port already in use')
             # check if the busLibrary-object has already been instanced
+            raise BaseException('Port already in use')
         self.sock = sock.socket(sock.AF_INET, sock.SOCK_DGRAM)
-        # self.sock = sock.socket(sock.AF_INET, sock.SOCK_DGRAM)
         if host:
             self.sock.bind((self.__myIPAddress, port))
             self.__openSocketPorts.add(port)
