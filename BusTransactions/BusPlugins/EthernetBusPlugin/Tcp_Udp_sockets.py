@@ -27,11 +27,13 @@ class UdpSocket(BusPluginInterface):
         :return: Message read from the UDP socket.
         """
         # --- Receiving header containing message-length --- #
-        headerLength = struct.calcsize('Q')
+        headerLength = struct.calcsize('Q') # Todo: Since this is always the same, it could be better to define it in the init-method
         # running loop until the size of message-length (headerLength (8 byte)) has been reached
         msgLength = self.__receiver(headerLength)
+        print(f'Message-length that is pre-set: {msgLength}')
         # unpacking the message-length
         msgLength = int(struct.unpack('Q', msgLength)[0])
+        print(f'Message-length that has been received from the other side: {msgLength}')
         # --- Receiving header containing message-data --- #
         msgData = self.__receiver(msgLength)
         return msgData
@@ -77,6 +79,7 @@ class UdpSocket(BusPluginInterface):
             # receiving dynamic size of packets until every byte has been received
             packet = self.sock.recvfrom(rcvSize)
             print(f'Information contained in the received Packet: {packet}, Package-length: {len(packet)}')
+            # Todo: Bug could be in line 81. Packet is a list. But is it still a list, when the address has already been received and there is only data left to receive?
             if not packet[0]:
                 break
             data += packet[0]
