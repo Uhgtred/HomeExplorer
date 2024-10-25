@@ -26,17 +26,9 @@ class UdpSocket(BusPluginInterface):
         Method that reads the UDP socket.
         :return: Message read from the UDP socket.
         """
-        # --- Receiving header containing message-length --- #
-        headerLength = struct.calcsize('Q') # Todo: Since this is always the same, it could be better to define it in the init-method
-        # running loop until the size of message-length (headerLength (8 byte)) has been reached
-        msgLength = self.__receiver(headerLength)
-        print(f'Message-length that is pre-set: {msgLength}')
-        # unpacking the message-length
-        msgLength = int(struct.unpack('Q', msgLength)[0])
-        print(f'Message-length that has been received from the other side: {msgLength}')
-        # --- Receiving header containing message-data --- #
-        msgData = self.__receiver(msgLength)
-        return msgData
+        headerLength = struct.calcsize('Q') # Todo: This is not a real header for udp. look at this: https://abdesol.medium.com/udp-protocol-with-a-header-implementation-in-python-b3d8dae9a74b
+        header, data = self.__receiver(1024, headerLength)
+        return data
 
     def writeBus(self, message: bytes) -> None:
         """
@@ -64,27 +56,16 @@ class UdpSocket(BusPluginInterface):
             self.sock.bind((self.__myIPAddress, port))
             self.__openSocketPorts.add(port)
 
-    def __receiver(self, msgLength: int) -> bytes:
+    def __receiver(self, msgLength: int, headerLength: int | None) -> tuple[bytes, bytes]:
         """
         Method that reads from a socket either message-header or message-body.
         :param msgLength: Length of the message that will be read from the socket.
                             Length of the body is represented by the header, which has length(struct.calcsize('Q')).
         :return: Message in bytes format.
         """
-        data = b''
-        while len(data) < msgLength:
-            # Varying receive-length to only receive the bytes of this specific message but max. self.__maxMessageSize!
-            rcvSize = self.__maxMessageSize if (msgLength - len(data)) > self.__maxMessageSize else (msgLength - len(data))
-            print(f'Receiving: {rcvSize} bytes. Missing bytes: {msgLength - len(data)}')
-            # receiving dynamic size of packets until every byte has been received
-            packet = self.sock.recvfrom(rcvSize)
-            print(f'Information contained in the received Packet: {packet}, Package-length: {len(packet)}')
-            # Todo: Bug could be in line 81. Packet is a list. But is it still a list, when the address has already been received and there is only data left to receive?
-            if not packet[0]:
-                break
-            data += packet[0]
-        print(f'The total length of the data that has been received: {len(data)}, Data received: {data}')
-        return data
+        data, address = self.sock.recvfrom(1024)
+        header, data = data[:headerLength], data[headerLength:]
+        return header, data
 
     def close(self) -> None:
         """
