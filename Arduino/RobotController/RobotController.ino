@@ -1,5 +1,5 @@
 #include <Servo.h>
-#include <ArduinoJson.h>
+#include "libraries/ArduinoJson/ArduinoJson.h"
 
 /*
 Declaring and defining Pins

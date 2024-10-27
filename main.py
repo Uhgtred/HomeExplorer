@@ -49,7 +49,7 @@ class Main:
 
     def __steeringControl(self) -> None:
         """
-        Method that sets up connection and communication to the Arduino.
+        Method that sets up connection and communication to the _.
         """
         remoteControlSocket = BusFactory.produceUDP_Transceiver(host=True, port=self.__ports.get('controllerPort'))
         actorController = ActorControlFactory.produceActorControl()
