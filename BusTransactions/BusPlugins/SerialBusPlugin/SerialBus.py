@@ -10,7 +10,7 @@ from ..BusPluginInterface import BusPluginInterface
 
 class SerialBus(BusPluginInterface):
     """
-    Class for handling a serial-connection to an Arduino. And reading/writing messages to it.
+    Class for handling a serial-connection to an _. And reading/writing messages to it.
     """
 
     def __init__(self, config: SerialBusConfig):
