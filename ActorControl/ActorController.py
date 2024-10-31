@@ -43,7 +43,7 @@ class ActorController(ActorControlInterface):
         if len(methodSignature.parameters) != numberOfArgs:
             raise TypeError(f'Method: {method} shall accept {numberOfArgs} argument(s), got: {len(methodSignature.parameters)}!')
 
-    def processInput(self, buttons: ButtonsInterface) -> None:
+    def processInput(self, buttons: dict) -> None:
         """
         Method to get the content of a buttons-object.
         """
@@ -51,7 +51,7 @@ class ActorController(ActorControlInterface):
         jsonMessage = self._transformValuesToJson(buttonDict)
         self.__transmitterMethod(jsonMessage)
 
-    def _getButtonDict(self, buttons: ButtonsInterface) -> dict:
+    def _getButtonDict(self, buttons: dict) -> dict:
         """
         Method for retrieving button-data from a button-object.
         :param buttons: Button-object that contains button information and state.
