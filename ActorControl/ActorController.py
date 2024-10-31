@@ -57,10 +57,7 @@ class ActorController(ActorControlInterface):
         :param buttons: Button-object that contains button information and state.
         :return: Dictionary containing button information and state.
         """
-        if callable(buttons):
-            buttons = buttons()
-        buttonDict: dict = buttons.getButtonDict
-        buttonDict = self.__remapButtons(buttonDict, ButtonConfig().xBox)
+        buttonDict = self.__remapButtons(buttons, ButtonConfig().xBox)
         return buttonDict
 
     @staticmethod
