@@ -37,3 +37,19 @@ class SerializerJoblib(SerializerInterface):
             """
         return joblib.load(filePath)
 
+# alternative serialization:
+    """
+    Todo: set this up or delete it
+      
+    from PIL import Image
+    import io
+
+    # Convert array to image and save as lossless PNG
+    image = Image.fromarray(array)
+    buffer = io.BytesIO()
+    image.save(buffer, format="JPEG", quality = 85) 
+    data_bytes = buffer.getvalue()
+
+    # Send over UDP
+    sock.sendto(data_bytes, (host, port))
+    """
