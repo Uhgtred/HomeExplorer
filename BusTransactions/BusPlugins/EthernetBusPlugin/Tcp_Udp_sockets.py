@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # @author: Markus Kösters
+
 import atexit
 import socket
 import struct
@@ -27,7 +28,7 @@ class UdpSocket(BusPluginInterface):
         :return: Message read from the UDP socket.
         """
         headerLength = struct.calcsize('Q') # Todo: This is not a real header for udp. look at this: https://abdesol.medium.com/udp-protocol-with-a-header-implementation-in-python-b3d8dae9a74b
-        header, data = self.__receiver(self.__maxMessageSize, headerLength)
+        header, data = self.__receiver(headerLength)
         return data
 
     def writeBus(self, message: bytes) -> None:
@@ -55,15 +56,15 @@ class UdpSocket(BusPluginInterface):
             self.sock.bind((self.__myIPAddress, port))
             self.__openSocketPorts.add(port)
 
-    def __receiver(self, msgLength: int, headerLength: int | None) -> tuple[bytes, bytes]:
+    def __receiver(self, headerLength: int | None) -> tuple[bytes, bytes]:
         """
         Method that reads from a socket either message-header or message-body.
         :param msgLength: Length of the message that will be read from the socket.
                             Length of the body is represented by the header, which has length(struct.calcsize('Q')).
         :return: Message in bytes format.
         """
-        data, address = self.sock.recvfrom(1024)
-        header, data = data[:headerLength], data[headerLength:]
+        message, address = self.sock.recvfrom(self.__maxMessageSize)
+        header, data = message[:headerLength], message[headerLength:]
         return header, data
 
     def close(self) -> None:
