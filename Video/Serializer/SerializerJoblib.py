@@ -44,10 +44,10 @@ class SerializerJoblib(SerializerInterface):
     from PIL import Image
     import io
 
-    # Convert array to image and save as lossless PNG
+    # Convert array to image and save as lossy but fast jpeg
     image = Image.fromarray(array)
     buffer = io.BytesIO()
-    image.save(buffer, format="JPEG", quality = 85) 
+    image.save(buffer, format="JPEG", quality = 85) # to use png instead of jpeg, just put "PNG" instead and delete the "quality" kwarg
     data_bytes = buffer.getvalue()
 
     # Send over UDP
