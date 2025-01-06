@@ -44,14 +44,11 @@ void setup() {
 }
 
 void loop() {
-    //Setting the motor-pins low in each iteration. If something gets stuck or communication breaks robot will stop!
-    // SetMotorsZero();
     readSerialJson();
     //Sending transformed data to motors and servos
     MotorControl();
     //ServoControl();
     //Serial.println(String(serialByteData[0]) + ' ' + String(serialByteData[2]));
-    // delay(50);
 }
 
 int readJsonValue(String key){
@@ -93,6 +90,7 @@ void MotorControl(){
     RMotorValue = readJsonValue("RightMotor");
     LMotorValue = readJsonValue("LeftMotor");
     //Motor turns clockwise if value is greater 0 else turns counterclockwise. Those are different pins though.
+    // Todo: the lines 94-116 can be moved to a separate function to make it more modular!
     if (RMotorValue < 0){
         analogWrite(RMotorRPin, abs(RMotorValue));
 //        Serial.println(RMotorValue);  // debugging-line
@@ -102,7 +100,7 @@ void MotorControl(){
 //        Serial.println(RMotorValue);  // debugging-line
     }
     else{
-        SetLeftMotorsZero();
+        SetRightMotorsZero();
     }
     //data[3] is bool and decides if LMotor is turning clockwise or counterclockwise
     if (LMotorValue < 0){
@@ -114,7 +112,7 @@ void MotorControl(){
 //        Serial.println(LMotorValue);  // debugging-line
     }
     else {
-      SetRightMotorsZero();
+        SetLeftMotorsZero();
     }
 }
 
