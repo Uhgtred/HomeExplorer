@@ -89,30 +89,51 @@ void MotorControl(){
     //reading the data from array which is being provided through the serial-connection
     RMotorValue = readJsonValue("RightMotor");
     LMotorValue = readJsonValue("LeftMotor");
-    //Motor turns clockwise if value is greater 0 else turns counterclockwise. Those are different pins though.
-    // Todo: the lines 94-116 can be moved to a separate function to make it more modular!
-    if (RMotorValue < 0){
-        analogWrite(RMotorRPin, abs(RMotorValue));
-//        Serial.println(RMotorValue);  // debugging-line
-    }
-    else if(RMotorValue > 0){
-        analogWrite(RMotorFPin, RMotorValue);
-//        Serial.println(RMotorValue);  // debugging-line
-    }
-    else{
-        SetRightMotorsZero();
-    }
-    //data[3] is bool and decides if LMotor is turning clockwise or counterclockwise
-    if (LMotorValue < 0){
-        analogWrite(LMotorRPin, abs(LMotorValue));
+    // Todo: Test this code!
+    _evaluateMotorDirection(RMotorFPin, RMotorRPin, RMotorValue);
+    _evaluateMotorDirection(LMotorFPin, LMotorRPin, LMotorValue);
+    // Todo: Delete this after testing.
+//     if (RMotorValue < 0){
+//         analogWrite(RMotorRPin, abs(RMotorValue));
+// //        Serial.println(RMotorValue);  // debugging-line
+//     }
+//     else if(RMotorValue > 0){
+//         analogWrite(RMotorFPin, RMotorValue);
+// //        Serial.println(RMotorValue);  // debugging-line
+//     }
+//     else{
+//         SetRightMotorsZero();
+//     }
+//     //data[3] is bool and decides if LMotor is turning clockwise or counterclockwise
+//     if (LMotorValue < 0){
+//         analogWrite(LMotorRPin, abs(LMotorValue));
+// //        Serial.println(LMotorValue);  // debugging-line
+//     }
+//     else if (LMotorValue > 0){
+//         analogWrite(LMotorFPin, LMotorValue);
+// //        Serial.println(LMotorValue);  // debugging-line
+//     }
+//     else {
+//         SetLeftMotorsZero();
+//     }
+}
+
+void _evaluateMotorDirection(unsigned short forwardMotorPin,unsigned short rewardMotorPin, int motorValue){
+    /*
+    Method for turning a motor forward or backward.
+    :param motorPin: the pin of the motor that will be controlled.
+    :param motorValue: the value of the motor, deciding the speed and direction of the motor (<0 backward, >0 forward)
+    */
+    if (motorValue < 0){
+        analogWrite(motorPin, abs(motorValue));
 //        Serial.println(LMotorValue);  // debugging-line
     }
-    else if (LMotorValue > 0){
-        analogWrite(LMotorFPin, LMotorValue);
+    else if (motorValue > 0){
+        analogWrite(motorPin, motorValue);
 //        Serial.println(LMotorValue);  // debugging-line
     }
     else {
-        SetLeftMotorsZero();
+        SetMotorsZero();
     }
 }
 
@@ -121,10 +142,23 @@ void ServoControl() {
     Moving servos with the help of a library which talks to the servos through PWM
     */
     //Setting the values from Json-document which is being provided through the serial-connection
+    // Todo: The reading of the camera-servo values should not be inside this method. For better modularity, this reading should happen inside another method. maybe even it's own method.
     int CameraXValue = readJsonValue("CameraXServo");
-    long int RStickXValue;
-    //fitting the values from -255 - 255 to 0-180°
-    RStickXValue = map(RStickXValue, -254, 254, 0, 180);
-    //Turning the servos
-    XServo.write(RStickXValue);
+    _evaluateServoDirection(XServo, CameraXValue);
+//     int RStickXValue;
+//     //fitting the values from -255 - 255 to 0-180°
+//     RStickXValue = map(RStickXValue, -254, 254, 0, 180);
+//     //Turning the servos
+//     XServo.write(RStickXValue);
+}
+
+void _evaluateServoDirection(Servo servo, int servoValue){
+    /*
+    Method for turning a servo by an angle, that is being represented through an integer (-254 to 255).
+    :param servo: Servo that will be controlled.
+    :param servoValue: Value which will be translated into an angle.
+    */
+    // Todo: Test this code!
+    int valueMappedToDegree = map(servoValue, -254, 255, 0, 180);
+    servo.write(valueMappedToDegree);
 }
