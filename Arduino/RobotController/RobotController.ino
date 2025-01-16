@@ -125,11 +125,11 @@ void _evaluateMotorDirection(unsigned short forwardMotorPin,unsigned short rewar
     :param motorValue: the value of the motor, deciding the speed and direction of the motor (<0 backward, >0 forward)
     */
     if (motorValue < 0){
-        analogWrite(motorPin, abs(motorValue));
+        analogWrite(rewardMotorPin, abs(motorValue));
 //        Serial.println(LMotorValue);  // debugging-line
     }
     else if (motorValue > 0){
-        analogWrite(motorPin, motorValue);
+        analogWrite(forwardMotorPin, motorValue);
 //        Serial.println(LMotorValue);  // debugging-line
     }
     else {
