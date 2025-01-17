@@ -47,7 +47,7 @@ void loop() {
     readSerialJson();
     //Sending transformed data to motors and servos
     MotorControl();
-    //ServoControl();
+    ServoControl();
     //Serial.println(String(serialByteData[0]) + ' ' + String(serialByteData[2]));
 }
 
@@ -89,33 +89,8 @@ void MotorControl(){
     //reading the data from array which is being provided through the serial-connection
     RMotorValue = readJsonValue("RightMotor");
     LMotorValue = readJsonValue("LeftMotor");
-    // Todo: Test this code!
     _evaluateMotorDirection(RMotorFPin, RMotorRPin, RMotorValue);
     _evaluateMotorDirection(LMotorFPin, LMotorRPin, LMotorValue);
-    // Todo: Delete this after testing.
-//     if (RMotorValue < 0){
-//         analogWrite(RMotorRPin, abs(RMotorValue));
-// //        Serial.println(RMotorValue);  // debugging-line
-//     }
-//     else if(RMotorValue > 0){
-//         analogWrite(RMotorFPin, RMotorValue);
-// //        Serial.println(RMotorValue);  // debugging-line
-//     }
-//     else{
-//         SetRightMotorsZero();
-//     }
-//     //data[3] is bool and decides if LMotor is turning clockwise or counterclockwise
-//     if (LMotorValue < 0){
-//         analogWrite(LMotorRPin, abs(LMotorValue));
-// //        Serial.println(LMotorValue);  // debugging-line
-//     }
-//     else if (LMotorValue > 0){
-//         analogWrite(LMotorFPin, LMotorValue);
-// //        Serial.println(LMotorValue);  // debugging-line
-//     }
-//     else {
-//         SetLeftMotorsZero();
-//     }
 }
 
 void _evaluateMotorDirection(unsigned short forwardMotorPin,unsigned short rewardMotorPin, int motorValue){
