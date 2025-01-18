@@ -9,5 +9,5 @@ class ButtonConfig:
         '2': 'LeftMotor',
         '5': 'RightMotor',
         '3': 'CameraXServo',
-        '4': 'CameraYServo'
+        '4': 'CameraZServo'
     }))

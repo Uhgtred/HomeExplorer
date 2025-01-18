@@ -117,23 +117,18 @@ void ServoControl() {
     Moving servos with the help of a library which talks to the servos through PWM
     */
     //Setting the values from Json-document which is being provided through the serial-connection
-    // Todo: The reading of the camera-servo values should not be inside this method. For better modularity, this reading should happen inside another method. maybe even it's own method.
     int CameraXValue = readJsonValue("CameraXServo");
+    int CameraZValue = readJsonValue("CameraZServo");
     _evaluateServoDirection(XServo, CameraXValue);
-//     int RStickXValue;
-//     //fitting the values from -255 - 255 to 0-180°
-//     RStickXValue = map(RStickXValue, -254, 254, 0, 180);
-//     //Turning the servos
-//     XServo.write(RStickXValue);
+    _evaluateServoDirection(ZServo, CameraZValue);
 }
 
 void _evaluateServoDirection(Servo servo, int servoValue){
     /*
-    Method for turning a servo by an angle, that is being represented through an integer (-254 to 255).
+    Method for turning a servo by an angle, that is being represented through an integer (-32768 to 32767).
     :param servo: Servo that will be controlled.
     :param servoValue: Value which will be translated into an angle.
     */
-    // Todo: Test this code!
-    int valueMappedToDegree = map(servoValue, -254, 255, 0, 180);
+    int valueMappedToDegree = map(servoValue, -32768, 32767, 0, 180);
     servo.write(valueMappedToDegree);
 }
