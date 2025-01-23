@@ -34,7 +34,7 @@ class Main:
         execution in both runners.
 
         Attributes:
-            __asyncRunner: An instance of `AsyncRunner` for handling asynchronous
+            __threadRunner: An instance of `AsyncRunner` for handling asynchronous
                 tasks.
             __threadRunner: An instance of `ThreadRunner` for handling threaded tasks.
 
@@ -44,25 +44,26 @@ class Main:
         """
         # Todo: After Systemtest check the versions of the code in BusTransactions repository vs the versions in HomeExplorer and RobotRemote
         # Most importantly, there needs to be the close function inside the all ethernet plugins
-        self.__asyncRunner = Runners.asyncRunner.AsyncRunner()
+        print('Starting initialization process...')
         self.__threadRunner = Runners.threadRunner.ThreadRunner()
         self.__setup()
-        self.__asyncRunner.runTasks()
-        self.__threadRunner.runTasks()
+        print('Initialization process complete.')
 
     def __setup(self) -> None:
         """
-        Sets up the components required for the system by initializing
-        steering control, video control, and API setup processes. If any
-        step fails, throws a BaseException with an appropriate error message.
+            Sets up the components required for the system by initializing
+            steering control, video control, and API setup processes. If any
+            step fails, throws a BaseException with an appropriate error message.
 
-        :raises BaseException: If an error occurs during setup, it wraps and
-            re-raises the exception with a descriptive message.
-        """
+            :raises BaseException: If an error occurs during setup, it wraps and
+                re-raises the exception with a descriptive message.
+            """
         try:
             self.__steeringControl()
             self.__videoControl()
-            self.__apiSetup()
+            # Todo: activate proper use of the api for maintainability.
+            # self.__apiSetup()
+            self.__threadRunner.runTasks()
         except Exception as e:
             raise BaseException(f'An error occurred during setup: {e}')
 
@@ -77,11 +78,13 @@ class Main:
         an asynchronous task to continuously read data from the remote control socket
         and notify all subscribed components when new data is received.
         """
+        print('Setting up steering control...')
         remoteControlSocket = BusFactory.produceUDP_Transceiver(host=True, port=self.__ports.get('controllerPort'))
         actorController = ActorControlFactory.produceActorControl()
         remoteControlEvent = EventManager.produceEvent('controllerEvent')
         remoteControlEvent.subscribe(actorController.processInput)
-        self.__asyncRunner.addTask(remoteControlSocket.readBusUntilStopFlag, remoteControlEvent.notifySubscribers)
+        self.__threadRunner.addTask(remoteControlSocket.readBusUntilStopFlag, remoteControlEvent.notifySubscribers)
+        print('Steering control setup complete.')
 
     def __apiSetup(self):
         """
@@ -93,8 +96,10 @@ class Main:
 
         :raises KeyError: If 'APIPort' key is not found in the `self.__ports` dictionary.
         """
+        print('Setting up API server...')
         apiObject = API.Main(port=self.__ports.get('APIPort'))
         apiObject.runServer()
+        print('API server started.')
 
     def __videoControl(self) -> None:
         """
@@ -104,11 +109,13 @@ class Main:
 
         :raises KeyError: If the 'videoPort' key is missing in the `self.__ports` dictionary.
         """
+        print('Setting up video streaming...')
         camera = VideoCameraFactory.produceDefaultCameraInstance()
         serializer = SerializerFactory.produceSerializationJoblib()
         transmitter = VideoTransmitterFactory.produceDefaultVideoTransmitter(self.__ports.get('videoPort'))
         videoController = VideoControllerBuilder().addCamera(camera).addSerialization(serializer).addTransmission(transmitter).build()
         self.__threadRunner.addTask(videoController.start)
+        print('Video streaming setup complete.')
 
 
 if __name__ == '__main__':

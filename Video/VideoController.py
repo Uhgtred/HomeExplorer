@@ -14,8 +14,9 @@ class VideoController:
     Class for controlling video.
     """
 
+    isRunning: bool = False
+
     def __init__(self):
-        self.isRunning = False
         self.__camera = None
         self.__filtering = None
         self.__serialization = None

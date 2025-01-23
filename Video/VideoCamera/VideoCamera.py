@@ -13,9 +13,9 @@ class VideoCamera(VideoCameraInterface):
 
     def __init__(self, config: VideoCameraConfig):
         self.__cam: callable = config.cameraModule
-        self.__videoFPS: float = float(1 / config.FPS)
+        self.__videoFPS: float = float((1 / abs(config.FPS)) if config.FPS > 0 else 15)
         self.__resolution: tuple[int, int] = config.Resolution
-        self.__runner = Runners.threadRunner.ThreadRunner()
+        self.__runner = Runners.threadRunner.ThreadRunner() # Todo: this could also be passed through by the main-program.
         self.__setupCamera(config.cameraModule, config.Port)
 
     def __setupCamera(self, cam: cv2.VideoCapture, port: int) -> None:
@@ -66,12 +66,12 @@ class VideoCamera(VideoCameraInterface):
         return int(1/self.__videoFPS)
 
     @FPS.setter
-    def FPS(self, fps: int) -> None:
+    def FPS(self, framesPerSecond: int) -> None:
         """
         Setter-Method for setting the camera-FPS.
-        :param fps: Integer representing the camera-FPS.
+        :param framesPerSecond: Integer representing the camera-FPS.
         """
-        self.__videoFPS = float(1 / fps)
+        self.__videoFPS = float(1 / abs(framesPerSecond))
 
     def readCameraInLoop(self, callbackMethod: any) -> None:
         """
