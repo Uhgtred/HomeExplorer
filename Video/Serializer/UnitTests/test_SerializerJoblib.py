@@ -20,12 +20,12 @@ class TestSerializerJoblib(unittest.TestCase):
         self.data = np.array([1, 2, 3, 4, 5])
 
     def test_serialize(self):
-        file_path = self.serializer.serialize(self.data)
+        file_path = self.serializer.serializeFile(self.data)
         self.assertTrue(os.path.isfile(file_path))
         os.remove(file_path)
 
     def test_deserialize(self):
-        self.serializer.serialize(self.data)
+        self.serializer.serializeFile(self.data)
         deserialized_data = self.serializer.deserialize(self.config.storageFile)
         np.testing.assert_array_equal(deserialized_data, self.data)
         os.remove(self.config.storageFile)

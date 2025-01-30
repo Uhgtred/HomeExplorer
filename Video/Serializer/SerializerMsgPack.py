@@ -1,0 +1,48 @@
+#!/usr/bin/env python3
+# @author: Markus Kösters
+import cv2
+import msgpack
+import numpy
+
+from Video.Serializer import SerializerInterface
+
+
+class SerializerMsgPack(SerializerInterface):
+
+    def __init__(self):
+        pass
+
+    def serializeRawData(self, data: numpy.ndarray) -> bytes[dict[str, bytes]]:
+        """
+        Serialize raw image data into a compressed byte format.
+
+        This function takes a NumPy ndarray representing image data, compresses it
+        using JPEG encoding, and serializes it into a compact byte format using msgpack.
+        The result includes the compressed image data in encoded byte array format,
+        suitable for network transmission or storage.
+
+        :param data: A NumPy ndarray containing raw image data to be serialized.
+        :type data: numpy.ndarray
+        :return: A serialized byte object containing the compressed image data in
+            msgpack format.
+        :rtype: bytes
+        """
+        # Todo: in the documentation the value of "returnvalue" is not specified. Check what comes ouf of there, expect boolean.
+        returnValue, buffer = cv2.imencode('.jpg', data)
+        serializedData: bytes = msgpack.packb({'frameData': buffer.tobytes()})
+        return serializedData
+
+    def serializeFile(self, data: any) -> str:
+        """
+        This method is not available for this serializer.
+        """
+        raise NotImplementedError
+
+
+    def deserialize(self, data: bytes) -> any:
+        payload = msgpack.unpackb(data)
+        frameData = payload.get(b'frameData')  # Access the frame
+        frameData = numpy.frombuffer(frameData, dtype=numpy.uint8) # or numpy.ndarray?
+        # Todo: i have no idea what cv2.imdecode is returning. The documentations are really bad for opencv.
+        imageframe = cv2.imdecode(frameData, cv2.IMREAD_COLOR)
+        return imageframe

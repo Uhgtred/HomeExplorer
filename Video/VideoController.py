@@ -120,7 +120,7 @@ class VideoController:
         :return: Serialized image file-path.
         """
         if self.__serialization is not None:
-            return self.__serialization.serialize(imageFrame)
+            return self.__serialization.serializeFile(imageFrame)
         else:
             raise Exception('Unable to serialize Image Frame. No transmission object set. Unserialized Image Frame '
                             'cannot be transmitted.')

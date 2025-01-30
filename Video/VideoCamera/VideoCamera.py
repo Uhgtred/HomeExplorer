@@ -27,7 +27,7 @@ class VideoCamera(VideoCameraInterface):
         # opening camera if the object is callable (not instanced yet).
         try:
             if callable(cam):
-                self.__cam = cam(port)
+                self.__cam = cam(port, cv2.CAP_V4L2) # Todo: using the default camera interface instead of gstreamer. Gstreamer could be better though.
             self.__setResolution()
         except Exception as e:
             raise BaseException(f'Error while trying to setup camera with port {port}: {e}')
@@ -51,8 +51,10 @@ class VideoCamera(VideoCameraInterface):
         for element in resolution:
             if not isinstance(element, int):
                 raise TypeError("Each element of resolution must be an integer!")
-        self.__resolution = [0, 0]  # make sure that the list exists with 2 values
+        self.__resolution = [0, 0]  # initializing the list with 2 values.
+        # Assuming the higher value is the X-Axis
         self.__resolution[0] = max(resolution)
+        # Assuming the lower value is the Y-Axis.
         self.__resolution[1] = min(resolution)
         # Setting resolution on camera-instance when setting the values of the variables
         self.__setResolution()

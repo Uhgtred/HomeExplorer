@@ -19,7 +19,7 @@ class SerializerJoblib(SerializerInterface):
     def __init__(self, config: SerializerConfig):
         self.__imageFile = config.storageFile
 
-    def serialize(self, imageFrame: numpy.ndarray) -> str:
+    def serializeFile(self, imageFrame: numpy.ndarray) -> str:
         """
         Method for serialization of imageData.
         :param imageFrame: Image data as numpy array that will be serialized.
