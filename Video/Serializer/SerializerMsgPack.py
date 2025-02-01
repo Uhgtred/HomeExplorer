@@ -9,10 +9,7 @@ from Video.Serializer import SerializerInterface
 
 class SerializerMsgPack(SerializerInterface):
 
-    def __init__(self):
-        pass
-
-    def serializeRawData(self, data: numpy.ndarray) -> bytes[dict[str, bytes]]:
+    def serialize(self, imageData: numpy.ndarray = None, filePath: str = '') -> bytes[dict[str, bytes]]:
         """
         Serialize raw image data into a compressed byte format.
 
@@ -21,23 +18,21 @@ class SerializerMsgPack(SerializerInterface):
         The result includes the compressed image data in encoded byte array format,
         suitable for network transmission or storage.
 
-        :param data: A NumPy ndarray containing raw image data to be serialized.
-        :type data: numpy.ndarray
+        :param imageData: A NumPy ndarray containing raw image data to be serialized.
+        :type imageData: numpy.ndarray
+        :param filePath: A file path to an image file to be serialized (not valid for this implementation).
+        :type filePath: str
         :return: A serialized byte object containing the compressed image data in
             msgpack format.
         :rtype: bytes
         """
+        super().serialize(imageData)
+        if filePath != '':
+            print('[Warning]: SerializerMsgPack does not support file-paths.')
         # Todo: in the documentation the value of "returnvalue" is not specified. Check what comes ouf of there, expect boolean.
-        returnValue, buffer = cv2.imencode('.jpg', data)
+        returnValue, buffer = cv2.imencode('.jpg', imageData)
         serializedData: bytes = msgpack.packb({'frameData': buffer.tobytes()})
         return serializedData
-
-    def serializeFile(self, data: any) -> str:
-        """
-        This method is not available for this serializer.
-        """
-        raise NotImplementedError
-
 
     def deserialize(self, data: bytes) -> any:
         payload = msgpack.unpackb(data)

@@ -7,18 +7,17 @@ import numpy
 
 class SerializerInterface(ABC):
 
-    """
-    Todo: this interface obviously does not make that much sense, when I have to adapt it for every class. I shoult think about keeping it or throwing it away.
-            Maybe make SerializerFacade that handles the serialization of all data-types. Or is that overcomplicated?
-    """
-
     @abstractmethod
-    def serializeFile(self, imageData: numpy.ndarray) -> str:
+    def serialize(self, imageData: numpy.ndarray = None, filePath: str = '') -> bytes[dict[str, bytes]] | str:
         """
-        Interface for serialization of image-arrays.
+        Interface for serialization of image-arrays. Selectable whether to use the image-data or a file-path.
+        Please start your implementation with super().serialize(...) to correctly handle exceptions.
         :param imageData: Array containing image-data that will be serialized.
-        :return: File-path of serialized image.
+        :param filePath: File path of the image-file that will be serialized.
+        :return: Bytes containing serialized image-data.
         """
+        if imageData is None and filePath == '':
+            raise ValueError("Either imageData or filePath must be provided.")
 
     @abstractmethod
     def deserialize(self, imageData: bytes) -> numpy.ndarray:
@@ -27,10 +26,3 @@ class SerializerInterface(ABC):
         :param imageData: Serialized image-data.
         :return: np.ndarray containing image-data.
         """
-
-def __init_subclass__(cls):
-    super().__init_subclass__()
-    if cls.methodA is SerializerInterface.methodA and cls.methodB is SerializerInterface.methodB:
-        raise TypeError(
-            f"{cls.__name__} must override at least one of 'methodA' or 'methodB'"
-        )

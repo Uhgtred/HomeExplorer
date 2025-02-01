@@ -19,14 +19,26 @@ class SerializerJoblib(SerializerInterface):
     def __init__(self, config: SerializerConfig):
         self.__imageFile = config.storageFile
 
-    def serializeFile(self, imageFrame: numpy.ndarray) -> str:
+    def serialize(self, imageData: numpy.ndarray = None, filePath: str = '') -> os.path:
         """
-        Method for serialization of imageData.
-        :param imageFrame: Image data as numpy array that will be serialized.
-        :return: Serialized numpy array (image data).
+        Serializes the given image data to a file and returns the absolute path of the file.
+
+        This method serializes image data using joblib and saves it to the specified file
+        path or a default file path determined by the class. It is intended to handle
+        image serialization efficiently and ensures the serialized file path is
+        returned for further usage.
+
+        :param imageData: The image data to serialize. Expected as a numpy array.
+        :type imageData: numpy.ndarray
+        :param filePath: The path of the file where the image data is serialized. An empty
+            string defaults to the class-defined file path.
+        :type filePath: str
+        :return: The absolute filepath of the serialized image file.
+        :rtype: str
         """
-        joblib.dump(imageFrame, self.__imageFile)
-        # returning absolute filepath of the image-file
+        super().serialize(imageData, filePath)
+        joblib.dump(imageData, self.__imageFile)
+        # returning absolute filepath of the image-file that has been created.
         return os.path.abspath(self.__imageFile)
 
     def deserialize(self, filePath: str) -> numpy.ndarray:
@@ -36,20 +48,3 @@ class SerializerJoblib(SerializerInterface):
             :return: The loaded numpy array.
             """
         return joblib.load(filePath)
-
-# alternative serialization:
-    """
-    Todo: set this up or delete it
-      
-    from PIL import Image
-    import io
-
-    # Convert array to image and save as lossy but fast jpeg
-    image = Image.fromarray(array)
-    buffer = io.BytesIO()
-    image.save(buffer, format="JPEG", quality = 85) # to use png instead of jpeg, just put "PNG" instead and delete the "quality" kwarg
-    data_bytes = buffer.getvalue()
-
-    # Send over UDP
-    sock.sendto(data_bytes, (host, port))
-    """
