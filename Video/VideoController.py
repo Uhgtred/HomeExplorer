@@ -125,14 +125,12 @@ class VideoController:
             raise Exception('Unable to serialize Image Frame. No transmission object set. Unserialized Image Frame '
                             'cannot be transmitted.')
 
-    def __transmit(self, imageFilePath: str) -> None:
+    def __transmit(self, frameData: bytes) -> None:
         """
         Private Method for transmitting the image to the client.
-        :param imageFilePath: Path to the serialized image-file.
+        :param frameData: Frame data that will be transmitted.
         """
         if self.__transmission is not None:
-            with open(imageFilePath, 'rb') as imageFile:
-                imageData = imageFile.read()
-            self.__transmission.transmit(imageData)
+            self.__transmission.transmit(frameData)
         else:
             raise Exception('Unable to transmit Image Frame. No transmission object set.')

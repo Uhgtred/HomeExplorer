@@ -9,6 +9,10 @@ class VideoTransmitter:
     The VideoTransmitter class is responsible for transmitting video frames over a specified bus.
     """
 
+    """
+    Todo: Is this class still needed?
+    """
+
     def __init__(self, bus: Bus):
         """
         Initializes the VideoTransmitter with a serializer and bus.
@@ -16,13 +20,13 @@ class VideoTransmitter:
         """
         self.__bus = bus
 
-    def transmit(self, imageFilePath: str) -> None:
+    def transmit(self, frameData: bytes) -> None:
         """
         Protocol for the image transmission. It ensures the image data is read from the file (which is already serialized)
         and then sent over the bus.
         :param imageFilePath: str - The absolute file path of the serialized image file.
         """
-        self.__bus.writeSingleMessage(self.__readImageFileData(imageFilePath))
+        self.__bus.writeSingleMessage(frameData)
 
     @staticmethod
     def __readImageFileData(imageFilePath: str) -> bytes:

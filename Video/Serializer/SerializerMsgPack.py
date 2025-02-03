@@ -9,7 +9,7 @@ from Video.Serializer import SerializerInterface
 
 class SerializerMsgPack(SerializerInterface):
 
-    def serialize(self, imageData: numpy.ndarray = None, filePath: str = '') -> bytes[dict[str, bytes]]:
+    def serialize(self, imageData: numpy.ndarray = None, filePath: str = '') -> bytes:
         """
         Serialize raw image data into a compressed byte format.
 

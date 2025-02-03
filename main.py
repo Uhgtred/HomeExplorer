@@ -111,7 +111,7 @@ class Main:
         """
         print('Setting up video streaming...')
         camera = VideoCameraFactory.produceDefaultCameraInstance()
-        serializer = SerializerFactory.produceSerializationJoblib()
+        serializer = SerializerFactory.produceSerializationMsgPack()
         transmitter = VideoTransmitterFactory.produceDefaultVideoTransmitter(self.__ports.get('videoPort'))
         videoController = VideoControllerBuilder().addCamera(camera).addSerialization(serializer).addTransmission(transmitter).build()
         self.__threadRunner.addTask(videoController.start)

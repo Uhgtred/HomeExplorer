@@ -8,7 +8,7 @@ import numpy
 class SerializerInterface(ABC):
 
     @abstractmethod
-    def serialize(self, imageData: numpy.ndarray = None, filePath: str = '') -> bytes[dict[str, bytes]] | str:
+    def serialize(self, imageData: numpy.ndarray = None, filePath: str = '') -> any:
         """
         Interface for serialization of image-arrays. Selectable whether to use the image-data or a file-path.
         Please start your implementation with super().serialize(...) to correctly handle exceptions.
@@ -17,7 +17,7 @@ class SerializerInterface(ABC):
         :return: Bytes containing serialized image-data.
         """
         if imageData is None and filePath == '':
-            raise ValueError("Either imageData or filePath must be provided.")
+            raise ValueError("Either imageData or filePath has to be provided.")
 
     @abstractmethod
     def deserialize(self, imageData: bytes) -> numpy.ndarray:
