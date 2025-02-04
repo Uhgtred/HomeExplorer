@@ -2,6 +2,7 @@
 # @author: Markus Kösters
 
 from BusTransactions import Bus
+from BusTransactions.BusFactory import BusFactory
 
 
 class VideoTransmitter:
@@ -13,19 +14,20 @@ class VideoTransmitter:
     Todo: Is this class still needed?
     """
 
-    def __init__(self, bus: Bus):
+    def __init__(self, port: int, host: bool = False):
         """
         Initializes the VideoTransmitter with a serializer and bus.
         :param bus: The bus used to transmit the serialized video frames.
         """
-        self.__bus = bus
+        self.__bus = BusFactory.produceUDP_Transceiver(port, host, noEncoding=True)
 
     def transmit(self, frameData: bytes) -> None:
         """
         Protocol for the image transmission. It ensures the image data is read from the file (which is already serialized)
         and then sent over the bus.
-        :param imageFilePath: str - The absolute file path of the serialized image file.
+        :param frameData: Image data to be transmitted.
         """
+        print(len(frameData))
         self.__bus.writeSingleMessage(frameData)
 
     @staticmethod

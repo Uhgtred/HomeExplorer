@@ -11,7 +11,7 @@ from Events import EventManager
 from Video import VideoControllerBuilder
 from Video.Serializer.SerializerFactory import SerializerFactory
 from Video.VideoCamera import VideoCameraFactory
-from Video.VideoTransmitter import VideoTransmitterFactory
+from Video.VideoTransmitter import VideoTransmitterFactory, VideoTransmitter
 
 # changing working-directory to parent of this file
 os.chdir(os.path.dirname(os.getcwd()))
@@ -112,7 +112,7 @@ class Main:
         print('Setting up video streaming...')
         camera = VideoCameraFactory.produceDefaultCameraInstance()
         serializer = SerializerFactory.produceSerializationMsgPack()
-        transmitter = VideoTransmitterFactory.produceDefaultVideoTransmitter(self.__ports.get('videoPort'))
+        transmitter = VideoTransmitter(self.__ports.get('videoPort'), False)
         videoController = VideoControllerBuilder().addCamera(camera).addSerialization(serializer).addTransmission(transmitter).build()
         self.__threadRunner.addTask(videoController.start)
         print('Video streaming setup complete.')
