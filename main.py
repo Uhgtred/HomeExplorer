@@ -9,6 +9,7 @@ from ActorControl.ActorControlFactory import ActorControlFactory
 from BusTransactions.BusFactory import BusFactory
 from Events import EventManager
 from Video import VideoControllerBuilder
+from Video.Compressor.CompressorZlib import CompressorZlib
 from Video.Serializer.SerializerFactory import SerializerFactory
 from Video.VideoCamera import VideoCameraFactory
 from Video.VideoTransmitter import VideoTransmitterFactory, VideoTransmitter
@@ -47,7 +48,7 @@ class Main:
         print('Starting initialization process...')
         self.__threadRunner = Runners.threadRunner.ThreadRunner()
         self.__setup()
-        print('Initialization process complete.')
+        print('Initialization process complete! Robot ready!')
 
     def __setup(self) -> None:
         """
@@ -84,7 +85,7 @@ class Main:
         remoteControlEvent = EventManager.produceEvent('controllerEvent')
         remoteControlEvent.subscribe(actorController.processInput)
         self.__threadRunner.addTask(remoteControlSocket.readBusUntilStopFlag, remoteControlEvent.notifySubscribers)
-        print('Steering control setup complete.')
+        print('Steering control setup complete!')
 
     def __apiSetup(self):
         """
@@ -99,7 +100,7 @@ class Main:
         print('Setting up API server...')
         apiObject = API.Main(port=self.__ports.get('APIPort'))
         apiObject.runServer()
-        print('API server started.')
+        print('API server started!')
 
     def __videoControl(self) -> None:
         """
@@ -113,9 +114,14 @@ class Main:
         camera = VideoCameraFactory.produceDefaultCameraInstance()
         serializer = SerializerFactory.produceSerializationMsgPack()
         transmitter = VideoTransmitter(self.__ports.get('videoPort'), False)
-        videoController = VideoControllerBuilder().addCamera(camera).addSerialization(serializer).addTransmission(transmitter).build()
+        videoController = (VideoControllerBuilder()
+                           .addCamera(camera)
+                           .addSerialization(serializer)
+                           .addTransmission(transmitter)
+                           .addCompression(CompressorZlib)
+                           .build())
         self.__threadRunner.addTask(videoController.start)
-        print('Video streaming setup complete.')
+        print('Video streaming setup complete!')
 
 
 if __name__ == '__main__':

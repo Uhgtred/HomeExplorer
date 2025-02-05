@@ -28,12 +28,12 @@ class SerializerMsgPack(SerializerInterface):
         """
         # This makes the code use the abstract method at the beginning, which includes a little bit of error-handling.
         super().serialize(imageData)
-        if filePath != '':
+        if filePath:
             print('[Warning]: SerializerMsgPack does not support file-paths.')
         # Todo: in the documentation the value of "returnvalue" is not specified. Check what comes ouf of there, expect boolean.
         encoding_parameters = [int(cv2.IMWRITE_JPEG_QUALITY), 80] # 80 is the quality of the jpeg compression
         returnValue, buffer = cv2.imencode('.jpg', imageData, encoding_parameters)
-        print(returnValue)
+        print(f'Return-Value of the cv2.imencode-method: {returnValue}, type of this return-value: {type(returnValue)}')
         serializedData: bytes = msgpack.packb({'frameData': buffer.tobytes()})
         return serializedData
 

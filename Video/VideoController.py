@@ -3,6 +3,8 @@
 
 import numpy
 
+from Video.Compressor.CompressorInterface import CompressorInterface
+from Video.Compressor.CompressorZlib import CompressorZlib
 from Video.VideoCamera import VideoCameraInterface
 from Video.VideoFilter import VideoFilterInterface
 from Video.Serializer import SerializerInterface
@@ -43,18 +45,16 @@ class VideoController:
 
     def setFiltering(self, filtering: VideoFilterInterface) -> None:
         """
-        Setter-Method for the filtering of video data.
+        Setter-Method for the filtering of video data. Not yet implemented.
         :param filtering: VideoFilter that will be applied to the video data.
         """
 
-    def setCompression(self, compression) -> None:
+    def setCompression(self, compression: CompressorInterface) -> None:
         """
         Setter-Method for the compression of video data.
         :param compression: Compressor that will be used to compress video data.
         """
-        if self.__compression is not None:
-            # TODO: implement compression if needed. Else remove this.
-            pass
+        self.__compression = compression
 
     def setTransmission(self, transmission: VideoTransmitterInterface) -> None:
         """
@@ -88,7 +88,7 @@ class VideoController:
         """
         filteredImage: numpy.ndarray = self.__filter(imageFrame)
         compressedImage: numpy.ndarray = self.__compress(filteredImage)
-        serializedImageFile: str = self.__serialize(compressedImage)
+        serializedImageFile: bytes = self.__serialize(compressedImage)
         self.__transmit(serializedImageFile)
 
     def __filter(self, imageFrame: numpy.ndarray) -> numpy.ndarray:
@@ -109,11 +109,10 @@ class VideoController:
         :return: Compressed image-data.
         """
         if self.__filtering is not None:
-            # TODO: implement compression if needed. Else remove this.
-            pass
+            imageFrame = self.__compression.compress(imageFrame)
         return imageFrame
 
-    def __serialize(self, imageFrame: numpy.ndarray) -> str:
+    def __serialize(self, imageFrame: numpy.ndarray) -> bytes:
         """
         Private Method for serializing the video data.
         :param imageFrame: Image frame that will be serialized.
