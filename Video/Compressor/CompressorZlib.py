@@ -15,7 +15,11 @@ class CompressorZlib(CompressorInterface):
         :param data: Image-data that is to be compressed.
         :return: Compressed image-data.
         """
-        return zlib.compress(data)
+        print(f'Datasize before compression: {len(data)}')
+        compressedData = zlib.compress(data)
+        print(f'Datasize after compression: {len(compressedData)}')
+        # return zlib.compress(data)
+        return compressedData
 
     @staticmethod
     def decompress(compressedData: any) -> any:
