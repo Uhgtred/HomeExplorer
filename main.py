@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # @author   Markus Kösters
-
+import logging
 import os
 
 import API
@@ -13,7 +13,6 @@ from Video import VideoControllerBuilder
 from Video.Compressor.CompressorFactory import CompressorFactory
 from Video.Serializer.SerializerFactory import SerializerFactory
 from Video.VideoCamera import VideoCameraFactory
-from Video.VideoTransmitter import VideoTransmitter
 from Video.VideoTransmitter.VideoTransmitterFactory import VideoTransmitterFactory
 
 # changing working-directory to parent of this file
