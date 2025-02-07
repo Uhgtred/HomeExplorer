@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 # @author: Markus Kösters
+from logging import exception
 
 import numpy
 
+from ProjectLogging import Logger
 from Video.Compressor.CompressorInterface import CompressorInterface
 from Video.Compressor.CompressorZlib import CompressorZlib
 from Video.VideoCamera import VideoCameraInterface
@@ -56,6 +58,7 @@ class VideoController:
         self.__serialization: SerializerInterface | None = None
         self.__compression: CompressorInterface | None = None
         self.__transmission: VideoTransmitterInterface | None = None
+        self.__logger: Logger.getLogger = Logger('VideoController', 'VideoControllerLog.log').getLogger
 
     def setCamera(self, camera: VideoCameraInterface) -> None:
         """
@@ -80,6 +83,7 @@ class VideoController:
         Setter-Method for the filtering of video data. Not yet implemented.
         :param filtering: VideoFilter that will be applied to the video data.
         """
+        self.__logger.warning('Filtering has not been implemented yet!')
 
     def setCompression(self, compression: CompressorInterface) -> None:
         """
@@ -103,7 +107,9 @@ class VideoController:
             self.isRunning = True
             self.__camera.readCameraInLoop(self.__processFrame)
         elif self.__camera is None:
-            raise Exception("VideoCamera not initialized! Cannot start video stream!")
+            exceptionMessage: str = "VideoCamera not initialized! Cannot start video stream!"
+            self.__logger.exception(exceptionMessage)
+            raise Exception(exceptionMessage)
 
     def stop(self) -> None:
         """
@@ -131,7 +137,7 @@ class VideoController:
         :return: Filtered image-data.
         """
         if self.__filtering is not None:
-            print('[Warning]: Filtering not yet implemented!')
+            self.__logger.warning('Filtering not yet implemented!')
         return imageFrame
 
     def __compress(self, imageFrame: numpy.ndarray) -> numpy.ndarray:
@@ -151,8 +157,10 @@ class VideoController:
         if self.__serialization is not None:
             return self.__serialization.serialize(imageFrame)
         else:
-            raise Exception('Unable to serialize Image Frame. No transmission object set. Unserialized Image Frame '
-                            'cannot be transmitted.')
+            exceptionMessage: str = ('Unable to serialize Image Frame. No transmission object set. Unserialized Image'
+                                     ' Frame cannot be transmitted.')
+            self.__logger.exception(exceptionMessage)
+            raise Exception(exceptionMessage)
 
     def __transmit(self, frameData: bytes) -> None:
         """
@@ -162,4 +170,6 @@ class VideoController:
         if self.__transmission is not None:
             self.__transmission.transmit(frameData)
         else:
-            raise Exception('Unable to transmit Image Frame. No transmission object set.')
+            exceptionMessage: str = 'Unable to transmit Image Frame. No transmission object set.'
+            self.__logger.exception(exceptionMessage)
+            raise Exception(exceptionMessage)

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # @author: Markus Kösters
+
 from Video.Compressor.CompressorInterface import CompressorInterface
 from Video.VideoCamera import VideoCameraInterface
 from Video.Serializer import SerializerInterface
-from Video.VideoController import VideoController
 from Video.VideoTransmitter import VideoTransmitterInterface
 from Video.VideoController import VideoController
 
@@ -17,9 +17,9 @@ class VideoControllerBuilder:
         self.videoController.setCamera(camera)
         return self
 
-    # def addFiltering(self, filtering) -> any:
-    #     self.videoController.setFiltering(filtering)
-    #     return self
+    def addFiltering(self, filtering) -> any:
+        self.videoController.setFiltering(filtering)
+        return self
 
     def addSerialization(self, serialization: SerializerInterface) -> any:
         self.videoController.setSerialization(serialization)

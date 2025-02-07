@@ -3,6 +3,7 @@
 
 import os
 
+from ProjectLogging.Logger import Logger
 import API
 import Runners
 from ActorControl.ActorControlFactory import ActorControlFactory
@@ -12,7 +13,7 @@ from Video import VideoControllerBuilder
 from Video.Compressor.CompressorZlib import CompressorZlib
 from Video.Serializer.SerializerFactory import SerializerFactory
 from Video.VideoCamera import VideoCameraFactory
-from Video.VideoTransmitter import VideoTransmitterFactory, VideoTransmitter
+from Video.VideoTransmitter import VideoTransmitter
 
 # changing working-directory to parent of this file
 os.chdir(os.path.dirname(os.getcwd()))
@@ -45,10 +46,11 @@ class Main:
         """
         # Todo: After Systemtest check the versions of the code in BusTransactions repository vs the versions in HomeExplorer and RobotRemote
         # Most importantly, there needs to be the close function inside the all ethernet plugins
-        print('Starting initialization process...')
+        self.__logger = Logger('Main', 'MainLog.log').getLogger
+        self.__logger.info('Starting initialization process...')
         self.__threadRunner = Runners.threadRunner.ThreadRunner()
         self.__setup()
-        print('Initialization process complete! Robot ready!')
+        self.__logger.info('Initialization process complete! Robot ready!')
 
     def __setup(self) -> None:
         """
@@ -60,12 +62,14 @@ class Main:
                 re-raises the exception with a descriptive message.
             """
         try:
+            pass
             self.__steeringControl()
             self.__videoControl()
             # Todo: activate proper use of the api for maintainability.
             # self.__apiSetup()
             self.__threadRunner.runTasks()
         except Exception as e:
+            self.__logger.exception(f'An error occurred during setup: {e}')
             raise BaseException(f'An error occurred during setup: {e}')
 
     def __steeringControl(self) -> None:
@@ -79,13 +83,13 @@ class Main:
         an asynchronous task to continuously read data from the remote control socket
         and notify all subscribed components when new data is received.
         """
-        print('Setting up steering control...')
+        self.__logger.info('Setting up steering control...')
         remoteControlSocket = BusFactory.produceUDP_Transceiver(host=True, port=self.__ports.get('controllerPort'))
         actorController = ActorControlFactory.produceActorControl()
         remoteControlEvent = EventManager.produceEvent('controllerEvent')
         remoteControlEvent.subscribe(actorController.processInput)
         self.__threadRunner.addTask(remoteControlSocket.readBusUntilStopFlag, remoteControlEvent.notifySubscribers)
-        print('Steering control setup complete!')
+        self.__logger.info('Steering control setup complete!')
 
     def __apiSetup(self):
         """
@@ -97,10 +101,10 @@ class Main:
 
         :raises KeyError: If 'APIPort' key is not found in the `self.__ports` dictionary.
         """
-        print('Setting up API server...')
+        self.__logger.info('Setting up API server...')
         apiObject = API.Main(port=self.__ports.get('APIPort'))
         apiObject.runServer()
-        print('API server started!')
+        self.__logger.info('API server started!')
 
     def __videoControl(self) -> None:
         """
@@ -110,7 +114,7 @@ class Main:
 
         :raises KeyError: If the 'videoPort' key is missing in the `self.__ports` dictionary.
         """
-        print('Setting up video streaming...')
+        self.__logger.info('Setting up video streaming...')
         camera = VideoCameraFactory.produceDefaultCameraInstance()
         serializer = SerializerFactory.produceSerializationMsgPack()
         transmitter = VideoTransmitter(self.__ports.get('videoPort'), False)
@@ -121,7 +125,7 @@ class Main:
                            .addCompression(CompressorZlib)
                            .build())
         self.__threadRunner.addTask(videoController.start)
-        print('Video streaming setup complete!')
+        self.__logger.info('Video streaming setup complete!')
 
 
 if __name__ == '__main__':
