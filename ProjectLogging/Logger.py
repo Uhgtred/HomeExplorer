@@ -13,6 +13,8 @@ class Logger:
     """
 
     def __init__(self, name: str, logFile: str = './MainLog.log', logLevel: int = logging.DEBUG, consoleOutput: bool = True):
+        if not logFile.endswith('.log'):
+            logFile += '.log'
         self.__deleteExistingLogFiles()
         self.__logger = logging.getLogger(name)
         self.__logger.setLevel(logLevel)

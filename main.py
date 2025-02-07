@@ -3,17 +3,18 @@
 
 import os
 
-from ProjectLogging.Logger import Logger
 import API
 import Runners
 from ActorControl.ActorControlFactory import ActorControlFactory
 from BusTransactions.BusFactory import BusFactory
 from Events import EventManager
+from ProjectLogging.Logger import Logger
 from Video import VideoControllerBuilder
-from Video.Compressor.CompressorZlib import CompressorZlib
+from Video.Compressor.CompressorFactory import CompressorFactory
 from Video.Serializer.SerializerFactory import SerializerFactory
 from Video.VideoCamera import VideoCameraFactory
 from Video.VideoTransmitter import VideoTransmitter
+from Video.VideoTransmitter.VideoTransmitterFactory import VideoTransmitterFactory
 
 # changing working-directory to parent of this file
 os.chdir(os.path.dirname(os.getcwd()))
@@ -76,7 +77,7 @@ class Main:
         """
         Sets up the steering mechanism by integrating remote control socket communication
         with actor control and event management. Creates and configures the necessary
-        components such as a remote control socket, an actor controller, and an event
+        parts such as a remote control socket, an actor controller, and an event
         manager to facilitate asynchronous handling of control inputs.
 
         The method subscribes the actor controller to the event manager and schedules
@@ -117,12 +118,13 @@ class Main:
         self.__logger.info('Setting up video streaming...')
         camera = VideoCameraFactory.produceDefaultCameraInstance()
         serializer = SerializerFactory.produceSerializationMsgPack()
-        transmitter = VideoTransmitter(self.__ports.get('videoPort'), False)
+        transmitter = VideoTransmitterFactory.produceDefaultVideoTransmitter(self.__ports.get('videoPort'))
+        compressor = CompressorFactory.produceCompressorZlib()
         videoController = (VideoControllerBuilder()
                            .addCamera(camera)
                            .addSerialization(serializer)
                            .addTransmission(transmitter)
-                           .addCompression(CompressorZlib)
+                           .addCompression(compressor)
                            .build())
         self.__threadRunner.addTask(videoController.start)
         self.__logger.info('Video streaming setup complete!')

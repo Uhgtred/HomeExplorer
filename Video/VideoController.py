@@ -6,7 +6,6 @@ import numpy
 
 from ProjectLogging import Logger
 from Video.Compressor.CompressorInterface import CompressorInterface
-from Video.Compressor.CompressorZlib import CompressorZlib
 from Video.VideoCamera import VideoCameraInterface
 from Video.VideoFilter import VideoFilterInterface
 from Video.Serializer import SerializerInterface
@@ -124,11 +123,13 @@ class VideoController:
         Private Method for processing the video frame.
         :param imageFrame: Image frame that will be processed.
         """
+        if imageFrame is None:
+            return
         filteredImage: numpy.ndarray = self.__filter(imageFrame)
         # numpy.ndarray is not the real type here but some compression-format
-        compressedImage: numpy.ndarray = self.__compress(filteredImage)
-        serializedImageFile: bytes = self.__serialize(compressedImage)
-        self.__transmit(serializedImageFile)
+        serializedImageData: bytes = self.__serialize(filteredImage)
+        compressedImage: bytes = self.__compress(serializedImageData)
+        self.__transmit(compressedImage)
 
     def __filter(self, imageFrame: numpy.ndarray) -> numpy.ndarray:
         """
@@ -140,7 +141,7 @@ class VideoController:
             self.__logger.warning('Filtering not yet implemented!')
         return imageFrame
 
-    def __compress(self, imageFrame: numpy.ndarray) -> numpy.ndarray:
+    def __compress(self, imageFrame: bytes) -> bytes:
         """
         Private Method for compressing the video data.
         :param imageFrame: Image frame that will be compressed.
@@ -154,6 +155,7 @@ class VideoController:
         :param imageFrame: Image frame that will be serialized.
         :return: Serialized image file-path.
         """
+        self.__logger.debug(f'Serializing Image Frame {imageFrame}')
         if self.__serialization is not None:
             return self.__serialization.serialize(imageFrame)
         else:

@@ -1,13 +1,18 @@
 #!/usr/bin/env python3
 # @author: Markus Kösters
+
 import cv2
 import msgpack
 import numpy
 
+from ProjectLogging import Logger
 from Video.Serializer import SerializerInterface
 
 
 class SerializerMsgPack(SerializerInterface):
+
+    def __init__(self):
+        self.__logger: Logger.getLogger = Logger('SerializerMsgPack','SerializerLog.log').getLogger
 
     def serialize(self, imageData: numpy.ndarray = None, filePath: str = '') -> bytes:
         """
@@ -29,9 +34,10 @@ class SerializerMsgPack(SerializerInterface):
         # This makes the code use the abstract method at the beginning, which includes a little bit of error-handling.
         super().serialize(imageData)
         if filePath:
-            print('[Warning]: SerializerMsgPack does not support file-paths.')
-        encoding_parameters = [int(cv2.IMWRITE_JPEG_QUALITY), 80] # 80 is the quality of the jpeg compression
-        returnValue, buffer = cv2.imencode('.jpg', imageData, encoding_parameters) # returnValue is type boolean.
+            self.__logger.warning('SerializerMsgPack does not support file-paths.')
+        self.__logger.debug(f'Serializing image data of type {type(imageData)} ...')
+        encodingParameters = [int(cv2.IMWRITE_JPEG_QUALITY), 80] # 80 is the quality of the jpeg compression
+        returnValue, buffer = cv2.imencode('.jpg', imageData, encodingParameters) # returnValue is type boolean.
         serializedData: bytes = msgpack.packb({'frameData': buffer.tobytes()})
         return serializedData
 
