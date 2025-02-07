@@ -13,6 +13,7 @@ class Logger:
     """
 
     def __init__(self, name: str, logFile: str = './MainLog.log', logLevel: int = logging.DEBUG, consoleOutput: bool = True):
+        self.__deleteExistingLogFiles()
         self.__logger = logging.getLogger(name)
         self.__logger.setLevel(logLevel)
         formatter: logging.Formatter = self.__setupFormatter(name)
@@ -63,3 +64,13 @@ class Logger:
         """
         return self.__logger
 
+    @staticmethod
+    def __deleteExistingLogFiles() -> None:
+        """
+        Method for deleting old logs. So they do not stack up and waste memory.
+        """
+        logPath = os.path.dirname(__file__)
+        files = os.listdir(logPath)
+        for file in files:
+            if file.endswith('.log'):
+                os.remove(os.path.join(logPath, file))
