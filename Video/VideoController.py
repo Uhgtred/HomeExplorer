@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 # @author: Markus Kösters
+from logging import exception
 
 import numpy
 
+from ProjectLogging import Logger
+from Video.Compressor.CompressorInterface import CompressorInterface
 from Video.VideoCamera import VideoCameraInterface
 from Video.VideoFilter import VideoFilterInterface
 from Video.Serializer import SerializerInterface
@@ -11,17 +14,50 @@ from Video.VideoTransmitter import VideoTransmitterInterface
 
 class VideoController:
     """
-    Class for controlling video.
+    Manages a video processing pipeline for capturing, filtering, compressing, serializing,
+    and transmitting video data.
+
+    This class provides the necessary structure to manage different stages of video
+    processing systematically. Each step in the pipeline is handled by respective interface
+    implementations, ensuring modular and maintainable code. The pipeline is designed to
+    be flexible, allowing components like filtering, serialization, compression, and
+    transmission to be swapped or modified as needed.
     """
 
     isRunning: bool = False
 
     def __init__(self):
-        self.__camera = None
-        self.__filtering = None
-        self.__serialization = None
-        self.__compression = None
-        self.__transmission = None
+        """
+        Initializes the VideoProcessingPipeline class. This class is responsible for
+        constructing and managing a video processing pipeline that may include
+        camera input, video filtering, serialization, compression, and data transmission.
+        Each step/component of the pipeline is represented by an appropriate interface
+        to ensure modular and flexible usage. It provides a way to handle the various
+        components of the pipeline systematically, primarily focused on video data.
+
+        Attributes:
+            __camera (VideoCameraInterface | None): Represents the camera module for
+                capturing video input. It follows the VideoCameraInterface for consistency
+                in implementation.
+            __filtering (VideoFilterInterface | None): Represents the video filtering
+                module responsible for processing and filtering video data. Adheres to the
+                VideoFilterInterface.
+            __serialization (SerializerInterface | None): Handles the serialization
+                of video data, making it ready for further processing such as transmission
+                or storage. It implements SerializerInterface.
+            __compression (CompressorInterface | None): Represents the module responsible
+                for compressing video data. The component can reduce bandwidth usage in
+                transmission processes. Follows the CompressorInterface.
+            __transmission (VideoTransmitterInterface | None): Manages the transmission
+                of processed video data to the designated target. It is implemented
+                according to VideoTransmitterInterface.
+        """
+        self.__camera: VideoCameraInterface | None = None
+        self.__filtering: VideoFilterInterface | None = None
+        self.__serialization: SerializerInterface | None = None
+        self.__compression: CompressorInterface | None = None
+        self.__transmission: VideoTransmitterInterface | None = None
+        self.__logger: Logger.getLogger = Logger('VideoController', 'VideoControllerLog.log').getLogger
 
     def setCamera(self, camera: VideoCameraInterface) -> None:
         """
@@ -43,18 +79,17 @@ class VideoController:
 
     def setFiltering(self, filtering: VideoFilterInterface) -> None:
         """
-        Setter-Method for the filtering of video data.
+        Setter-Method for the filtering of video data. Not yet implemented.
         :param filtering: VideoFilter that will be applied to the video data.
         """
+        self.__logger.warning('Filtering has not been implemented yet!')
 
-    def setCompression(self, compression) -> None:
+    def setCompression(self, compression: CompressorInterface) -> None:
         """
         Setter-Method for the compression of video data.
         :param compression: Compressor that will be used to compress video data.
         """
-        if self.__compression is not None:
-            # TODO: implement compression if needed. Else remove this.
-            pass
+        self.__compression = compression
 
     def setTransmission(self, transmission: VideoTransmitterInterface) -> None:
         """
@@ -71,7 +106,9 @@ class VideoController:
             self.isRunning = True
             self.__camera.readCameraInLoop(self.__processFrame)
         elif self.__camera is None:
-            raise Exception("VideoCamera not initialized! Cannot start video stream!")
+            exceptionMessage: str = "VideoCamera not initialized! Cannot start video stream!"
+            self.__logger.exception(exceptionMessage)
+            raise Exception(exceptionMessage)
 
     def stop(self) -> None:
         """
@@ -86,10 +123,13 @@ class VideoController:
         Private Method for processing the video frame.
         :param imageFrame: Image frame that will be processed.
         """
+        if imageFrame is None:
+            return
         filteredImage: numpy.ndarray = self.__filter(imageFrame)
-        compressedImage: numpy.ndarray = self.__compress(filteredImage)
-        serializedImageFile: str = self.__serialize(compressedImage)
-        self.__transmit(serializedImageFile)
+        # numpy.ndarray is not the real type here but some compression-format
+        serializedImageData: bytes = self.__serialize(filteredImage)
+        compressedImage: bytes = self.__compress(serializedImageData)
+        self.__transmit(compressedImage)
 
     def __filter(self, imageFrame: numpy.ndarray) -> numpy.ndarray:
         """
@@ -98,41 +138,40 @@ class VideoController:
         :return: Filtered image-data.
         """
         if self.__filtering is not None:
-            # TODO: implement filtering if needed. Else remove this.
-            pass
+            self.__logger.warning('Filtering not yet implemented!')
         return imageFrame
 
-    def __compress(self, imageFrame: numpy.ndarray) -> numpy.ndarray:
+    def __compress(self, imageFrame: bytes) -> bytes:
         """
         Private Method for compressing the video data.
         :param imageFrame: Image frame that will be compressed.
         :return: Compressed image-data.
         """
-        if self.__filtering is not None:
-            # TODO: implement compression if needed. Else remove this.
-            pass
-        return imageFrame
+        return self.__compression.compress(imageFrame)
 
-    def __serialize(self, imageFrame: numpy.ndarray) -> str:
+    def __serialize(self, imageFrame: numpy.ndarray) -> bytes:
         """
         Private Method for serializing the video data.
         :param imageFrame: Image frame that will be serialized.
         :return: Serialized image file-path.
         """
+        self.__logger.debug(f'Serializing Image Frame {imageFrame}')
         if self.__serialization is not None:
             return self.__serialization.serialize(imageFrame)
         else:
-            raise Exception('Unable to serialize Image Frame. No transmission object set. Unserialized Image Frame '
-                            'cannot be transmitted.')
+            exceptionMessage: str = ('Unable to serialize Image Frame. No transmission object set. Unserialized Image'
+                                     ' Frame cannot be transmitted.')
+            self.__logger.exception(exceptionMessage)
+            raise Exception(exceptionMessage)
 
-    def __transmit(self, imageFilePath: str) -> None:
+    def __transmit(self, frameData: bytes) -> None:
         """
         Private Method for transmitting the image to the client.
-        :param imageFilePath: Path to the serialized image-file.
+        :param frameData: Frame data that will be transmitted.
         """
         if self.__transmission is not None:
-            with open(imageFilePath, 'rb') as imageFile:
-                imageData = imageFile.read()
-            self.__transmission.transmit(imageData)
+            self.__transmission.transmit(frameData)
         else:
-            raise Exception('Unable to transmit Image Frame. No transmission object set.')
+            exceptionMessage: str = 'Unable to transmit Image Frame. No transmission object set.'
+            self.__logger.exception(exceptionMessage)
+            raise Exception(exceptionMessage)

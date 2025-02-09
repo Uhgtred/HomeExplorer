@@ -14,8 +14,8 @@ class EncodingFactory:
         return BusEncodings.ArduinoSerialEncoding()
 
     @staticmethod
-    def socketEncoding(pickle=False):
-        if pickle:
-            return BusEncodings.SocketEncodingJson()
-        else:
-            return BusEncodings.SocketEncoding()
+    def socketEncoding(encodingType: str = "json"):
+        match encodingType:
+            case "json": return BusEncodings.SocketEncodingJson()
+            case "python": return BusEncodings.SocketEncoding()
+        raise ValueError("Unknown encoding type!")

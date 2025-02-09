@@ -29,6 +29,8 @@ class Bus(BusInterface):
         Read and decode a single message from the bus.
         :return: Decoded message in string format.
         """
+        if self.encoding is None:
+            return self.bus.readBus()
         return self.encoding.decode(self.bus.readBus())
 
     def readBusUntilStopFlag(self, callbackMethod: callable, *args, **kwargs) -> None:
@@ -75,6 +77,9 @@ class Bus(BusInterface):
         Sending an encoded message to the bus.
         :param message: Message that will be sent to the bus.
         """
+        if self.encoding is None:
+            self.bus.writeBus(message)
+            return
         self.bus.writeBus(self.encoding.encode(message))
 
     @property
