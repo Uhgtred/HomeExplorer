@@ -1,12 +1,9 @@
-FROM ubuntu:latest
+FROM ubuntu:22.04
 LABEL authors="Markus"
 
 # Install python and pip
-RUN apt-get update && \
-    apt-get install -y python3 python3-pip && \
-    apt-get install -y python3-venv && \
-    apt-get install -y ffmpeg libsm6 libxext6 && \
-    apt-get install -y libgl1-mesa-glx && \
+RUN apt update --allow-releaseinfo-change && \
+    apt install -y --no-install-recommends python3 python3-pip python3-venv ffmpeg libsm6 libxext6 libgl1-mesa-glx && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy requirements to app-folder
