@@ -47,3 +47,17 @@ class MockSocket:
     @property
     def getBuffer(self):
         return self.buffer
+
+    @classmethod
+    def close(cls) -> None:
+        """
+        Closes the class-level state.
+
+        This method is used to modify the class attribute `state`. It sets the
+        `state` attribute to `False`, effectively closing or deactivating the
+        state. The method acts on the class level and modifies the shared
+        state attribute for all instances of the class.
+
+        :raises: No exceptions are raised by this function.
+        """
+        cls.state = False

@@ -31,11 +31,11 @@ class BusPluginFactory:
         :return: Socket-instance.
         """
         if ipAddress:
-            config = SocketConfigs.UdpSocketConfig(host=host, IPAddress=ipAddress, messageSize=messageSize, port=port)
+            config = SocketConfigs.UdpSocketConfig(host=host, MyIPAddress=ipAddress, messageSize=messageSize, port=port)
         else:
             config = SocketConfigs.UdpSocketConfig(host=host, messageSize=messageSize, port=port)
         if stub:
-            config = SocketConfigs.UdpSocketConfig(host=host, IPAddress=ipAddress, messageSize=messageSize, port=port, busLibrary=MockSocket)
+            config = SocketConfigs.UdpSocketConfig(host=host, MyIPAddress=ipAddress, messageSize=messageSize, port=port, busLibrary=MockSocket)
         # else:
         #     config = SocketConfigs.UdpSocketConfig(IPAddress=ipAddress, messageSize=messageSize, port=port, host=host)  # busLibrary defaults to socket-library
         return Tcp_Udp_sockets.UdpSocket(config)

@@ -3,3 +3,4 @@
 
 from .VideoTransmitter import VideoTransmitter
 from .VideoTransmitterInterface import VideoTransmitterInterface
+from .VideoTransmitterFactory import VideoTransmitterFactory
