@@ -27,23 +27,44 @@ class BusFactory:
         return transceiver
 
     @staticmethod
-    def produceSerialTransceiver(path: str = '/dev/ttyACM0', baudRate: int = 115200, stub: bool = False) -> Bus:
+    def produceSerialTransceiver() -> Bus:
         """
         Method for creating an instance of a serial-bus transceiver that connects to arduino.
         """
         encoding: EncodingProtocol = EncodingFactory.arduinoSerialEncoding()
-        busPlugin: BusPluginInterface = BusPluginFactory.produceSerialBusPlugin(path, baudRate, stub=stub)
+        busPlugin: BusPluginInterface = BusPluginFactory.produceSerialBusArduinoPlugin()
         return Bus(busPlugin, encoding)
 
     @staticmethod
-    def produceUDP_Transceiver(port: int, host: bool, stub: bool = False, noEncoding: bool = False) -> Bus:
+    def produceUDP_Transceiver(port: int, pickle: bool = False, stub: bool = False) -> Bus:
         """
         Method for creating an instance of an udp-socket.
-        :return: Bus-object.
+        :return:
         """
-        if noEncoding:
-            busPlugin: BusPluginInterface = BusPluginFactory.produceUdpSocketPlugin(host=host, port=port, stub=stub)
-            return Bus(busPlugin, None )
-        encoding: EncodingProtocol = EncodingFactory.socketEncoding('json')
-        busPlugin: BusPluginInterface = BusPluginFactory.produceUdpSocketPlugin(host=host, port=port, stub=stub)
+        encoding: EncodingProtocol = EncodingFactory.socketEncoding(pickle)
+        if stub:
+            busPlugin: BusPluginInterface = BusPluginFactory.produceUdpStubPlugin(port=port)
+        else:
+            busPlugin: BusPluginInterface = BusPluginFactory.produceUdpSocketPlugin(port=port)
+        return Bus(busPlugin, encoding)
+
+    @staticmethod
+    def produceUDP_ImageDataReceiver(port: int, stub: bool = False) -> Bus:
+        """
+        Creates an UDP-based Image Data Receiver with options for using a stub plugin or
+        a real socket plugin, and returns a configured Bus instance which includes the
+        desired encoding protocol and the chosen bus plugin.
+
+        :param port: Specifies the UDP port number on which the receiver will operate.
+        :type port: int
+        :param stub: Determines whether to use a stub plugin (for testing) or a real socket plugin. Defaults to False.
+        :type stub: bool
+        :return: An instance of Bus configured with the chosen UDP plugin and encoding protocol.
+        :rtype: Bus
+        """
+        encoding: EncodingProtocol = EncodingFactory.produceImageReceiverEncoding()
+        if stub:
+            busPlugin: BusPluginInterface = BusPluginFactory.produceUdpStubPlugin(port=port)
+        else:
+            busPlugin: BusPluginInterface = BusPluginFactory.produceUdpSocketPlugin(port=port)
         return Bus(busPlugin, encoding)

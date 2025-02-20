@@ -12,7 +12,7 @@ class Logger:
     This class has to be instanced BEFORE calling the "getLogger" property.
     """
 
-    def __init__(self, name: str, logFile: str = './MainLog.log', logLevel: int = logging.INFO, consoleOutput: bool = True):
+    def __init__(self, name: str, logFile: str = './MainLog.log', logLevel: int = logging.DEBUG, consoleOutput: bool = True):
         if not logFile.endswith('.log'):
             logFile += '.log'
         self.__deleteExistingLogFiles()

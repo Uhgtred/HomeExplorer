@@ -84,7 +84,7 @@ class Main:
         and notify all subscribed components when new data is received.
         """
         self.__logger.info('Setting up steering control...')
-        remoteControlSocket = BusFactory.produceUDP_Transceiver(host=True, port=self.__ports.get('controllerPort'))
+        remoteControlSocket = BusFactory.produceUDP_Transceiver(port=self.__ports.get('controllerPort'))
         actorController = ActorControlFactory.produceActorControl()
         remoteControlEvent = EventManager.produceEvent('controllerEvent')
         remoteControlEvent.subscribe(actorController.processInput)

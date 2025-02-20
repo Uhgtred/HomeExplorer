@@ -4,6 +4,7 @@
 import time
 import cv2
 
+import ProjectLogging
 import Runners.threadRunner
 from .VideoCameraConfig import VideoCameraConfig
 from .VideoCameraInterface import VideoCameraInterface
@@ -15,19 +16,23 @@ class VideoCamera(VideoCameraInterface):
         self.__cam: callable = config.cameraModule
         self.__videoFPS: float = float((1 / abs(config.FPS)) if config.FPS > 0 else 15)
         self.__resolution: tuple[int, int] = config.Resolution
-        self.__runner = Runners.threadRunner.ThreadRunner() # Todo: this could also be passed through by the main-program.
+        # Todo: the Runner should be passed through by the main-program.
+        self.__runner = Runners.threadRunner.ThreadRunner()
         self.__setupCamera(config.cameraModule, config.Port)
+        self.__logger: ProjectLogging.Logger.getLogger = ProjectLogging.Logger('VideoCamera',
+                                                                               'VideoCamera.log').getLogger
 
     def __setupCamera(self, cam: cv2.VideoCapture, port: int) -> None:
         """
         Method for setting up the camera.
         """
         if type(port) is not int:
+            self.__logger.error("Camera port must be an integer")
             raise TypeError("Camera port must be an integer")
         # opening camera if the object is callable (not instanced yet).
         try:
             if callable(cam):
-                self.__cam = cam(port, cv2.CAP_V4L2) # Todo: using the default camera interface instead of gstreamer. Gstreamer could be better though.
+                self.__cam = cam(port, cv2.CAP_V4L2)
             self.__setResolution()
         except Exception as e:
             raise BaseException(f'Error while trying to setup camera with port {port}: {e}')
@@ -95,14 +100,15 @@ class VideoCamera(VideoCameraInterface):
         while self.__cam is not None and self.__cam.isOpened():
             # state returns false if the frame could not be read, else returns true.
             state, frame = self.__cam.read()
+            self.__logger.debug(f"Frame read from camera: {frame}.")
             if not state:
-                # Todo: make a log-entry when a frame could not be read correctly.
-                #       maybe a warning would also be a good idea, depending on the frequency of this happening
-                pass
+                self.__logger.error("Could not read frame from camera!\n"
+                                    f" State of the camera is: {state}. Unknown error of the camera.")
             # executing any 1s/fps so for 1s/30fps it will execute any 0.0333seconds
             # sleeping the program is no option because the buffer of the camera will then cause lag
             if time.time() - __startTime >= self.__videoFPS:
                 # calling the defined callback-method and passing it the frame recorded.
+                self.__logger.debug(f"Calling callback-method: {callbackMethod.__name__}, with frame: {frame}.")
                 callbackMethod(frame)
                 __startTime = time.time()
 

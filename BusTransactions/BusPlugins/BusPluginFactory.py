@@ -4,6 +4,7 @@
 from .EthernetBusPlugin import Tcp_Udp_sockets, SocketConfigs
 from .EthernetBusPlugin.test_UnitTests import MockSocket
 from .SerialBusPlugin import SerialBus, SerialBusConfig
+from .BusPluginInterface import BusPluginInterface
 from .SerialBusPlugin.test_UnitTests.SerialBusMock import MockSerialBus
 
 
@@ -13,29 +14,47 @@ class BusPluginFactory:
     """
 
     @staticmethod
-    def produceSerialBusPlugin(path: str, baudRate: int, stub: bool = False) -> SerialBus:
+    def produceSerialBusArduinoPlugin() -> SerialBus:
         """
         Method for creating an instance of a SerialBus.
         :return: SerialBus-instance.
         """
-        if stub:
-            config = SerialBusConfig(port=path, baudRate=baudRate, busLibrary=MockSerialBus)
-        else:
-            config = SerialBusConfig(port=path, baudRate=baudRate)
+        config = SerialBusConfig('/dev/ttyACM0', 115200)
         return SerialBus(config)
 
     @staticmethod
-    def produceUdpSocketPlugin(port: int, host: bool, ipAddress: str = None, messageSize: int = 4096, stub: bool = False) -> Tcp_Udp_sockets.UdpSocket:
+    def produceSerialBusStubPlugin() -> SerialBus:
+        config = SerialBusConfig('/dev/ttyACM0', 115200, MockSerialBus)
+        return SerialBus(config)
+
+    @staticmethod
+    def produceUdpSocketPlugin(port: int) -> Tcp_Udp_sockets.UdpSocket:
         """
-        Method for creating an instance of an Udp-socket connection.
-        :return: Socket-instance.
+        This static method initializes and produces an instance of the UdpSocket plugin
+        using the provided port number and optional message size. The method acts as a
+        factory for creating and returning a configured UdpSocket object.
+
+        :param port: The port number to bind the UDP socket to.
+        :type port: int
+
+        :return: An instance of `Tcp_Udp_sockets.UdpSocket` configured with the
+            specified port and message size.
+        :rtype: Tcp_Udp_sockets.UdpSocket
         """
-        if ipAddress:
-            config = SocketConfigs.UdpSocketConfig(host=host, MyIPAddress=ipAddress, messageSize=messageSize, port=port)
-        else:
-            config = SocketConfigs.UdpSocketConfig(host=host, messageSize=messageSize, port=port)
-        if stub:
-            config = SocketConfigs.UdpSocketConfig(host=host, MyIPAddress=ipAddress, messageSize=messageSize, port=port, busLibrary=MockSocket)
-        # else:
-        #     config = SocketConfigs.UdpSocketConfig(IPAddress=ipAddress, messageSize=messageSize, port=port, host=host)  # busLibrary defaults to socket-library
+        config: SocketConfigs = SocketConfigs.UdpSocketConfig(port=port)
+        return Tcp_Udp_sockets.UdpSocket(config)
+
+    @staticmethod
+    def produceUdpStubPlugin(port: int) -> Tcp_Udp_sockets:
+        """
+        Produces a UDP stub plugin for mock testing or emulation. This method creates a UDP
+        socket configuration and initializes a UDP socket instance using a mock socket library.
+
+        :param port: The port number to initialize the UDP socket configuration.
+        :type port: int
+        :return: An instance of UdpSocket configured with the specified port and using
+                 the mock socket library.
+        :rtype: Tcp_Udp_sockets
+        """
+        config: SocketConfigs = SocketConfigs.UdpSocketConfig(port=port, busLibrary=MockSocket)
         return Tcp_Udp_sockets.UdpSocket(config)

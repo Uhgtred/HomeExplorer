@@ -10,9 +10,8 @@ class UdpSocketConfig:
     """
     Config-dataclass for Serial-busses.
     """
-    messageSize: int
     port: int
-    host: bool
+    messageSize: int = 4096
     # IP-Address of the device that this script is running on
     MyIPAddress: str = '192.168.178.36'
     # IP-Address of the device that will be connected to the socket from the other side.

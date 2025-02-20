@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # @author: Markus Kösters
-
+import ProjectLogging
 from BusTransactions.BusFactory import BusFactory
 from Video.VideoTransmitter.VideoTransmitterInterface import VideoTransmitterInterface
 
@@ -22,7 +22,11 @@ class VideoTransmitter(VideoTransmitterInterface):
         Initializes the VideoTransmitter with a serializer and bus.
         :param bus: The bus used to transmit the serialized video frames.
         """
+        # Initializing a logger. The loglevel can globally be set in ProjectLogging.Logger.
+        self.__logger: ProjectLogging.Logger.getLogger = ProjectLogging.Logger('VideoTransmitter',
+                                                                               'VideoTransmitter.log').getLogger
         self.__bus = bus
+        self.__logger.debug(f"VideoTransmitter-bus is: {self.__bus}")
 
     def transmit(self, frameData: bytes) -> None:
         """
@@ -30,5 +34,6 @@ class VideoTransmitter(VideoTransmitterInterface):
         and then sent over the bus.
         :param frameData: Image data to be transmitted.
         """
+        self.__logger.debug(f"Transmitting video frame: {frameData}\t of size: {len(frameData)}.")
         self.__bus.writeSingleMessage(frameData)
 
