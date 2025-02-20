@@ -15,5 +15,5 @@ class UdpSocketConfig:
     # IP-Address of the device that this script is running on
     MyIPAddress: str = '192.168.178.36'
     # IP-Address of the device that will be connected to the socket from the other side.
-    YourIPAddress: str = '192.168.178.44'
+    YourIPAddress: str = '192.168.178.32'
     busLibrary: socket = socket

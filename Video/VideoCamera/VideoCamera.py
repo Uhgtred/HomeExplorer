@@ -24,7 +24,23 @@ class VideoCamera(VideoCameraInterface):
 
     def __setupCamera(self, cameraModule: cv2.VideoCapture, port: int) -> None:
         """
-        Method for setting up the camera.
+        Sets up the camera on the specified port using the provided camera module. This
+        method validates the port, initializes the camera module, and sets the camera
+        resolution.
+
+        :param cameraModule: The camera module to be used for capturing video. If the
+            camera module is callable, it will be instantiated with the provided port
+            and `cv2.CAP_V4L2` flag.
+        :type cameraModule: cv2.VideoCapture
+
+        :param port: The port number to which the camera is connected. Must be an
+            integer.
+        :type port: int
+
+        :raises TypeError: If the provided port is not an integer.
+        :raises BaseException: If there is an error during the camera initialization or
+            resolution setup.
+        :return: None
         """
         if type(port) is not int:
             self.__logger.error("Camera port must be an integer")

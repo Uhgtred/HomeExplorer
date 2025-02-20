@@ -5,14 +5,16 @@ import os
 
 import API
 import Runners
+from ActorControl import ActorController
 from ActorControl.ActorControlFactory import ActorControlFactory
 from BusTransactions.BusFactory import BusFactory
 from Events import EventManager
 from ProjectLogging.Logger import Logger
-from Video import VideoControllerBuilder
+from Video import VideoControllerBuilder, Serializer, Compressor, VideoController
 from Video.Compressor.CompressorFactory import CompressorFactory
 from Video.Serializer.SerializerFactory import SerializerFactory
-from Video.VideoCamera import VideoCameraFactory
+from Video.VideoCamera import VideoCameraFactory, VideoCamera
+from Video.VideoTransmitter import VideoTransmitter
 from Video.VideoTransmitter.VideoTransmitterFactory import VideoTransmitterFactory
 
 # changing working-directory to parent of this file
@@ -85,7 +87,7 @@ class Main:
         """
         self.__logger.info('Setting up steering control...')
         remoteControlSocket = BusFactory.produceUDP_Transceiver(port=self.__ports.get('controllerPort'))
-        actorController = ActorControlFactory.produceActorControl()
+        actorController: ActorController = ActorControlFactory.produceActorControl()
         remoteControlEvent = EventManager.produceEvent('controllerEvent')
         remoteControlEvent.subscribe(actorController.processInput)
         self.__threadRunner.addTask(remoteControlSocket.readBusUntilStopFlag, remoteControlEvent.notifySubscribers)
@@ -115,11 +117,11 @@ class Main:
         :raises KeyError: If the 'videoPort' key is missing in the `self.__ports` dictionary.
         """
         self.__logger.info('Setting up video streaming...')
-        camera = VideoCameraFactory.produceDefaultCameraInstance()
-        serializer = SerializerFactory.produceSerializationMsgPack()
-        transmitter = VideoTransmitterFactory.produceDefaultVideoTransmitter(self.__ports.get('videoPort'))
-        compressor = CompressorFactory.produceCompressorZlib()
-        videoController = (VideoControllerBuilder()
+        camera: VideoCamera = VideoCameraFactory.produceDefaultCameraInstance()
+        serializer: Serializer = SerializerFactory.produceSerializationMsgPack()
+        transmitter: VideoTransmitter = VideoTransmitterFactory.produceDefaultVideoTransmitter(self.__ports.get('videoPort'))
+        compressor: Compressor = CompressorFactory.produceCompressorZlib()
+        videoController: VideoController = (VideoControllerBuilder()
                            .addCamera(camera)
                            .addSerialization(serializer)
                            .addTransmission(transmitter)

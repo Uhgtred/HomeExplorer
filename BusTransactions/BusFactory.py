@@ -36,6 +36,12 @@ class BusFactory:
         return Bus(busPlugin, encoding)
 
     @staticmethod
+    def produceSerialTransceiverStub() -> Bus:
+        encoding: EncodingProtocol = EncodingFactory.arduinoSerialEncoding()
+        busPlugin: BusPluginInterface = BusPluginFactory.produceSerialBusStubPlugin()
+        return Bus(busPlugin, encoding)
+
+    @staticmethod
     def produceUDP_Transceiver(port: int, stub: bool = False) -> Bus:
         """
         Produces a UDP transceiver bus object configured with the specified port and
@@ -59,7 +65,7 @@ class BusFactory:
         return Bus(busPlugin, encoding)
 
     @staticmethod
-    def produceUDP_ImageDataReceiver(port: int, stub: bool = False) -> Bus:
+    def produceUDP_ImageDataReceiver(port: int) -> Bus:
         """
         Creates an UDP-based Image Data Receiver with options for using a stub plugin or
         a real socket plugin, and returns a configured Bus instance which includes the
@@ -72,9 +78,26 @@ class BusFactory:
         :return: An instance of Bus configured with the chosen UDP plugin and encoding protocol.
         :rtype: Bus
         """
-        encoding: EncodingProtocol = EncodingFactory.produceImageReceiverEncoding()
-        if stub:
-            busPlugin: BusPluginInterface = BusPluginFactory.produceUdpStubPlugin(port=port)
-        else:
-            busPlugin: BusPluginInterface = BusPluginFactory.produceUdpSocketPlugin(port=port)
+        encoding: None = None
+        busPlugin: BusPluginInterface = BusPluginFactory.produceUdpSocketPlugin(port=port)
+        return Bus(busPlugin, encoding)
+
+    @staticmethod
+    def produceUDP_ImageDataReceiverStub(port: int) -> Bus:
+        """
+        Creates a stub for an Image Data Receiver using UDP protocol. This factory
+        method enables access to an implementation of a receiver through the
+        specified port number. The returned object will adhere to the Bus interface
+        and is tailored for scenarios involving UDP communication and image data
+        handling.
+
+        :param port: Port number used for the UDP receiver stub. It should be
+            specified as an integer and represents the designated endpoint
+            (in terms of port) for communication.
+        :return: A Bus interface implementation corresponding to an image data
+            receiver stub over UDP.
+        :rtype: Bus
+        """
+        encoding: None = None
+        busPlugin: BusPluginInterface = BusPluginFactory.produceUdpStubPlugin(port=port)
         return Bus(busPlugin, encoding)
