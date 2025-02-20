@@ -22,7 +22,7 @@ class VideoCamera(VideoCameraInterface):
         self.__logger: ProjectLogging.Logger.getLogger = ProjectLogging.Logger('VideoCamera',
                                                                                'VideoCamera.log').getLogger
 
-    def __setupCamera(self, cam: cv2.VideoCapture, port: int) -> None:
+    def __setupCamera(self, cameraModule: cv2.VideoCapture, port: int) -> None:
         """
         Method for setting up the camera.
         """
@@ -31,8 +31,8 @@ class VideoCamera(VideoCameraInterface):
             raise TypeError("Camera port must be an integer")
         # opening camera if the object is callable (not instanced yet).
         try:
-            if callable(cam):
-                self.__cam = cam(port, cv2.CAP_V4L2)
+            if callable(cameraModule):
+                self.__cam: cv2.VideoCapture = cameraModule(port, cv2.CAP_V4L2)
             self.__setResolution()
         except Exception as e:
             raise BaseException(f'Error while trying to setup camera with port {port}: {e}')

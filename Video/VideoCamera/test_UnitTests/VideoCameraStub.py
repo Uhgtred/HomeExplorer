@@ -14,7 +14,7 @@ class VideoCameraStub:
 
     isOpen: bool = False
 
-    def __init__(self, source):
+    def __init__(self, source, *args, **kwargs):
         self.args = None
         self.source = source
         self.isOpen: bool = True
