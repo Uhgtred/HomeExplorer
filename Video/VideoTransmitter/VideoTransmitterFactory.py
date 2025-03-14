@@ -32,5 +32,5 @@ class VideoTransmitterFactory:
         :return: A configured VideoTransmitter instance.
         :rtype: VideoTransmitter
         """
-        bus = BusFactory.produceUDP_ImageDataReceiverStub(port)
+        bus = BusFactory.produceUDP_ImageDataReceiverWithStub(port)
         return VideoTransmitter(bus)
