@@ -2,10 +2,9 @@
 # @author      Markus Kösters
 
 from .Event import Event
-from .EventInterface import EventInterface
 
 
-class EventManager(EventInterface):
+class EventManager:
     """
     Factory-class for EventUser.
     """
@@ -30,8 +29,14 @@ class EventManager(EventInterface):
         :return: List of available Events.
         """
         return list(self.__events.keys())
-    
-    def subscribeEvent(self, eventName: str, callbackMethod: callable) -> None: 
+
+    def subscriberEvent(self, eventName: str, callbackMethod: callable) -> None:
+        """
+        Method for subscribing to a specific event.
+        :param callbackMethod: Method that will be used for the callback (event update).
+        :param eventName: Name of the event.
+        """
         if not callable(callbackMethod):
             return
         self.__events.get(eventName).subscribe(callbackMethod)
+

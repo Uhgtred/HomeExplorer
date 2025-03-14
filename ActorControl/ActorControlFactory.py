@@ -9,7 +9,7 @@ from .ActorController import ActorController
 class ActorControlFactory:
 
     @staticmethod
-    def produceActorControl(transmitterMethod: callable = None) -> ActorController:
+    def produceActorControlXbox(transmitterMethod: callable = None) -> ActorController:
         """
         Creates and returns an instance of ActorController based on the provided
         transmitter method or a default serial bus transceiver. If a custom
@@ -24,9 +24,9 @@ class ActorControlFactory:
         :rtype: ActorController
         """
         if transmitterMethod:
-            return ActorController(transmitterMethod)
+            return ActorController(transmitterMethod, 'xbox_controller')
         actorBus: Bus = BusFactory.produceSerialTransceiver()
-        return ActorController(actorBus.writeSingleMessage)
+        return ActorController(actorBus.writeSingleMessage, 'xbox_controller')
 
     @staticmethod
     def produceActorControlStub() -> ActorController:

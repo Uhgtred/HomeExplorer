@@ -10,7 +10,7 @@ from ActorControl.ActorControlFactory import ActorControlFactory
 class test_ActorControlFactory(unittest.TestCase):
 
     def test_produceActor(self):
-        testObject = ActorControlFactory.produceActorControl(stub=True)
+        testObject = ActorControlFactory.produceActorControlStub()
         self.assertIsInstance(testObject, ActorController)
 
 
