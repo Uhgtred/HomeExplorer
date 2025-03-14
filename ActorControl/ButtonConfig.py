@@ -15,3 +15,10 @@ class ButtonConfig:
         '3': 'CameraXServo',
         '4': 'CameraZServo'
     }))
+
+    default: dict[str, str] = field(default_factory=lambda: ({
+        '2': 'LeftMotor',
+        '5': 'RightMotor',
+        '3': 'CameraXServo',
+        '4': 'CameraZServo'
+    }))
