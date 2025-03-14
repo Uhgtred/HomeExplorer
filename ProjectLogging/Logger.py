@@ -11,6 +11,7 @@ class Logger:
     Console-logs are activated by default and can be deactivated by passing "consoleOutput = False" to the instance.
     This class has to be instanced BEFORE calling the "getLogger" property.
     """
+    DEFAULT_LOG_FILE = './MainLog.log'
 
     def __init__(self, name: str, logFile: str = './MainLog.log', logLevel: int = logging.DEBUG, consoleOutput: bool = True):
         if not logFile.endswith('.log'):
@@ -32,7 +33,7 @@ class Logger:
         :param logger: The logger that this console-streamer is being attached to.
         """
         consoleHandler = logging.StreamHandler()
-        consoleHandler.setLevel(loglevel)  # Only log INFO and above to the console
+        consoleHandler.setLevel(loglevel)
         consoleHandler.setFormatter(formatter)
         logger.addHandler(consoleHandler)
 
@@ -76,3 +77,24 @@ class Logger:
         for file in files:
             if file.endswith('.log'):
                 os.remove(os.path.join(logPath, file))
+
+    @staticmethod
+    def __configure_global_logger(logFile: str, logLevel: int, consoleOutput: bool):
+        """
+        Configures the global logging settings, attaching file and console handlers.
+        """
+        logger = logging.getLogger()  # Get the root logger (shared globally)
+        logger.setLevel(logLevel)
+
+        # Avoid duplicate handlers if the logger has already been configured
+        if not logger.handlers:
+            # Formatter for log messages
+            formatter = Logger.__setupFormatter()
+
+            # Add file handler for logs
+            Logger.__setupFileHandler(logLevel, logFile, formatter, logger)
+
+            # Add optional console handler
+            if consoleOutput:
+                Logger.__setupConsoleHandler(logLevel, formatter, logger)
+

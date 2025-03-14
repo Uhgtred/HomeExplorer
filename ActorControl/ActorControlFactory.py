@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # @author: Markus Kösters
 
-from BusTransactions import Bus
-from BusTransactions.BusFactory import BusFactory
+from ..BusTransactions import Bus
+from ..BusTransactions import BusFactory
 from .ActorController import ActorController
 
 

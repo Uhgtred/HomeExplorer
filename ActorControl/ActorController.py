@@ -4,10 +4,11 @@
 import json
 from inspect import signature
 
-import ProjectLogging
+import logging
+
+from .ButtonsInterface import ButtonsInterface
 from .ActorControlInterface import ActorControlInterface
 from .ButtonConfig import ButtonConfig
-from .UnitTests.TestActorController import Buttons
 
 class ActorController(ActorControlInterface):
     """
@@ -29,8 +30,7 @@ class ActorController(ActorControlInterface):
         input data.
     :type __transmitterMethod: callable
     """
-    __logger: ProjectLogging.Logger.getLogger = ProjectLogging.Logger('ActorController',
-                                                                      'ActorController.log').getLogger
+    __logger: logging.getLogger = logging.getLogger(__name__)
 
     def __init__(self, transmitterMethod: callable, inputDeviceType: str):
         """
@@ -80,7 +80,7 @@ class ActorController(ActorControlInterface):
         if len(methodSignature.parameters) != numberOfArgs:
             raise TypeError(f'Method: {method} shall accept {numberOfArgs} argument(s), got: {len(methodSignature.parameters)}!')
 
-    def processInput(self, buttons: Buttons) -> None:
+    def processInput(self, buttons: ButtonsInterface) -> None:
         """
         Processes input buttons by converting their data into a JSON message and transmitting it.
 
@@ -96,7 +96,7 @@ class ActorController(ActorControlInterface):
         jsonMessage = self._transformValuesToJson(buttonDict)
         self.__transmitterMethod(jsonMessage)
 
-    def _getButtonDict(self, buttons: Buttons) -> dict:
+    def _getButtonDict(self, buttons: ButtonsInterface) -> dict:
         """
         Converts button configuration into a dictionary remapped to the specific input device
         type's button configuration. Supports handling various device types for consistent

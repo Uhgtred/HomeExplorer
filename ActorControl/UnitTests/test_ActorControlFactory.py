@@ -3,8 +3,8 @@
 
 import unittest
 
-from ActorControl.ActorController import ActorController
-from ActorControl.ActorControlFactory import ActorControlFactory
+from ..ActorController import ActorController
+from ..ActorControlFactory import ActorControlFactory
 
 
 class test_ActorControlFactory(unittest.TestCase):

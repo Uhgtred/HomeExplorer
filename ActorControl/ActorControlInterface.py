@@ -4,7 +4,7 @@
 import json
 from abc import ABC, abstractmethod
 
-from ActorControl.ButtonsInterface import ButtonsInterface
+from .ButtonsInterface import ButtonsInterface
 
 
 class ActorControlInterface(ABC):

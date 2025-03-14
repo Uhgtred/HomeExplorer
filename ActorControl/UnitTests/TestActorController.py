@@ -5,8 +5,8 @@ import json
 import unittest
 from dataclasses import field, dataclass
 
-from ActorControl.ActorControlFactory import ActorControlFactory
-from ActorControl.ButtonsInterface import ButtonsInterface
+from ..ActorControlFactory import ActorControlFactory
+from ..ButtonsInterface import ButtonsInterface
 
 
 @dataclass
