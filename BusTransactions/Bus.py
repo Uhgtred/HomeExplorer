@@ -4,6 +4,7 @@
 import inspect
 import threading
 
+import ProjectLogging
 from .BusPlugins import BusPluginInterface
 from .Encoding.BusEncodings import EncodingProtocol
 from .BusInterface import BusInterface
@@ -23,15 +24,16 @@ class Bus(BusInterface):
         self.__stopFlag: bool = False
         self.encoding: EncodingProtocol = encoding
         self.bus: BusPluginInterface = bus
+        self.__logger: ProjectLogging.Logger.getLogger = ProjectLogging.Logger('Bus', 'Bus.log').getLogger
 
     def readSingleMessage(self) -> EncodingProtocol.decode:
         """
         Read and decode a single message from the bus.
         :return: Decoded message in string format.
         """
-        if self.encoding is None:
-            return self.bus.readBus()
-        return self.encoding.decode(self.bus.readBus())
+        message: any = self.encoding.decode(self.bus.readBus())
+        self.__logger.debug(f'Message that has been received: {message}')
+        return message
 
     def readBusUntilStopFlag(self, callbackMethod: callable, *args, **kwargs) -> None:
         """
@@ -52,10 +54,13 @@ class Bus(BusInterface):
         """
         while not self.__stopFlag:
             try:
+                self.__logger.debug(f'Trying to read a message with callback-method {self.readSingleMessage.__name__}\n'
+                                    f'\twith args: {args}\n'
+                                    f'\tand kwargs: {kwargs}'
+                                    f'\ton bus: {self.bus.__class__.__name__}')
                 callbackMethod(self.readSingleMessage(), *args, **kwargs)
             except Exception as e:
-                # Todo: Log-warning for this case!
-                pass
+                self.__logger.error(f'Error while reading message: {e}')
 
     @staticmethod
     def __callBackHasInputArg(callbackMethod: callable) -> None:
@@ -72,14 +77,14 @@ class Bus(BusInterface):
         else:
             raise TypeError("Callback-method is not callable.")
 
-    def writeSingleMessage(self, message: any) -> None:
+    def writeSingleMessage(self, message: any, verbose: bool = False) -> None:
         """
         Sending an encoded message to the bus.
+        :param verbose: Makes the method return command-line output.
         :param message: Message that will be sent to the bus.
         """
-        if self.encoding is None:
-            self.bus.writeBus(message)
-            return
+        if verbose:
+            self.__logger.debug(f'Sending message: {message} to bus: {self.bus.__class__.__name__}')
         self.bus.writeBus(self.encoding.encode(message))
 
     @property
