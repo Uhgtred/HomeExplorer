@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # @author: Markus Kösters
 
+import logging
+
 import cv2
 import msgpack
 import numpy
@@ -12,7 +14,7 @@ from Video.Serializer import SerializerInterface
 class SerializerMsgPack(SerializerInterface):
 
     def __init__(self):
-        self.__logger: Logger.getLogger = Logger('SerializerMsgPack','SerializerLog.log').getLogger
+        self.__logger: logging.Logger = logging.getLogger(__name__)
 
     def serialize(self, imageData: numpy.ndarray = None, filePath: str = '') -> bytes:
         """
@@ -42,9 +44,23 @@ class SerializerMsgPack(SerializerInterface):
         return serializedData
 
     def deserialize(self, data: bytes) -> any:
-        payload = msgpack.unpackb(data)
-        frameData = payload.get(b'frameData')  # Access the frame
-        frameData = numpy.frombuffer(frameData, dtype=numpy.uint8) # or numpy.ndarray?
-        # Todo: i have no idea what cv2.imdecode is returning. The documentations are really bad for opencv.
+        """
+        Deserializes a given byte array into an image frame object.
+
+        This method takes a serialized byte array in the MessagePack format,
+        extracts the frame data, decodes it into an image format using OpenCV,
+        and returns the corresponding image frame.
+
+        :param data: A byte array representing the serialized payload in
+                     MessagePack format.
+        :type data: bytes
+        :return: Decoded image frame extracted from the serialized data.
+        :rtype: any
+        # Todo: Check if this code could be more modular (i am serializing and decoding image-data, which makes it only usable for image-data).
+                If i split the code into two functions, it would be more modular and could potentially also be used for other data types.
+        """
+        payload: dict = msgpack.unpackb(data)
+        frameData: numpy.ndarray = payload.get('frameData')  # Access the frame-data
+        frameData: numpy.ndarray = numpy.frombuffer(frameData, dtype=numpy.uint8)
         imageframe = cv2.imdecode(frameData, cv2.IMREAD_COLOR)
         return imageframe
