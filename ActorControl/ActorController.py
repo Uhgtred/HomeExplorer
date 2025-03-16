@@ -38,7 +38,9 @@ class ActorController(ActorControlInterface):
         :param inputDeviceType: This defines which input-device is connected. For example 'xbox_controller'.
         """
         self.__inputDeviceType: str = inputDeviceType
-        self.__checkInputArgs(transmitterMethod, 1)
+        print(f'transmitterMethod: {transmitterMethod}, {signature(transmitterMethod)}')
+        self.__logger.debug(f'Input Device Type: {self.__inputDeviceType}')
+        self.__checkInputArgs(transmitterMethod, 2)
         self.__transmitterMethod = transmitterMethod
 
     @staticmethod
@@ -76,8 +78,8 @@ class ActorController(ActorControlInterface):
         :param method: Method to check.
         """
         # raising exception if method does not accept any input-arguments.
-        methodSignature = signature(method)
-        if len(methodSignature.parameters) != numberOfArgs:
+        methodSignature: signature = signature(method)
+        if len(methodSignature.parameters) > numberOfArgs:
             raise TypeError(f'Method: {method} shall accept {numberOfArgs} argument(s), got: {len(methodSignature.parameters)}!')
 
     def processInput(self, buttons: ButtonsInterface) -> None:

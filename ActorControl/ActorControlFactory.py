@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 # @author: Markus Kösters
+import logging
 
+from ..BusTransactions.BusFactory import BusFactory
 from ..BusTransactions import Bus
-from ..BusTransactions import BusFactory
 from .ActorController import ActorController
 
 
 class ActorControlFactory:
+
+    __logger: logging.Logger = logging.getLogger(__name__)
 
     @staticmethod
     def produceActorControlXbox(transmitterMethod: callable = None) -> ActorController:
@@ -42,5 +45,10 @@ class ActorControlFactory:
         :returns: A mocked instance of ActorController.
         :rtype: ActorController
         """
-        actorBus: Bus = BusFactory.produceSerialTransceiverStub()
-        return ActorController(actorBus.writeSingleMessage)
+        ActorControlFactory.__logger.debug(f'ActorControlFactory: Creating stub bus')
+        actorBus: Bus = BusFactory.produceSerialTransceiverWithStub()
+        ActorControlFactory.__logger.debug(f'ActorControlFactory: Using stub bus: {actorBus}')
+        ActorControlFactory.__logger.debug(f'ActorControlFactory: Stub bus: {actorBus.bus}')
+        actorController: ActorController = ActorController(actorBus.writeSingleMessage, 'xbox_controller')
+        ActorControlFactory.__logger.debug(f'ActorController created: {actorController}')
+        return actorController
