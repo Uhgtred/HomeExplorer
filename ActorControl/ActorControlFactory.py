@@ -47,8 +47,7 @@ class ActorControlFactory:
         """
         ActorControlFactory.__logger.debug(f'ActorControlFactory: Creating stub bus')
         actorBus: Bus = BusFactory.produceSerialTransceiverWithStub()
-        ActorControlFactory.__logger.debug(f'ActorControlFactory: Using stub bus: {actorBus}')
-        ActorControlFactory.__logger.debug(f'ActorControlFactory: Stub bus: {actorBus.bus}')
+        ActorControlFactory.__logger.debug(f'Using stub bus: {actorBus}')
         actorController: ActorController = ActorController(actorBus.writeSingleMessage, 'xbox_controller')
         ActorControlFactory.__logger.debug(f'ActorController created: {actorController}')
         return actorController
