@@ -3,11 +3,10 @@
 
 import unittest
 
-from ..ActorController import ActorController
-from ..ActorControlFactory import ActorControlFactory
+from ActorControl import ActorControlFactory, ActorController
 
 
-class test_ActorControlFactory(unittest.TestCase):
+class TestActorControlFactory(unittest.TestCase):
 
     def test_produceActor(self):
         """
@@ -19,12 +18,7 @@ class test_ActorControlFactory(unittest.TestCase):
 
         :return: None
         """
-        print(f'!!!!!!!!!!!!!!!!!!!!!!! shit {ActorControlFactory}!!!!!!!!!!!!!!!!!!!!!!11')
-        try:
-            testObject = ActorControlFactory.produceActorControlStub()
-        except Exception as e:
-            print(e)
-        print(f'!!!!!!!!!!!!!!!!!!!!!!! DAFUQ{type(testObject)}!!!!!!!!!!!!!!!!!!!!!!11')
+        testObject = ActorControlFactory.produceActorControlStub()
         self.assertIsInstance(testObject, ActorController)
 
 
