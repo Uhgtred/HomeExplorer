@@ -87,7 +87,7 @@ class Main:
         """
         self.__logger.info('Setting up steering control...')
         remoteControlSocket = BusFactory.produceUDP_Transceiver(port=self.__ports.get('controllerPort'))
-        actorController: ActorController = ActorControlFactory.produceActorControl()
+        actorController: ActorController = ActorControlFactory.produceActorControlXbox()
         remoteControlEvent = EventManager.produceEvent('controllerEvent')
         remoteControlEvent.subscribe(actorController.processInput)
         self.__threadRunner.addTask(remoteControlSocket.readBusUntilStopFlag, remoteControlEvent.notifySubscribers)

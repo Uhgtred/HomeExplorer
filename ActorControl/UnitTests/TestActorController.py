@@ -5,9 +5,7 @@ import json
 import unittest
 from dataclasses import field, dataclass
 
-from ActorControl.ActorControlFactory import ActorControlFactory
-from ActorControl.ButtonsInterface import ButtonsInterface
-
+from ..ActorControlFactory import ActorControlFactory
 
 @dataclass
 class ButtonData:
@@ -31,18 +29,18 @@ class Buttons:
         return buttonDict
 
 
-class test_ActorController(unittest.TestCase):
+class TestActorController(unittest.TestCase):
 
     def setUp(self):
         self.buttons = Buttons
         self.message = None
 
     def test_transmitterWrongNumberOfArguments(self):
-        self.assertRaises(TypeError, ActorControlFactory.produceActorControl, transmitterMethod=self.transmitterHelperMethod2Arguments)
+        self.assertRaises(TypeError, ActorControlFactory.produceActorControlXbox, transmitterMethod=self.transmitterHelperMethod2Arguments)
 
     def test_processInput(self):
-        actorController = ActorControlFactory.produceActorControl(transmitterMethod=self.transmitterHelperMethod)
-        actorController.processInput(buttons=self.buttons)
+        actorController = ActorControlFactory.produceActorControlXbox(transmitterMethod=self.transmitterHelperMethod)
+        actorController.processInput(buttons=self.buttons.getButtonDict)
         # creating the json-string manually
         buttonData = actorController._getButtonDict(self.buttons)
         self.assertEqual(json.dumps(buttonData), self.message)

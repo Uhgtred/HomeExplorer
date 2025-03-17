@@ -1,15 +1,18 @@
 #!/usr/bin/env python3
 # @author: Markus Kösters
+import logging
 
-from BusTransactions import Bus
-from BusTransactions.BusFactory import BusFactory
+from ..BusTransactions.BusFactory import BusFactory
+from ..BusTransactions import Bus
 from .ActorController import ActorController
 
 
 class ActorControlFactory:
 
+    __logger: logging.Logger = logging.getLogger(__name__)
+
     @staticmethod
-    def produceActorControl(transmitterMethod: callable = None) -> ActorController:
+    def produceActorControlXbox(transmitterMethod: callable = None) -> ActorController:
         """
         Creates and returns an instance of ActorController based on the provided
         transmitter method or a default serial bus transceiver. If a custom
@@ -24,9 +27,9 @@ class ActorControlFactory:
         :rtype: ActorController
         """
         if transmitterMethod:
-            return ActorController(transmitterMethod)
+            return ActorController(transmitterMethod, 'xbox_controller')
         actorBus: Bus = BusFactory.produceSerialTransceiver()
-        return ActorController(actorBus.writeSingleMessage)
+        return ActorController(actorBus.writeSingleMessage, 'xbox_controller')
 
     @staticmethod
     def produceActorControlStub() -> ActorController:
@@ -42,5 +45,9 @@ class ActorControlFactory:
         :returns: A mocked instance of ActorController.
         :rtype: ActorController
         """
-        actorBus: Bus = BusFactory.produceSerialTransceiverStub()
-        return ActorController(actorBus.writeSingleMessage)
+        ActorControlFactory.__logger.debug(f'ActorControlFactory: Creating stub bus')
+        actorBus: Bus = BusFactory.produceSerialTransceiverWithStub()
+        ActorControlFactory.__logger.debug(f'Using stub bus: {actorBus}')
+        actorController: ActorController = ActorController(actorBus.writeSingleMessage, 'xbox_controller')
+        ActorControlFactory.__logger.debug(f'ActorController created: {actorController}')
+        return actorController

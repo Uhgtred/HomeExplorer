@@ -116,7 +116,7 @@ class VideoCamera(VideoCameraInterface):
         while self.__cam is not None and self.__cam.isOpened():
             # state returns false if the frame could not be read, else returns true.
             state, frame = self.__cam.read()
-            self.__logger.debug(f"Frame read from camera: {frame}.")
+            self.__logger.debug(f"Frame read from camera! Length of frame: {len(frame)}.")
             if not state:
                 self.__logger.error("Could not read frame from camera!\n"
                                     f" State of the camera is: {state}. Unknown error of the camera.")
