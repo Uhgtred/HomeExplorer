@@ -6,8 +6,6 @@ import unittest
 from dataclasses import field, dataclass
 
 from ..ActorControlFactory import ActorControlFactory
-from ..ButtonsInterface import ButtonsInterface
-
 
 @dataclass
 class ButtonData:
