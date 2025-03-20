@@ -30,7 +30,7 @@ class EventManager:
         """
         return list(self.__events.keys())
 
-    def subscriberEvent(self, eventName: str, callbackMethod: callable) -> None:
+    def subscribeToEvent(self, eventName: str, callbackMethod: callable) -> None:
         """
         Method for subscribing to a specific event.
         :param callbackMethod: Method that will be used for the callback (event update).
