@@ -2,8 +2,8 @@
 # @author: Markus Kösters
 import logging
 
-from ..BusTransactions.BusFactory import BusFactory
-from ..BusTransactions import Bus
+from BusTransactions import Bus
+from BusTransactions.BusFactory import BusFactory
 from .ActorController import ActorController
 
 
