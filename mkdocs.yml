@@ -1,0 +1,9 @@
+site_name: HomeExplorer
+site_description: Documentation for HomeExplorer Robot Project
+theme:
+  name: material
+nav:
+  - Home: index.md
+  - Features: features.md
+  - Setup: setup.md
+
