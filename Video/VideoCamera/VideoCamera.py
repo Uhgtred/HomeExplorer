@@ -116,15 +116,17 @@ class VideoCamera(VideoCameraInterface):
         while self.__cam is not None and self.__cam.isOpened():
             # state returns false if the frame could not be read, else returns true.
             state, frame = self.__cam.read()
+            if not len(frame):
+                continue
             self.__logger.debug(f"Frame read from camera! Length of frame: {len(frame)}.")
             if not state:
-                self.__logger.error("Could not read frame from camera!\n"
+                self.__logger.error("Could not read frame from camera!\n" 
                                     f" State of the camera is: {state}. Unknown error of the camera.")
             # executing any 1s/fps so for 1s/30fps it will execute any 0.0333seconds
             # sleeping the program is no option because the buffer of the camera will then cause lag
             if time.time() - __startTime >= self.__videoFPS:
                 # calling the defined callback-method and passing it the frame recorded.
-                self.__logger.debug(f"Calling callback-method: {callbackMethod.__name__}, with frame: {frame}.")
+                self.__logger.debug(f"Calling callback-method: {callbackMethod.__name__}, with frame-length: {len(frame)}.")
                 callbackMethod(frame)
                 __startTime = time.time()
 

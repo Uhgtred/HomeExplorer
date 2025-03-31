@@ -119,11 +119,11 @@ class Main:
         self.__logger.info('Setting up video streaming...')
         camera: VideoCamera = VideoCameraFactory.produceDefaultCameraInstance()
         serializer: Serializer = SerializerFactory.produceSerializationMsgPack()
-        transmitter: VideoTransmitter = VideoTransmitterFactory.produceDefaultVideoTransmitter(self.__ports.get('videoPort'))
+        transmitter: VideoTransmitter = VideoTransmitterFactory.produceVideoTransmitterNoEncoding(self.__ports.get('videoPort'))
         compressor: Compressor = CompressorFactory.produceCompressorZlib()
         videoController: VideoController = (VideoControllerBuilder()
                            .addCamera(camera)
-                           .addSerialization(serializer)
+                           .addSerialization(serializer)  # Could be that this caused all the issues. This could have encoded the data twice!
                            .addTransmission(transmitter)
                            .addCompression(compressor)
                            .build())

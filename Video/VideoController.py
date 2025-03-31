@@ -100,7 +100,13 @@ class VideoController:
 
     def start(self) -> None:
         """
-        Method that starts the VideoController and starts the video processing.
+        Starts the video stream by reading the camera input in a loop and processing
+        each frame using the specified processing function. Ensures that the method
+        does not start the video stream if it is already running. If the associated
+        camera has not been initialized, an exception is raised, and a corresponding
+        error is logged.
+
+        :raises Exception: Raised if the camera has not been initialized.
         """
         if not self.isRunning and self.__camera is not None:
             self.isRunning = True
@@ -120,15 +126,26 @@ class VideoController:
 
     def __processFrame(self, imageFrame: numpy.ndarray) -> None:
         """
-        Private Method for processing the video frame.
-        :param imageFrame: Image frame that will be processed.
+        Processes a single image frame through a series of pipeline steps which
+        include filtering, serializing, compressing, and transmission. The function
+        is designed to handle image frames in a numpy array format and applies these
+        steps sequentially to prepare the frame for transmission.
+
+        :param imageFrame: The input image frame to be processed. The frame must be
+            a numpy array representing the image to be filtered, serialized, and
+            compressed. If the input is None, the processing is skipped.
+
+        :return: This method does not return any value.
         """
         if imageFrame is None:
             return
         filteredImage: numpy.ndarray = self.__filter(imageFrame)
+        self.__logger.debug(f'Filtered Image Frame of type {type(filteredImage)}')
         # numpy.ndarray is not the real type here but some compression-format
         serializedImageData: bytes = self.__serialize(filteredImage)
+        self.__logger.debug(f'Serialized Image Frame of type {type(serializedImageData)}')
         compressedImage: bytes = self.__compress(serializedImageData)
+        self.__logger.debug(f'Compressed Image Frame of type {type(compressedImage)}')
         self.__transmit(compressedImage)
 
     def __filter(self, imageFrame: numpy.ndarray) -> numpy.ndarray:
@@ -147,22 +164,18 @@ class VideoController:
         :param imageFrame: Image frame that will be compressed.
         :return: Compressed image-data.
         """
-        return self.__compression.compress(imageFrame)
+        return imageFrame if self.__compression is None else self.__compression.compress(imageFrame)
 
-    def __serialize(self, imageFrame: numpy.ndarray) -> bytes:
+    def __serialize(self, imageFrame: numpy.ndarray) -> bytes | numpy.ndarray:
         """
         Private Method for serializing the video data.
         :param imageFrame: Image frame that will be serialized.
         :return: Serialized image file-path.
         """
-        self.__logger.debug(f'Serializing Image Frame {imageFrame}')
+        self.__logger.debug(f'Serializing Image Frame of type {type(imageFrame)}')
         if self.__serialization is not None:
             return self.__serialization.serialize(imageFrame)
-        else:
-            exceptionMessage: str = ('Unable to serialize Image Frame. No transmission object set. Unserialized Image'
-                                     ' Frame cannot be transmitted.')
-            self.__logger.exception(exceptionMessage)
-            raise Exception(exceptionMessage)
+        return imageFrame
 
     def __transmit(self, frameData: bytes) -> None:
         """

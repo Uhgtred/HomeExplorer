@@ -159,3 +159,42 @@ class ImageDataAsMsgPackEncoding(EncodingProtocol):
         imageframe: numpy.ndarray = cv2.imdecode(frameData, cv2.IMREAD_COLOR)
         return imageframe
 
+
+class NoEncoding(EncodingProtocol):
+    """
+    Provides a no-operation encoding and decoding protocol.
+
+    This class implements the EncodingProtocol but does not alter the data
+    during encoding or decoding. It ensures that the input and output are
+    identical. Useful in scenarios where no transformation of the data
+    is required.
+    """
+
+    @staticmethod
+    def encode(message: any) -> any:
+        """
+        Encodes the provided message and returns it. This method is a placeholder,
+        demonstrating a simple implementation that takes any input and directly
+        returns it without any modifications.
+
+        :param message: The message to be encoded.
+        :type message: Any
+        :return: The same message that was provided as input.
+        :rtype: Any
+        """
+        return message
+
+    @staticmethod
+    def decode(message: any) -> any:
+        """
+        Decodes the given message and returns the same as output. This function
+        can handle any type of input for the `message` parameter, and it returns
+        the exact same type that was inputted. This static method does not
+        modify or process the input in any substantial way, serving primarily
+        as a placeholder or identity function.
+
+        :param message: The input message of any type that will be returned
+                        directly.
+        :return: The input message is returned as-is without any modification.
+        """
+        return message

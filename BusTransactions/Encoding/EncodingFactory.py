@@ -62,3 +62,19 @@ class EncodingFactory:
         :return: An instance of `BusEncodings` configured for image data with MessagePack encoding.
         """
         return BusEncodings.ImageDataAsMsgPackEncoding()
+
+    @staticmethod
+    def produceNoEncoding() -> BusEncodings:
+        """
+        Produces an instance of `BusEncodings` with no encoding applied.
+
+        This method is a static method that creates and returns an instance of
+        `BusEncodings` specific for cases requiring no encoding. It serves as
+        a utility function to facilitate the creation of `BusEncodings.NoEncoding()`
+        objects directly without additional parameters.
+
+        :return: Returns an object of type `BusEncodings` with no encoding
+            configured.
+        :rtype: BusEncodings
+        """
+        return BusEncodings.NoEncoding()

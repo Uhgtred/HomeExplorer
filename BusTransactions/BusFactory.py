@@ -134,3 +134,22 @@ class BusFactory:
         encoding: EncodingProtocol = EncodingFactory.produceImageReceiverEncoding()
         busPlugin: BusPluginInterface = BusPluginFactory.produceUdpStubPlugin(port=port)
         return Bus(busPlugin, encoding)
+
+    @staticmethod
+    def produceUDP_TransceiverNoEncoding(port: int) -> Bus:
+        """
+        Creates and returns a UDP transceiver with no encoding.
+
+        This static method initializes and configures a UDP transceiver by generating an
+        instance of a `Bus` object using a no-encoding protocol and a UDP socket plugin.
+        It facilitates the use of network communication where data needs to be sent or
+        received over a UDP socket without any specific encoding applied.
+
+        :param port: The port number for the UDP socket plugin.
+        :type port: int
+        :return: An instance of `Bus` configured with a UDP socket plugin and no encoding.
+        :rtype: Bus
+        """
+        encoding: EncodingProtocol = EncodingFactory.produceNoEncoding()
+        busPlugin: BusPluginInterface = BusPluginFactory.produceUdpSocketPlugin(port=port)
+        return Bus(busPlugin, encoding)
