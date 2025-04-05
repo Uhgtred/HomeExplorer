@@ -4,11 +4,11 @@
 import json
 from inspect import signature
 
-import logging
-
-from .ButtonsInterface import ButtonsInterface
+import ProjectLogging
 from .ActorControlInterface import ActorControlInterface
 from .ButtonConfig import ButtonConfig
+from .ButtonsInterface import ButtonsInterface
+
 
 class ActorController(ActorControlInterface):
     """
@@ -30,7 +30,8 @@ class ActorController(ActorControlInterface):
         input data.
     :type __transmitterMethod: callable
     """
-    __logger: logging.getLogger = logging.getLogger(__name__)
+    __logger: ProjectLogging.Logger.getLogger = ProjectLogging.Logger('ActorController',
+                                                                      'ActorController.log').getLogger
 
     def __init__(self, transmitterMethod: callable, inputDeviceType: str):
         """
@@ -110,7 +111,8 @@ class ActorController(ActorControlInterface):
             type defined by the instance's configuration.
         :rtype: dict
         """
-        buttonDict: dict = buttons.getButtonDict
+        self.__logger.debug(f'Getting button dict from {buttons}')
+        buttonDict: dict = buttons # Todo: This was really good. This needs to be reimplemented
         match self.__inputDeviceType.lower():
             case 'xbox_controller': return self.__remapButtons(buttonDict, ButtonConfig().xBox)
             case default: return self.__remapButtons(buttonDict, ButtonConfig().default)

@@ -89,8 +89,10 @@ void MotorControl(){
     //reading the data from array which is being provided through the serial-connection
     RMotorValue = readJsonValue("RightMotor");
     LMotorValue = readJsonValue("LeftMotor");
-    _evaluateMotorDirection(RMotorFPin, RMotorRPin, RMotorValue);
+    SetLeftMotorsZero();
     _evaluateMotorDirection(LMotorFPin, LMotorRPin, LMotorValue);
+    SetRightMotorsZero();
+    _evaluateMotorDirection(RMotorFPin, RMotorRPin, RMotorValue);
 }
 
 void _evaluateMotorDirection(unsigned short forwardMotorPin,unsigned short rewardMotorPin, int motorValue){
@@ -107,9 +109,9 @@ void _evaluateMotorDirection(unsigned short forwardMotorPin,unsigned short rewar
         analogWrite(forwardMotorPin, motorValue);
 //        Serial.println(LMotorValue);  // debugging-line
     }
-    else {
-        SetMotorsZero();
-    }
+//     else {
+//         SetMotorsZero();
+//     }
 }
 
 void ServoControl() {
