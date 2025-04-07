@@ -16,15 +16,7 @@ class CameraConfigTest(unittest.TestCase):
         self.assertEqual(config.FPS, fps)
         self.assertEqual(config.Resolution, resolution)
 
-    # Thought this will not be accepted. But typehints really only seem to be hints for dataclasses as well
-    # Todo: find some other way to verify the types of the attributes
-    # def test_CameraConfigNegative(self):
-    #     port = 'hans'
-    #     resolution = '300x200'
-    #     fps = -1
-    #     config = CameraConfig(fps, port, resolution)
-    #     print(config)
-
+    # Todo: implement negative testcase!
 
 if __name__ == '__main__':
     unittest.main()

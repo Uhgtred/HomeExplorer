@@ -1,20 +1,19 @@
 #!/usr/bin/env python3
 # @author: Markus Kösters
 
-import logging
-
 import cv2
 import msgpack
 import numpy
 
-from ProjectLogging import Logger
+import ProjectLogging
 from Video.Serializer import SerializerInterface
 
 
 class SerializerMsgPack(SerializerInterface):
 
     def __init__(self):
-        self.__logger: logging.Logger = logging.getLogger(__name__)
+        self.__logger: ProjectLogging.Logger.getLogger = ProjectLogging.Logger('SerializerMsgPack',
+                                                                               'SerializerMsgPack.log').getLogger
 
     def serialize(self, imageData: numpy.ndarray = None, filePath: str = '') -> bytes:
         """
