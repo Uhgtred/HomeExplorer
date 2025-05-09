@@ -3,6 +3,7 @@
 
 import logging
 import os.path
+import typing
 
 
 class Logger:
@@ -65,7 +66,7 @@ class Logger:
                                  datefmt='%d-%m-%Y %H:%M:%S')
 
     @property
-    def getLogger(self):
+    def getLogger(self) -> logging.Logger:
         """
         Provides a property method to access the private logger instance.
 

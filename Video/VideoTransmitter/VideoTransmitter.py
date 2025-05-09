@@ -4,6 +4,8 @@
 import logging
 
 from BusTransactions.BusFactory import BusFactory
+
+from BusTransactions.BusInterface import BusInterface
 from Video.VideoTransmitter.VideoTransmitterInterface import VideoTransmitterInterface
 
 
@@ -21,7 +23,7 @@ class VideoTransmitter(VideoTransmitterInterface):
             Ontop the implementation and the concept for the compression inside the BusTransactions-package would be needed.
     """
 
-    def __init__(self, bus: BusFactory.produceUDP_Transceiver):
+    def __init__(self, bus: BusInterface):
         """
         Initializes the VideoTransmitter with a serializer and bus.
         :param bus: The bus used to transmit the serialized video frames.

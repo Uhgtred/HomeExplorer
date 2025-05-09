@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # @author: Markus Kösters
+
 import typing
 
 from Video.Compressor.CompressorInterface import CompressorInterface
@@ -20,14 +21,6 @@ class VideoControllerBuilder:
 
     def addFiltering(self, filtering) -> typing.Self:
         self.videoController.setFiltering(filtering)
-        return self
-
-    def addSerialization(self, serialization: SerializerInterface) -> typing.Self:
-        self.videoController.setSerialization(serialization)
-        return self
-
-    def addCompression(self, compression: CompressorInterface) -> typing.Self:
-        self.videoController.setCompression(compression)
         return self
 
     def addTransmission(self, transmission: VideoTransmitterInterface) -> typing.Self:

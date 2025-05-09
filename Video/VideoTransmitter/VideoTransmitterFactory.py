@@ -13,7 +13,7 @@ class VideoTransmitterFactory:
         Factory method for producing an instance of a default video-transmission object.
         :return: Video-transmission instance-object.
         """
-        bus = BusFactory.produceUDP_ImageDataReceiver(port=port)
+        bus = BusFactory.produceUDP_ImageDataTransceiver(port=port)
         return VideoTransmitter(bus)
 
     @staticmethod
@@ -32,7 +32,7 @@ class VideoTransmitterFactory:
         :return: A configured VideoTransmitter instance.
         :rtype: VideoTransmitter
         """
-        bus = BusFactory.produceUDP_ImageDataReceiverWithStub(port)
+        bus = BusFactory.produceUDP_ImageDataTransceiverWithStub(port)
         return VideoTransmitter(bus)
 
     @staticmethod

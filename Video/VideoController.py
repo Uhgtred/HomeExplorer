@@ -1,14 +1,11 @@
 #!/usr/bin/env python3
 # @author: Markus Kösters
-from logging import exception
 
 import numpy
 
-from ProjectLogging import Logger
-from Video.Compressor.CompressorInterface import CompressorInterface
+import ProjectLogging
 from Video.VideoCamera import VideoCameraInterface
 from Video.VideoFilter import VideoFilterInterface
-from Video.Serializer import SerializerInterface
 from Video.VideoTransmitter import VideoTransmitterInterface
 
 
@@ -25,6 +22,8 @@ class VideoController:
     """
 
     isRunning: bool = False
+    __logger: ProjectLogging.Logger.getLogger = ProjectLogging.Logger('VideoController',
+                                                                      'VideoControllerLog.log').getLogger
 
     def __init__(self):
         """
@@ -42,22 +41,13 @@ class VideoController:
             __filtering (VideoFilterInterface | None): Represents the video filtering
                 module responsible for processing and filtering video data. Adheres to the
                 VideoFilterInterface.
-            __serialization (SerializerInterface | None): Handles the serialization
-                of video data, making it ready for further processing such as transmission
-                or storage. It implements SerializerInterface.
-            __compression (CompressorInterface | None): Represents the module responsible
-                for compressing video data. The component can reduce bandwidth usage in
-                transmission processes. Follows the CompressorInterface.
             __transmission (VideoTransmitterInterface | None): Manages the transmission
                 of processed video data to the designated target. It is implemented
                 according to VideoTransmitterInterface.
         """
         self.__camera: VideoCameraInterface | None = None
         self.__filtering: VideoFilterInterface | None = None
-        self.__serialization: SerializerInterface | None = None
-        self.__compression: CompressorInterface | None = None
         self.__transmission: VideoTransmitterInterface | None = None
-        self.__logger: Logger.getLogger = Logger('VideoController', 'VideoControllerLog.log').getLogger
 
     def setCamera(self, camera: VideoCameraInterface) -> None:
         """
@@ -66,30 +56,12 @@ class VideoController:
         """
         self.__camera = camera
 
-    def setSerialization(self, serialization: SerializerInterface) -> None:
-        """
-        Sets the serialization strategy for the VideoController.
-
-        The method sets the SerializerInterface (serialization strategy) object,
-        which will be used by the VideoController to serialize data.
-
-        :param serialization: The serialization object to be used by the VideoController.
-        """
-        self.__serialization = serialization
-
     def setFiltering(self, filtering: VideoFilterInterface) -> None:
         """
         Setter-Method for the filtering of video data. Not yet implemented.
         :param filtering: VideoFilter that will be applied to the video data.
         """
         self.__logger.warning('Filtering has not been implemented yet!')
-
-    def setCompression(self, compression: CompressorInterface) -> None:
-        """
-        Setter-Method for the compression of video data.
-        :param compression: Compressor that will be used to compress video data.
-        """
-        self.__compression = compression
 
     def setTransmission(self, transmission: VideoTransmitterInterface) -> None:
         """
@@ -109,7 +81,7 @@ class VideoController:
         :raises Exception: Raised if the camera has not been initialized.
         """
         if not self.isRunning and self.__camera is not None:
-            self.isRunning = True
+            self.isRunning: bool = True
             self.__camera.readCameraInLoop(self.__processFrame)
         elif self.__camera is None:
             exceptionMessage: str = "VideoCamera not initialized! Cannot start video stream!"
@@ -142,11 +114,7 @@ class VideoController:
         filteredImage: numpy.ndarray = self.__filter(imageFrame)
         self.__logger.debug(f'Filtered Image Frame of type {type(filteredImage)}')
         # numpy.ndarray is not the real type here but some compression-format
-        serializedImageData: bytes = self.__serialize(filteredImage)
-        self.__logger.debug(f'Serialized Image Frame of type {type(serializedImageData)}')
-        compressedImage: bytes = self.__compress(serializedImageData)
-        self.__logger.debug(f'Compressed Image Frame of type {type(compressedImage)}')
-        self.__transmit(compressedImage)
+        self.__transmit(filteredImage)
 
     def __filter(self, imageFrame: numpy.ndarray) -> numpy.ndarray:
         """
@@ -156,25 +124,6 @@ class VideoController:
         """
         if self.__filtering is not None:
             self.__logger.warning('Filtering not yet implemented!')
-        return imageFrame
-
-    def __compress(self, imageFrame: bytes) -> bytes:
-        """
-        Private Method for compressing the video data.
-        :param imageFrame: Image frame that will be compressed.
-        :return: Compressed image-data.
-        """
-        return imageFrame if self.__compression is None else self.__compression.compress(imageFrame)
-
-    def __serialize(self, imageFrame: numpy.ndarray) -> bytes | numpy.ndarray:
-        """
-        Private Method for serializing the video data.
-        :param imageFrame: Image frame that will be serialized.
-        :return: Serialized image file-path.
-        """
-        self.__logger.debug(f'Serializing Image Frame of type {type(imageFrame)}')
-        if self.__serialization is not None:
-            return self.__serialization.serialize(imageFrame)
         return imageFrame
 
     def __transmit(self, frameData: bytes) -> None:

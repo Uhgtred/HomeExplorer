@@ -8,6 +8,9 @@ import Runners
 from ActorControl import ActorController
 from ActorControl.ActorControlFactory import ActorControlFactory
 from BusTransactions.BusFactory import BusFactory
+
+from BusTransactions.BusInterface import BusInterface
+from BusTransactions.DefaultBusFactory import DefaultBusFactory
 from Events import EventManager
 from ProjectLogging.Logger import Logger
 from Video import VideoControllerBuilder, Serializer, Compressor, VideoController
@@ -118,14 +121,10 @@ class Main:
         """
         self.__logger.info('Setting up video streaming...')
         camera: VideoCamera = VideoCameraFactory.produceDefaultCameraInstance()
-        serializer: Serializer = SerializerFactory.produceSerializationMsgPack()
-        transmitter: VideoTransmitter = VideoTransmitterFactory.produceVideoTransmitterNoEncoding(self.__ports.get('videoPort'))
-        compressor: Compressor = CompressorFactory.produceCompressorZlib()
+        transmitter: BusInterface = DefaultBusFactory.produceUDP_ImageDataTransceiver(self.__ports.get('videoPort'))
         videoController: VideoController = (VideoControllerBuilder()
                            .addCamera(camera)
-                           .addSerialization(serializer)  # Could be that this caused all the issues. This could have encoded the data twice!
                            .addTransmission(transmitter)
-                           .addCompression(compressor)
                            .build())
         self.__threadRunner.addTask(videoController.start)
         self.__logger.info('Video streaming setup complete!')
