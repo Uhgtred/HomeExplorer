@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 # @author: Markus Kösters
 
-import logging
-
-from BusTransactions.BusFactory import BusFactory
+import ProjectLogging
 
 from BusTransactions.BusInterface import BusInterface
 from Video.VideoTransmitter.VideoTransmitterInterface import VideoTransmitterInterface
@@ -12,16 +10,10 @@ from Video.VideoTransmitter.VideoTransmitterInterface import VideoTransmitterInt
 class VideoTransmitter(VideoTransmitterInterface):
     """
     The VideoTransmitter class is responsible for transmitting video frames over a specified bus.
+    It is not implementing the Video transmission itself but wraps an existing bus with an Interface.
     """
-
-    """
-    Todo:   Is this class still needed? Maybe it would be possible to use the BusTransactions module and overwrite the encoding with serialization.
-            Or even use the BusTransactions module directly and set the serializer to match the encoding. But by doing this the possib
-            ilities to compress the frames would be lost as well. Except I also integrate the compression into the serializer of the BusTransactions module.
-            This would be a major change though and also goes against the separation of concerns. So I will leave it like this for now. 
-            Best solution would probably be to integrate a compression into the BusTransactions. This would require the BusFactory to become a BusBuilder instead.
-            Ontop the implementation and the concept for the compression inside the BusTransactions-package would be needed.
-    """
+    __logger: ProjectLogging.Logger.getLogger = ProjectLogging.Logger('VideoTransmitter',
+                                                                      'VideoTransmitter.log').getLogger
 
     def __init__(self, bus: BusInterface):
         """
@@ -29,7 +21,6 @@ class VideoTransmitter(VideoTransmitterInterface):
         :param bus: The bus used to transmit the serialized video frames.
         """
         # Initializing a logger. The loglevel can globally be set in ProjectLogging.Logger.
-        self.__logger: logging.Logger = logging.getLogger(__name__)
         self.__bus = bus
         self.__logger.debug(f"VideoTransmitter-bus is: {self.__bus}")
 

@@ -24,8 +24,27 @@ jobs:
       - name: Set PATH environment variable
         run: echo "PATH=$PATH:/app/venv/bin" >> $GITHUB_ENV
 
-      - name: Run unit tests in Docker container
-        run: docker run --rm robot_image sh -c "python3 -m unittest discover -v"
+      - name: Install coverage in Docker container
+        run: docker run --rm robot_image sh -c "pip install coverage"
+
+      - name: Run unit tests with coverage in Docker container and extract report
+        run: |
+          docker run --name coverage_container robot_image sh -c "coverage run --rcfile=.coveragerc -m unittest discover -v && coverage xml --rcfile=.coveragerc -o /app/coverage.xml && coverage report --rcfile=.coveragerc"
+          docker cp coverage_container:/app/coverage.xml ./coverage.xml
+          docker rm coverage_container
+
+      - name: Upload coverage report to GitHub
+        uses: actions/upload-artifact@v2
+        with:
+          name: coverage-report
+          path: ./coverage.xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage.xml
+          fail_ci_if_error: false
+          verbose: true
 
 
   # MKDocs documentation generation
