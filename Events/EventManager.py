@@ -30,9 +30,8 @@ class EventManager:
         :return:    An instance of an Event, that can be used to create an update
                     for the subscribers and for subscribing to this event.
         """
-        # Only adds the key to the dictionary if it does not already exist!
-        cls.__events.setdefault(name, Event())
-        return cls.__events.get(name)
+        # Only adds the key to the dictionary if it does not already exist! And returns an Event-instance in any case.
+        return cls.__events.setdefault(name, Event())
 
     @property
     def getEventsList(self) -> list[str]:
