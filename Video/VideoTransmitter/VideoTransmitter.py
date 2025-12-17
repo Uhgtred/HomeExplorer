@@ -12,8 +12,6 @@ class VideoTransmitter(VideoTransmitterInterface):
     The VideoTransmitter class is responsible for transmitting video frames over a specified bus.
     It is not implementing the Video transmission itself but wraps an existing bus with an Interface.
     """
-    __logger: ProjectLogging.Logger.getLogger = ProjectLogging.Logger('VideoTransmitter',
-                                                                      'VideoTransmitter.log').getLogger
 
     def __init__(self, bus: BusInterface):
         """
@@ -22,6 +20,7 @@ class VideoTransmitter(VideoTransmitterInterface):
         """
         # Initializing a logger. The loglevel can globally be set in ProjectLogging.Logger.
         self.__bus = bus
+        self.__logger = bus._Bus__logger
         self.__logger.debug(f"VideoTransmitter-bus is: {self.__bus}")
 
     def transmit(self, frameData: bytes) -> None:

@@ -12,15 +12,15 @@ class BusBuilder:
         # bus needs to be set on instancing this class, since it is the only thing that is not optional.
         self.bus: BusInterface = bus()
 
-    def setCompressor(self, compressor: CompressionProtocol) -> typing.Self:
-        self.bus.setCompressor(compressor)
+    def addCompressor(self, compressor: CompressionProtocol) -> typing.Self:
+        self.bus.addCompressor(compressor)
         return self
 
-    def setSerializer(self, serializer: SerializationProtocol) -> typing.Self:
+    def addSerializer(self, serializer: SerializationProtocol) -> typing.Self:
         self.bus.setSerializer(serializer)
         return self
 
-    def setEncoder(self, encoder: EncodingProtocol) -> typing.Self:
+    def addEncoder(self, encoder: EncodingProtocol) -> typing.Self:
         self.bus.setEncoder(encoder)
         return self
 

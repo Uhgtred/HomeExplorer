@@ -60,7 +60,7 @@ class helperClass:
 
 class TestBusTransceiver(unittest.TestCase):
     bus = BusPluginFactory.produceSerialBusStubPlugin()
-    serialTransceiver = BusFactory.DefaultBusFactory.produceCustomBusTransceiver(bus, Encoding.EncodingFactory.arduinoSerialEncoding)
+    serialTransceiver = DefaultBusFactory.DefaultBusFactory.produceCustomBusTransceiver(bus, Encoding.EncodingFactory.produceArduinoSerialEncoding)
     testString = 'Hello World'
     messages = []
 
@@ -76,7 +76,7 @@ class TestBusTransceiver(unittest.TestCase):
 
     def test_readBusUntilStopFlag(self):
         obj = helperClass()
-        udpBus = BusFactory.DefaultBusFactory.produceUDP_TransceiverWithStub(port = 2121)
+        udpBus = DefaultBusFactory.DefaultBusFactory.produceUDP_TransceiverWithStub(port = 2121)
         udpBus.writeSingleMessage(self.testString)
         arg = 'testArg'
         udpBus.readBusUntilStopFlag(obj.helperMethod, arg, testKwarg='testKwarg')
@@ -90,7 +90,7 @@ class TestBusTransceiver(unittest.TestCase):
 
     def test_readBusUntilStopFlagFail(self):
         obj = helperClass()
-        udpBus = BusFactory.DefaultBusFactory.produceUDP_TransceiverWithStub(port = 2122)
+        udpBus = DefaultBusFactory.DefaultBusFactory.produceUDP_TransceiverWithStub(port = 2122)
         udpBus.writeSingleMessage(self.testString)
         arg = 'testArg'
         self.assertRaises(TypeError, udpBus.readBusUntilStopFlag, (obj.helperMethodNoArgs, arg), testKwarg='testKwarg')

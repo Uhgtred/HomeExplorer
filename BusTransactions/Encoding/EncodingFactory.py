@@ -5,7 +5,7 @@ from . import EncodingProtocol
 from .ArduinoSerialEncoder import ArduinoSerialEncoder
 from .ImageDataEncoder import ImageDataEncoder
 from .PythonEncoder import PythonEncoder
-from .SocketEncoderJson import SocketEncoderJson
+from .JsonEncoder import SocketEncoderJson
 
 
 class EncodingFactory:
@@ -20,7 +20,7 @@ class EncodingFactory:
     """
 
     @staticmethod
-    def arduinoSerialEncoding() -> EncodingProtocol:
+    def produceArduinoSerialEncoding() -> EncodingProtocol:
         """
         Static method that provides the BusEncoding implementation specific to
         Arduino Serial communication. This encoding is suitable for scenarios
@@ -35,7 +35,7 @@ class EncodingFactory:
         return ArduinoSerialEncoder()
 
     @staticmethod
-    def socketEncoding(encodingType: str = "json") -> EncodingProtocol:
+    def produceSocketEncoding(encodingType: str = "json") -> EncodingProtocol:
         """
         Determine the socket encoding strategy based on the specified encoding type.
 

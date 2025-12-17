@@ -3,6 +3,8 @@ source = .
 omit = 
     */test_*
     */tests/*
+    */.venv_uv/*
+    */.venv/*
     */venv/*
     */site-packages/*
     setup.py

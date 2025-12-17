@@ -22,14 +22,14 @@ class TestBusEncodings(unittest.TestCase):
 
     def test_jsonDecoding(self):
         message: bytes = json.dumps({'testKey': 'testValue'}).encode()
-        encoder:  EncodingProtocol = self.encoding.socketEncoding('json')
+        encoder:  EncodingProtocol = self.encoding.produceSocketEncoding('json')
         decodedJsonData = encoder.decode(message)
         self.assertIsInstance(decodedJsonData, dict)
 
     def test_jsonEncoding(self):
         message: dict = {'testKey': 'testValue'}
         self.__logger.debug(f'Raw data before encoding is of type: {type(message)}.')
-        encoder: EncodingProtocol = self.encoding.socketEncoding('json')
+        encoder: EncodingProtocol = self.encoding.produceSocketEncoding('json')
         encodedJsonData = encoder.encode(message)
         self.__logger.debug(f'Encoded message is of type: {type(encodedJsonData)}')
         self.assertIsInstance(encodedJsonData, bytes)
@@ -37,28 +37,28 @@ class TestBusEncodings(unittest.TestCase):
     def test_pythonInternalEncoding(self):
         message: str = 'Hello World'
         self.__logger.debug(f'Raw data before encoding is of type: {type(message)}.')
-        encoder: EncodingProtocol = self.encoding.socketEncoding('pythonDefault')
+        encoder: EncodingProtocol = self.encoding.produceSocketEncoding('pythonDefault')
         encodedStringData = encoder.encode(message)
         self.__logger.debug(f'Encoded message is of type: {type(encodedStringData)}')
         self.assertIsInstance(encodedStringData, bytes)
 
     def test_pythonInternalDecoding(self):
         message: bytes = 'Hello World'.encode()
-        encoder: EncodingProtocol = self.encoding.socketEncoding('pythonDefault')
+        encoder: EncodingProtocol = self.encoding.produceSocketEncoding('pythonDefault')
         decodedStringData = encoder.decode(message)
         self.assertIsInstance(decodedStringData, str)
 
     def test_arduinoSerialEncoding(self):
         message: str = 'Hello World'
         self.__logger.debug(f'Raw data before encoding is of type: {type(message)}.')
-        encoder: EncodingProtocol = self.encoding.arduinoSerialEncoding()
+        encoder: EncodingProtocol = self.encoding.produceArduinoSerialEncoding()
         encodedStringData = encoder.encode(message)
         self.__logger.debug(f'Encoded message is of type: {type(encodedStringData)}')
         self.assertIsInstance(encodedStringData, bytes)
 
     def test_arduinoSerialDecoding(self):
         message: bytes = 'Hello World'.encode()
-        encoder: EncodingProtocol = self.encoding.arduinoSerialEncoding()
+        encoder: EncodingProtocol = self.encoding.produceArduinoSerialEncoding()
         decodedStringData = encoder.decode(message)
         self.assertIsInstance(decodedStringData, str)
 

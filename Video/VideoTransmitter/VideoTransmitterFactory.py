@@ -2,13 +2,15 @@
 # @author: Markus Kösters
 from BusTransactions import Bus
 from BusTransactions.BusFactory import BusFactory
+
+from Video.VideoTransmitter import VideoTransmitterInterface
 from Video.VideoTransmitter.VideoTransmitter import VideoTransmitter
 
 
 class VideoTransmitterFactory:
 
     @staticmethod
-    def produceDefaultVideoTransmitter(port: int, stub: bool = False) -> VideoTransmitter:
+    def produceDefaultVideoTransmitter(port: int) -> VideoTransmitterInterface:
         """
         Factory method for producing an instance of a default video-transmission object.
         :return: Video-transmission instance-object.
@@ -17,7 +19,7 @@ class VideoTransmitterFactory:
         return VideoTransmitter(bus)
 
     @staticmethod
-    def produceDefaultVideoTransmitterStub(port: int) -> VideoTransmitter:
+    def produceDefaultVideoTransmitterStub(port: int) -> VideoTransmitterInterface:
         """
         Produce a default VideoTransmitter stub configured with a UDP ImageDataReceiver.
 
@@ -36,7 +38,7 @@ class VideoTransmitterFactory:
         return VideoTransmitter(bus)
 
     @staticmethod
-    def produceVideoTransmitterNoEncoding(port: int) -> VideoTransmitter:
+    def produceVideoTransmitterNoEncoding(port: int) -> VideoTransmitterInterface:
         """
         Generates a VideoTransmitter instance configured with a UDP Transceiver that
         has no encoding.

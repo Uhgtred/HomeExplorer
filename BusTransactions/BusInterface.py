@@ -14,7 +14,7 @@ class BusInterface(ABC):
     """
 
     @abstractmethod
-    def setCompressor(self, compressor: CompressionProtocol) -> None:
+    def addCompressor(self, compressor: CompressionProtocol) -> None:
         """
 
         :param compressor:

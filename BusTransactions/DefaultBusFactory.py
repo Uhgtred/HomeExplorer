@@ -30,10 +30,10 @@ class DefaultBusFactory:
                  and encoding protocol.
         :rtype: Bus
         """
-        encoding: EncodingProtocol = EncodingFactory.arduinoSerialEncoding()
+        encoding: EncodingProtocol = EncodingFactory.produceArduinoSerialEncoding()
         busPlugin: BusPluginInterface = BusPluginFactory.produceSerialBusArduinoPlugin()
         bus: BusInterface = (BusBuilder(busPlugin)
-                             .setEncoder(encoding)
+                             .addEncoder(encoding)
                              .build())
         return bus
 
@@ -48,10 +48,10 @@ class DefaultBusFactory:
         :return: Returns an instance of the Bus class initialized with a stub serial
                  bus plugin and Arduino serial encoding protocol.
         """
-        encoding: EncodingProtocol = EncodingFactory.arduinoSerialEncoding()
+        encoding: EncodingProtocol = EncodingFactory.produceArduinoSerialEncoding()
         busPlugin: BusPluginInterface = BusPluginFactory.produceSerialBusStubPlugin()
         bus: BusInterface = (BusBuilder(busPlugin)
-                             .setEncoder(encoding)
+                             .addEncoder(encoding)
                              .build())
         return bus
 
@@ -68,10 +68,10 @@ class DefaultBusFactory:
         :return: Configured Bus object equipped with a UDP transceiver.
         :rtype: Bus
         """
-        encoding: EncodingProtocol = EncodingFactory.socketEncoding()
+        encoding: EncodingProtocol = EncodingFactory.produceSocketEncoding()
         busPlugin: BusPluginInterface = BusPluginFactory.produceUdpSocketPlugin(port=port)
         bus: BusInterface = (BusBuilder(busPlugin)
-                             .setEncoder(encoding)
+                             .addEncoder(encoding)
                              .build())
         return bus
 
@@ -91,10 +91,10 @@ class DefaultBusFactory:
         :return: A fully configured `Bus` instance with UDP-based stub communication.
         :rtype: Bus
         """
-        encoding: EncodingProtocol = EncodingFactory.socketEncoding()
+        encoding: EncodingProtocol = EncodingFactory.produceSocketEncoding()
         busPlugin: BusPluginInterface = BusPluginFactory.produceUdpStubPlugin(port=port)
         bus: BusInterface = (BusBuilder(busPlugin)
-                             .setEncoder(encoding)
+                             .addEncoder(encoding)
                              .build())
         return bus
 
@@ -114,9 +114,9 @@ class DefaultBusFactory:
         encoding: EncodingProtocol = EncodingFactory.produceImageDataEncoder()
         busPlugin: BusPluginInterface = BusPluginFactory.produceUdpSocketPlugin(port=port)
         bus: BusInterface = (BusBuilder(busPlugin)
-                             .setSerializer(SerializerMsgPack())
-                             .setEncoder(encoding)
-                             .setCompressor(CompressorZlib)
+                             .addSerializer(SerializerMsgPack())
+                             .addEncoder(encoding)
+                             .addCompressor(CompressorZlib)
                              .build())
         return bus
 
@@ -140,8 +140,8 @@ class DefaultBusFactory:
         encoding: EncodingProtocol = EncodingFactory.produceImageDataEncoder()
         busPlugin: BusPluginInterface = BusPluginFactory.produceUdpStubPlugin(port=port)
         bus: BusInterface = (BusBuilder(bus=busPlugin)
-                             .setSerializer(SerializerMsgPack())
-                             .setCompressor(CompressorZlib())
-                             .setEncoder(encoding)
+                             .addSerializer(SerializerMsgPack())
+                             .addCompressor(CompressorZlib())
+                             .addEncoder(encoding)
                              .build())
         return bus

@@ -10,6 +10,7 @@ from .BusInterface import BusInterface
 from .BusPlugins import BusPluginInterface
 from .Compression.CompressionProtocol import CompressionProtocol
 from .Encoding.EncodingProtocol import EncodingProtocol
+from .Encryption.EncryptionProtocol import EncryptionProtocol
 from .Serialization.SerializationProtocol import SerializationProtocol
 
 
@@ -27,9 +28,10 @@ class Bus(BusInterface):
         """
         self.__stopFlag: bool = False
         self.bus: BusPluginInterface = bus
-        self.__compressor: CompressionProtocol | None = None
-        self.__serializer: SerializationProtocol | None = None
-        self.__encoder: EncodingProtocol | None = None
+        self.__encryptor: EncryptionProtocol = None
+        self.__compressor: CompressionProtocol = None
+        self.__serializer: SerializationProtocol = None
+        self.__encoder: EncodingProtocol = None
 
     def readSingleMessage(self) -> EncodingProtocol.decode:
         """
@@ -109,10 +111,12 @@ class Bus(BusInterface):
         message: bytes = self.__encode(message)
         message: bytes = self.__serialize(message)
         message: bytes = self.__compress(message)
+        message: bytes = self.__encrypt(message)
         return message
 
     def __postProcessMessageFromReceiving(self, message: bytes) -> any:
         # The order is important for the following methods.
+        message: bytes = self.__decrypt(message)
         message: bytes = self.__deCompress(message)
         message: bytes = self.__deSerialize(message)
         message: any = self.__decode(message)
@@ -134,7 +138,7 @@ class Bus(BusInterface):
         """
         self.__stopFlag = state
 
-    def setCompressor(self, compressor: type(CompressionProtocol)) -> None:
+    def addCompressor(self, compressor: type(CompressionProtocol)) -> None:
         # Sets the compressor-object. It is being instanced before setting it, if it has not already been instanced.
         self.__compressor: CompressionProtocol = compressor() if callable(compressor) else compressor
 
@@ -163,8 +167,17 @@ class Bus(BusInterface):
         # Sets the serializer-object. It is being instanced before setting it, if it has not already been instanced.
         self.__serializer: SerializationProtocol = serializer() if callable(serializer) else serializer
 
+    def setEncryptor(self, encryptor: type(EncryptionProtocol)) -> None:
+        self.__encryptor: EncryptionProtocol = encryptor() if callable(encryptor) else encryptor
+
     def __serialize(self, data: any) -> bytes:
         return self.__serializer.serialize(data) if self.__serializer else data
 
     def __deSerialize(self, data: bytes) -> any:
         return self.__serializer.deSerialize(data) if self.__serializer else data
+
+    def __encrypt(self, message: bytes) -> bytes:
+        return self.__encryptor.encrypt(message) if self.__encryptor else message
+
+    def __decrypt(self, message: bytes) -> bytes:
+        return self.__encryptor.decrypt(message) if self.__encryptor else message

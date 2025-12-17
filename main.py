@@ -12,13 +12,12 @@ from BusTransactions.BusFactory import BusFactory
 from BusTransactions.BusInterface import BusInterface
 from BusTransactions.DefaultBusFactory import DefaultBusFactory
 from Events import EventManager
-from ProjectLogging.Logger import Logger
+from PortsEnum import PortsEnum
 from Video import VideoControllerBuilder, Serializer, Compressor, VideoController
 from Video.Compressor.CompressorFactory import CompressorFactory
 from Video.Serializer.SerializerFactory import SerializerFactory
 from Video.VideoCamera import VideoCameraFactory, VideoCamera
-from Video.VideoTransmitter import VideoTransmitter
-from Video.VideoTransmitter.VideoTransmitterFactory import VideoTransmitterFactory
+from Video.VideoTransmitter import VideoTransmitterInterface, VideoTransmitterFactory
 
 # changing working-directory to parent of this file
 os.chdir(os.path.dirname(os.getcwd()))
@@ -28,7 +27,6 @@ class Main:
     """
     Main program for managing the process and starting the program.
     """
-    __ports: dict = {'controllerPort': 2001, 'APIPort': 3000, 'videoPort': 2002}
 
     def __init__(self):
         """
@@ -50,12 +48,12 @@ class Main:
 
         """
         # Todo: After Systemtest check the versions of the code in BusTransactions repository vs the versions in HomeExplorer and RobotRemote
+        #       This should be a subrepository inside this repository or even a package on pypi, so it can be imported with it's latest version.
         # Most importantly, there needs to be the close function inside the all ethernet plugins
-        self.__logger = Logger('Main', 'MainLog.log').getLogger
-        self.__logger.info('Starting initialization process...')
+        self.__ports = PortsEnum
+        self.__logger = ProjectLogging.Logger('Main', 'MainLog.log').getLogger
         self.__threadRunner = Runners.threadRunner.ThreadRunner()
         self.__setup()
-        self.__logger.info('Initialization process complete! Robot ready!')
 
     def __setup(self) -> None:
         """
@@ -66,8 +64,9 @@ class Main:
             :raises BaseException: If an error occurs during setup, it wraps and
                 re-raises the exception with a descriptive message.
             """
+        self.__logger.info('Starting initialization process...')
         try:
-            pass
+            self.__logger.info('Press Ctrl+C to exit...')
             self.__steeringControl()
             self.__videoControl()
             # Todo: activate proper use of the api for maintainability.
@@ -76,6 +75,10 @@ class Main:
         except Exception as e:
             self.__logger.exception(f'An error occurred during setup: {e}')
             raise BaseException(f'An error occurred during setup: {e}')
+        except KeyboardInterrupt:
+            self.__logger.info('Robot interrupted by user!')
+        self.__logger.info('Initialization process complete! Robot ready!')
+
 
     def __steeringControl(self) -> None:
         """
@@ -89,7 +92,7 @@ class Main:
         and notify all subscribed components when new data is received.
         """
         self.__logger.info('Setting up steering control...')
-        remoteControlSocket = BusFactory.produceUDP_Transceiver(port=self.__ports.get('controllerPort'))
+        remoteControlSocket = BusFactory.produceUDP_Transceiver(port=self.__ports.CONTROLLERPORT)
         actorController: ActorController = ActorControlFactory.produceActorControlXbox()
         remoteControlEvent = EventManager.produceEvent('controllerEvent')
         remoteControlEvent.subscribe(actorController.processInput)
@@ -107,7 +110,7 @@ class Main:
         :raises KeyError: If 'APIPort' key is not found in the `self.__ports` dictionary.
         """
         self.__logger.info('Setting up API server...')
-        apiObject = API.Main(port=self.__ports.get('APIPort'))
+        apiObject = API.Main(port=self.__ports.APIPORT)
         apiObject.runServer()
         self.__logger.info('API server started!')
 
@@ -121,11 +124,11 @@ class Main:
         """
         self.__logger.info('Setting up video streaming...')
         camera: VideoCamera = VideoCameraFactory.produceDefaultCameraInstance()
-        transmitter: BusInterface = DefaultBusFactory.produceUDP_ImageDataTransceiver(self.__ports.get('videoPort'))
+        transmitter: VideoTransmitterInterface = VideoTransmitterFactory.produceDefaultVideoTransmitter(self.__ports.VIDEOPORT)
         videoController: VideoController = (VideoControllerBuilder()
-                           .addCamera(camera)
-                           .addTransmission(transmitter)
-                           .build())
+                                            .addCamera(camera)
+                                            .addTransmission(transmitter)
+                                            .build())
         self.__threadRunner.addTask(videoController.start)
         self.__logger.info('Video streaming setup complete!')
 
