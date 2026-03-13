@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 # @author      Markus Kösters
+import typing
 
-import logging
+import ProjectLogging
 
 from .Event import Event
 
@@ -21,7 +22,8 @@ class EventManager:
     """
 
     __events: dict = {}
-    __logger: logging.Logger = logging.getLogger(__name__)
+    __logger: ProjectLogging.Logger().getLogger = ProjectLogging.Logger('EventManager',
+                                                                      'EventManager.log').getLogger
 
     @classmethod
     def produceEvent(cls, name: str) -> Event:
@@ -43,13 +45,14 @@ class EventManager:
         """
         return list(self.__events.keys())
 
-    def subscribeToEvent(self, eventName: str, callbackMethod: callable) -> None:
+    def subscribeToEvent(self, eventName: str, callbackMethod: typing.Callable) -> None:
         """
         Method for subscribing to a specific event.
         :param callbackMethod: Method that will be used for the callback (event update).
         :param eventName: Name of the event.
         """
         if not callable(callbackMethod):
+            self.__logger.warning(f'Callbackmethod is not callable. Subscription to event {eventName} failed!')
             return
         self.__events.get(eventName).subscribe(callbackMethod)
 

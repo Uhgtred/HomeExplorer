@@ -1,4 +1,5 @@
 import json
+import typing
 
 import ProjectLogging
 from BusTransactions.Encoding.EncodingProtocol import EncodingProtocol
@@ -23,7 +24,7 @@ class SocketEncoderJson(EncodingProtocol):
         return json.loads(message)
 
     @staticmethod
-    def encode(message: any) -> json:
+    def encode(message: typing.Any) -> json:
         """
         Method for encoding a message that will be sent to a socket.
         :param message: Message that needs to be encoded.

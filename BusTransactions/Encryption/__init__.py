@@ -1,1 +1,1 @@
-from EncryptionProtocol import  EncryptionProtocol
+from EncryptionProtocol import EncryptionProtocol

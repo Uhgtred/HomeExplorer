@@ -14,7 +14,7 @@ class BusInterface(ABC):
     """
 
     @abstractmethod
-    def addCompressor(self, compressor: CompressionProtocol) -> None:
+    def setCompressor (self, compressor: CompressionProtocol) -> None:
         """
 
         :param compressor:
@@ -72,4 +72,7 @@ class BusInterface(ABC):
         Setter-method for the stop-flag.
         :param state: Stop-flag state that will be set.
         """
+        pass
+
+    def setEncryptor(self, encryptor):
         pass

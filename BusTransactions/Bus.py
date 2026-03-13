@@ -3,6 +3,7 @@
 
 import inspect
 import threading
+import typing
 from inspect import Signature
 
 import ProjectLogging
@@ -33,7 +34,7 @@ class Bus(BusInterface):
         self.__serializer: SerializationProtocol = None
         self.__encoder: EncodingProtocol = None
 
-    def readSingleMessage(self) -> EncodingProtocol.decode:
+    def readSingleMessage(self) -> typing.Any:
         """
         Read and decode a single message from the bus.
         :return: Decoded message in string format.
@@ -44,11 +45,11 @@ class Bus(BusInterface):
         except Exception as exception:
             self.__logger.debug(f'Error while trying to read a message from the bus: {exception}')
             raise BaseException(f'Error while trying to read a message from the bus: {exception}')
-        message: any = self.__postProcessMessageFromReceiving(message)
+        message: typing.Any = self.__postProcessMessageFromReceiving(message)
         self.__logger.debug(f'Message that has been received: {message}')
         return message
 
-    def readBusUntilStopFlag(self, callbackMethod: callable, *args, **kwargs) -> None:
+    def readBusUntilStopFlag(self, callbackMethod: typing.Callable, *args, **kwargs) -> None:
         """
             Reading messages from a bus in a loop until stopFlag is raised.
             :param callbackMethod: Method that the received messages shall be sent to.
@@ -58,7 +59,7 @@ class Bus(BusInterface):
         thread = threading.Thread(target=self.__readLoop, args=(callbackMethod, *args), kwargs=kwargs)
         thread.start()
 
-    def __readLoop(self, callbackMethod: callable, *args, **kwargs) -> None:
+    def __readLoop(self, callbackMethod: typing.Callable, *args, **kwargs) -> None:
         """
             Method that includes the logic to read a message from the bus in a loop until stopFlag is raised.
             :param callbackMethod: Method that the received messages will be sent to.
@@ -71,7 +72,7 @@ class Bus(BusInterface):
                                     f'\twith args: {args}\n'
                                     f'\tand kwargs: {kwargs}'
                                     f'\ton bus: {self.bus.__class__.__name__}')
-                message: any = self.readSingleMessage()
+                message: typing.Any = self.readSingleMessage()
                 self.__logger.debug(f'Message received: {message}')
                 callbackMethod(message, *args, **kwargs)
             except Exception as e:
@@ -79,7 +80,7 @@ class Bus(BusInterface):
 
 
     @staticmethod
-    def __callBackHasInputArg(callbackMethod: callable) -> None:
+    def __callBackHasInputArg(callbackMethod: typing.Callable) -> None:
         """
         Method that is making sure, the callback-method provided to the bus fulfills the requirements.
         :param callbackMethod: Method that will be checked for compliance.
@@ -93,7 +94,7 @@ class Bus(BusInterface):
         else:
             raise TypeError("Callback-method is not callable.")
 
-    def writeSingleMessage(self, message: any) -> None:
+    def writeSingleMessage(self, message: typing.Any) -> None:
         """
             Sending an encoded message to the bus.
             :param message: Message that will be sent to the bus.
@@ -106,7 +107,7 @@ class Bus(BusInterface):
             self.__logger.debug(f'Error while trying to send a message to the bus: {exception}!')
             raise BaseException(f'Error while trying to send a message to the bus: {exception}!')
 
-    def __preProcessMessageForTransmission(self, message: any) -> bytes:
+    def __preProcessMessageForTransmission(self, message: typing.Any) -> bytes:
         # The order is important for the following methods.
         message: bytes = self.__encode(message)
         message: bytes = self.__serialize(message)
@@ -114,12 +115,12 @@ class Bus(BusInterface):
         message: bytes = self.__encrypt(message)
         return message
 
-    def __postProcessMessageFromReceiving(self, message: bytes) -> any:
+    def __postProcessMessageFromReceiving(self, message: bytes) -> typing.Any:
         # The order is important for the following methods.
         message: bytes = self.__decrypt(message)
         message: bytes = self.__deCompress(message)
         message: bytes = self.__deSerialize(message)
-        message: any = self.__decode(message)
+        message: typing.Any = self.__decode(message)
         return message
 
     @property
@@ -138,7 +139,7 @@ class Bus(BusInterface):
         """
         self.__stopFlag = state
 
-    def addCompressor(self, compressor: type(CompressionProtocol)) -> None:
+    def setCompressor(self, compressor: typing.Type[CompressionProtocol]) -> None:
         # Sets the compressor-object. It is being instanced before setting it, if it has not already been instanced.
         self.__compressor: CompressionProtocol = compressor() if callable(compressor) else compressor
 
@@ -153,27 +154,27 @@ class Bus(BusInterface):
     def __deCompress(self, data: bytes) -> bytes:
         return self.__compressor.deCompress(data) if self.__compressor else data
 
-    def setEncoder(self, encoder: type(EncodingProtocol)) -> None:
+    def setEncoder(self, encoder: typing.Type[EncodingProtocol]) -> None:
         # Sets the encoder-object. It is being instanced before setting it, if it has not already been instanced.
         self.__encoder: EncodingProtocol = encoder() if callable(encoder) else encoder
 
-    def __encode(self, data: any) -> bytes:
+    def __encode(self, data: typing.Any) -> bytes:
         return self.__encoder.encode(data) if self.__encoder else data
 
-    def __decode(self, data: bytes) -> any:
+    def __decode(self, data: bytes) -> typing.Any:
         return self.__encoder.decode(data) if self.__encoder else data
 
-    def setSerializer(self, serializer: type(SerializationProtocol)) -> None:
+    def setSerializer(self, serializer: typing.Type[SerializationProtocol]) -> None:
         # Sets the serializer-object. It is being instanced before setting it, if it has not already been instanced.
         self.__serializer: SerializationProtocol = serializer() if callable(serializer) else serializer
 
-    def setEncryptor(self, encryptor: type(EncryptionProtocol)) -> None:
+    def setEncryptor(self, encryptor: typing.Type[EncryptionProtocol]) -> None:
         self.__encryptor: EncryptionProtocol = encryptor() if callable(encryptor) else encryptor
 
-    def __serialize(self, data: any) -> bytes:
+    def __serialize(self, data: typing.Any) -> bytes:
         return self.__serializer.serialize(data) if self.__serializer else data
 
-    def __deSerialize(self, data: bytes) -> any:
+    def __deSerialize(self, data: bytes) -> typing.Any:
         return self.__serializer.deSerialize(data) if self.__serializer else data
 
     def __encrypt(self, message: bytes) -> bytes:

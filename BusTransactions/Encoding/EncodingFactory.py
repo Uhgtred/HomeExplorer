@@ -2,10 +2,10 @@
 # @author Markus Kösters
 
 from . import EncodingProtocol
-from .ArduinoSerialEncoder import ArduinoSerialEncoder
-from .ImageDataEncoder import ImageDataEncoder
-from .PythonEncoder import PythonEncoder
-from .JsonEncoder import SocketEncoderJson
+from BusTransactions.Encoding.Encoders.ArduinoSerialEncoder import ArduinoSerialEncoder
+from BusTransactions.Encoding.Encoders.ImageDataEncoder import ImageDataEncoder
+from BusTransactions.Encoding.Encoders.PythonEncoder import PythonEncoder
+from BusTransactions.Encoding.Encoders.JsonEncoder import SocketEncoderJson
 
 
 class EncodingFactory:

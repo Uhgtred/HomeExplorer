@@ -1,21 +1,18 @@
 #!/usr/bin/env python3
 # @author   Markus Kösters
-import logging
-import os
 
+import os
 import API
+import ProjectLogging
 import Runners
 from ActorControl import ActorController
 from ActorControl.ActorControlFactory import ActorControlFactory
-from BusTransactions.BusFactory import BusFactory
 
 from BusTransactions.BusInterface import BusInterface
 from BusTransactions.DefaultBusFactory import DefaultBusFactory
-from Events import EventManager
+from Events import EventManager, Event
 from PortsEnum import PortsEnum
-from Video import VideoControllerBuilder, Serializer, Compressor, VideoController
-from Video.Compressor.CompressorFactory import CompressorFactory
-from Video.Serializer.SerializerFactory import SerializerFactory
+from Video import VideoControllerBuilder, VideoController
 from Video.VideoCamera import VideoCameraFactory, VideoCamera
 from Video.VideoTransmitter import VideoTransmitterInterface, VideoTransmitterFactory
 
@@ -92,11 +89,13 @@ class Main:
         and notify all subscribed components when new data is received.
         """
         self.__logger.info('Setting up steering control...')
-        remoteControlSocket = BusFactory.produceUDP_Transceiver(port=self.__ports.CONTROLLERPORT)
+        remoteControlSocket: BusInterface = (DefaultBusFactory.
+                                             produceUDP_Transceiver(port=self.__ports.CONTROLLERPORT.value))
         actorController: ActorController = ActorControlFactory.produceActorControlXbox()
-        remoteControlEvent = EventManager.produceEvent('controllerEvent')
+        remoteControlEvent: Event = EventManager.produceEvent('controllerEvent')
         remoteControlEvent.subscribe(actorController.processInput)
-        self.__threadRunner.addTask(remoteControlSocket.readBusUntilStopFlag, remoteControlEvent.notifySubscribers)
+        self.__threadRunner.addTask(remoteControlSocket.readBusUntilStopFlag,
+                                    remoteControlEvent.notifySubscribers)
         self.__logger.info('Steering control setup complete!')
 
     def __apiSetup(self):
@@ -110,7 +109,7 @@ class Main:
         :raises KeyError: If 'APIPort' key is not found in the `self.__ports` dictionary.
         """
         self.__logger.info('Setting up API server...')
-        apiObject = API.Main(port=self.__ports.APIPORT)
+        apiObject = API.Main(port=self.__ports.APIPORT.value)
         apiObject.runServer()
         self.__logger.info('API server started!')
 
@@ -124,7 +123,8 @@ class Main:
         """
         self.__logger.info('Setting up video streaming...')
         camera: VideoCamera = VideoCameraFactory.produceDefaultCameraInstance()
-        transmitter: VideoTransmitterInterface = VideoTransmitterFactory.produceDefaultVideoTransmitter(self.__ports.VIDEOPORT)
+        transmitter: VideoTransmitterInterface = (VideoTransmitterFactory.
+                                                  produceDefaultVideoTransmitter(self.__ports.VIDEOPORT.value))
         videoController: VideoController = (VideoControllerBuilder()
                                             .addCamera(camera)
                                             .addTransmission(transmitter)
