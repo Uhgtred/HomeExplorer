@@ -7,7 +7,7 @@ RUN apt update --allow-releaseinfo-change && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy requirements to app-folder
-COPY requirements.txt /app/
+COPY pyproject.toml /app/venv
 WORKDIR /app/
 
 # open specified port to the outside
@@ -15,9 +15,10 @@ ENV PORT=2000
 EXPOSE 2000
 
 # Install dependencies
-RUN python3 -m venv /app/venv && \
-    /app/venv/bin/pip3 install --upgrade pip && \
-    /app/venv/bin/pip3 install -r /app/requirements.txt
+RUN python3 -m pip install uv && \
+    uv /app/venv && \
+    source /app/venv/bin/activate &&\
+    uv sync \
 
 # Copy SourceCode to app-folder
 COPY ../ /app/
