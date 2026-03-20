@@ -15,7 +15,7 @@ ENV PORT=2000
 EXPOSE 2000
 
 # Install dependencies
-RUN python3 -m pip install uv && \
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh && \
     uv /app/venv && \
     source /app/venv/bin/activate &&\
     uv sync \
