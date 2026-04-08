@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 # @author: Markus Kösters
 import logging
+import typing
 
 from BusTransactions import Bus
-from BusTransactions.BusFactory import BusFactory
+from BusTransactions.DefaultBusFactory import DefaultBusFactory
 from .ActorController import ActorController
 
 
@@ -12,7 +13,12 @@ class ActorControlFactory:
     __logger: logging.Logger = logging.getLogger(__name__)
 
     @staticmethod
-    def produceActorControlXbox(transmitterMethod: callable = None) -> ActorController:
+    def createActorController() -> ActorController:
+        actorBus: type[Bus] = DefaultBusFactory.produceSerialTransceiver()
+        return ActorController(actorBus.writeSingleMessage)
+
+    @staticmethod
+    def produceActorControlXbox(transmitterMethod: typing.Callable = None) -> ActorController:
         """
         Creates and returns an instance of ActorController based on the provided
         transmitter method or a default serial bus transceiver. If a custom
@@ -27,9 +33,9 @@ class ActorControlFactory:
         :rtype: ActorController
         """
         if transmitterMethod:
-            return ActorController(transmitterMethod, 'xbox_controller')
-        actorBus: Bus = BusFactory.produceSerialTransceiver()
-        return ActorController(actorBus.writeSingleMessage, 'xbox_controller')
+            return ActorController(transmitterMethod)
+        actorBus: type[Bus] = DefaultBusFactory.produceSerialTransceiver()
+        return ActorController(actorBus.writeSingleMessage)
 
     @staticmethod
     def produceActorControlStub() -> ActorController:
@@ -46,8 +52,8 @@ class ActorControlFactory:
         :rtype: ActorController
         """
         ActorControlFactory.__logger.debug(f'ActorControlFactory: Creating stub bus')
-        actorBus: Bus = BusFactory.produceSerialTransceiverWithStub()
+        actorBus: type[Bus] = DefaultBusFactory.produceSerialTransceiverWithStub()
         ActorControlFactory.__logger.debug(f'Using stub bus: {actorBus}')
-        actorController: ActorController = ActorController(actorBus.writeSingleMessage, 'xbox_controller')
+        actorController: ActorController = ActorController(actorBus.writeSingleMessage)
         ActorControlFactory.__logger.debug(f'ActorController created: {actorController}')
         return actorController

@@ -18,13 +18,13 @@ class SocketEncoderJson(EncodingProtocol):
         """
         SocketEncoderJson.__logger.debug(f'Message that will be decoded is of type: {type(message)}')
         if isinstance(message, bytes):
-            message: json = message.decode()
+            message: str = message.decode()
         SocketEncoderJson.__logger.debug(f'Decoded message that will be unpacked from json is: {message}, of type: '
                                           f'{type(message)}')
         return json.loads(message)
 
     @staticmethod
-    def encode(message: typing.Any) -> json:
+    def encode(message: typing.Any) -> bytes:
         """
         Method for encoding a message that will be sent to a socket.
         :param message: Message that needs to be encoded.

@@ -2,12 +2,11 @@
 # @author: Markus Kösters
 
 import json
-from inspect import signature
+from inspect import signature, Signature
+import typing
 
 import ProjectLogging
 from .ActorControlInterface import ActorControlInterface
-from .ButtonConfig import ButtonConfig
-from .ButtonsInterface import ButtonsInterface
 
 
 class ActorController(ActorControlInterface):
@@ -33,57 +32,26 @@ class ActorController(ActorControlInterface):
     __logger: ProjectLogging.Logger.getLogger = ProjectLogging.Logger('ActorController',
                                                                       'ActorController.log').getLogger
 
-    def __init__(self, transmitterMethod: callable, inputDeviceType: str):
+    def __init__(self, transmitterMethod: typing.Callable):
         """
         :param transmitterMethod: Method used to transmit data. Needs to accept one input argument.
         :param inputDeviceType: This defines which input-device is connected. For example 'xbox_controller'.
         """
-        self.__inputDeviceType: str = inputDeviceType
-        print(f'transmitterMethod: {transmitterMethod}, {signature(transmitterMethod)}')
-        self.__logger.debug(f'Input Device Type: {self.__inputDeviceType}')
         self.__checkInputArgs(transmitterMethod, 2)
         self.__transmitterMethod = transmitterMethod
 
     @staticmethod
-    def __remapButtons(buttonDict: dict, configDict: dict) -> dict:
-        """
-        Remaps the keys of a given dictionary that represents buttons using a configuration
-        dictionary mapping old keys to new keys. This functionality is typically used
-        to adjust configurations dynamically based on user preferences or system specifications.
-
-        .. note::
-           This method performs logging for debugging purposes before the remapping process begins.
-
-        :param buttonDict: A dictionary where keys represent current buttons and values
-           represent associated data or actions bound to those buttons.
-        :param configDict: A dictionary that defines the mapping of old button keys
-           to new button keys. The keys are existing buttons, and the values are the
-           new keys to replace them.
-        :return: A new dictionary where keys of `buttonDict` have been remapped using
-           `configDict`. If a key in `buttonDict` does not have a corresponding key in
-           `configDict`, it will not appear in the resulting dictionary.
-        :rtype: dict
-        """
-        ActorController.__logger.debug(f'Buttons that are going to be remapped: {buttonDict}, '
-                                       f'with config: {configDict}')
-        newButtonsDict: dict = {}
-        for key in buttonDict.keys():
-            newKey: str = configDict.get(str(key))
-            newButtonsDict[newKey] = buttonDict.get(key)
-        return newButtonsDict
-
-    @staticmethod
-    def __checkInputArgs(method: callable, numberOfArgs: int) -> None:
+    def __checkInputArgs(method: typing.Callable, numberOfArgs: int) -> None:
         """
         Method for checking number of input arguments for a given method. Raising an exception if numberOfArgs does not match the signature of the method.
         :param method: Method to check.
         """
         # raising exception if method does not accept any input-arguments.
-        methodSignature: signature = signature(method)
+        methodSignature: Signature = signature(method)
         if len(methodSignature.parameters) > numberOfArgs:
             raise TypeError(f'Method: {method} shall accept {numberOfArgs} argument(s), got: {len(methodSignature.parameters)}!')
 
-    def processInput(self, buttons: ButtonsInterface) -> None:
+    def processInput(self, buttonJson: str) -> None:
         """
         Processes input buttons by converting their data into a JSON message and transmitting it.
 
@@ -95,30 +63,11 @@ class ActorController(ActorControlInterface):
         :param buttons: The Buttons object containing input data to be processed.
         :return: None
         """
-        buttonDict = self._getButtonDict(buttons)
-        jsonMessage = self._transformValuesToJson(buttonDict)
-        self.__transmitterMethod(jsonMessage)
-
-    def _getButtonDict(self, buttons: ButtonsInterface) -> dict:
-        """
-        Converts button configuration into a dictionary remapped to the specific input device
-        type's button configuration. Supports handling various device types for consistent
-        button mapping across different input devices.
-
-        :param buttons: Buttons instance containing the button configuration to be converted.
-        :type buttons: Buttons
-        :return: Dictionary of button mappings remapped for the corresponding input device
-            type defined by the instance's configuration.
-        :rtype: dict
-        """
-        self.__logger.debug(f'Getting button dict from {buttons}')
-        buttonDict: dict = buttons # Todo: This was really good. This needs to be reimplemented
-        match self.__inputDeviceType.lower():
-            case 'xbox_controller': return self.__remapButtons(buttonDict, ButtonConfig().xBox)
-            case default: return self.__remapButtons(buttonDict, ButtonConfig().default)
+        # jsonMessage = self._transformValuesToJson(buttonDict)
+        self.__transmitterMethod(buttonJson)
 
     @staticmethod
-    def _transformValuesToJson(message: dict) -> json:
+    def _transformValuesToJson(message: dict) -> str:
         """
         Transforms a given dictionary message into a JSON formatted string.
 

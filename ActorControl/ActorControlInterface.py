@@ -4,13 +4,11 @@
 import json
 from abc import ABC, abstractmethod
 
-from .ButtonsInterface import ButtonsInterface
-
 
 class ActorControlInterface(ABC):
 
     @abstractmethod
-    def processInput(self, buttons: ButtonsInterface) -> None:
+    def processInput(self, buttons: dict) -> None:
         """
         Interface-method for describing how the input can be set.
         :param buttons: Buttons-object containing information about the buttons.
@@ -23,13 +21,4 @@ class ActorControlInterface(ABC):
         Interface-method for transforming the message into json-format.
         :param message: Dictionary containing information about the buttons pressed and their value.
         :return: Json-formatted message.
-        """
-
-    @staticmethod
-    @abstractmethod
-    def _getButtonDict(buttons: ButtonsInterface) -> dict:
-        """
-        Interface-Method for retrieving button-data from a button-object.
-        :param buttons: Button-object that contains button information and state.
-        :return: Dictionary containing button information and state.
         """

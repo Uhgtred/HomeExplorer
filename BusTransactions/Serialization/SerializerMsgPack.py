@@ -1,3 +1,5 @@
+import typing
+
 import msgpack
 
 from BusTransactions.Serialization.SerializationProtocol import SerializationProtocol
@@ -5,10 +7,10 @@ from BusTransactions.Serialization.SerializationProtocol import SerializationPro
 
 class SerializerMsgPack(SerializationProtocol):
 
-    def serialize(self, data: any) -> bytes:
+    def serialize(self, data: typing.Any) -> bytes:
         serializedData: bytes = msgpack.packb(data)
         return serializedData
 
-    def deSerialize(self, serializedData: bytes) -> any:
-        deserializedData: any = msgpack.unpackb(serializedData)
+    def deSerialize(self, serializedData: bytes) -> typing.Any:
+        deserializedData: typing.Any = msgpack.unpackb(serializedData)
         return deserializedData

@@ -2,6 +2,8 @@
 # @author   Markus Kösters
 
 import os
+import typing
+
 import API
 import ProjectLogging
 import Runners
@@ -89,10 +91,11 @@ class Main:
         and notify all subscribed components when new data is received.
         """
         self.__logger.info('Setting up steering control...')
-        remoteControlSocket: BusInterface = (DefaultBusFactory.
-                                             produceUDP_Transceiver(port=self.__ports.CONTROLLERPORT.value))
+        remoteControlSocket: typing.Type[BusInterface] = (
+            DefaultBusFactory.produceUPD_Transceiver_Python_Encoding(port = self.__ports.CONTROLLERPORT.value))
         actorController: ActorController = ActorControlFactory.produceActorControlXbox()
         remoteControlEvent: Event = EventManager.produceEvent('controllerEvent')
+        # Subscribes to an event that notifies the subscribers with the buttons that have been pushed.
         remoteControlEvent.subscribe(actorController.processInput)
         self.__threadRunner.addTask(remoteControlSocket.readBusUntilStopFlag,
                                     remoteControlEvent.notifySubscribers)
