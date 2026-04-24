@@ -7,13 +7,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.ROBOT_USER }}
           password: ${{ secrets.ROBOT_TOKEN }}
-
 
       - name: Checkout code
         uses: actions/checkout@v3
@@ -21,15 +19,18 @@ jobs:
       - name: Build Docker image
         run: docker build . --file Dockerfile --tag robot_image
 
-      - name: Set PATH environment variable
-        run: echo "PATH=$PATH:/app/venv/bin" >> $GITHUB_ENV
-
+      # Install coverage inside the container using uv
       - name: Install coverage in Docker container
-        run: docker run --rm robot_image sh -c "uv install coverage"
+        run: docker run --rm robot_image sh -c "uv tool install coverage"
 
+      # Run tests + generate coverage.xml inside container
       - name: Run unit tests with coverage in Docker container and extract report
         run: |
-          docker run --name coverage_container robot_image sh -c "coverage run --rcfile=.coveragerc -m unittest discover -v && coverage xml --rcfile=.coveragerc -o /app/coverage.xml && coverage report --rcfile=.coveragerc"
+          docker run --name coverage_container robot_image sh -c "\
+            uv run coverage run --rcfile=.coveragerc -m unittest discover -v && \
+            uv run coverage xml --rcfile=.coveragerc -o /app/coverage.xml && \
+            uv run coverage report --rcfile=.coveragerc \
+          "
           docker cp coverage_container:/app/coverage.xml ./coverage.xml
           docker rm coverage_container
 
@@ -47,25 +48,27 @@ jobs:
           verbose: true
 
 
-  # MKDocs documentation generation
   docs:
     runs-on: ubuntu-latest
-    needs:
-      - build
+    needs: build
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.14
+      - name: Install uv
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
 
-      - name: Install dependencies
+      - name: Add uv to PATH
+        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Install documentation tools
         run: |
-          uv install mkdocs
-          uv install mkdocs-material
+          uv tool install mkdocs
+          uv tool install mkdocs-material
+
+      - name: Build documentation
+        run: mkdocs build
 
       - name: Deploy documentation to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
