@@ -32,9 +32,9 @@ ENV PATH="/app/venv/bin:${PATH}"
 RUN uv sync --frozen
 
 # Install tools globally (coverage + mkdocs)
-RUN uv tool install coverage && \
-    uv tool install mkdocs && \
-    uv tool install mkdocs-material
+RUN uv tool install coverage # && \
+#    uv tool install mkdocs && \
+#    uv tool install mkdocs-material
 
 # Copy source code
 COPY . .
