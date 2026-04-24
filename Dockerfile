@@ -1,27 +1,42 @@
 FROM ubuntu:22.04
 LABEL authors="Markus"
 
-# Install python and pip
+# Install system dependencies
 RUN apt update --allow-releaseinfo-change && \
-    apt install -y --no-install-recommends python3 python3-pip python3-venv ffmpeg libsm6 libxext6 libgl1-mesa-glx && \
-    rm -rf /var/lib/apt/lists/*
+    apt install -y --no-install-recommends \
+        curl \
+        ca-certificates \
+        ffmpeg \
+        libsm6 \
+        libxext6 \
+        libgl1-mesa-glx \
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements to app-folder
-COPY pyproject.toml /app/venv
-WORKDIR /app/
+# Install uv
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+ENV PATH="/root/.local/bin:${PATH}"
 
-# open specified port to the outside
+# Create app directory
+WORKDIR /app
+
+# Copy project metadata first (for caching)
+COPY pyproject.toml uv.lock* ./
+
+# Create virtual environment using uv
+RUN uv venv /app/venv
+
+# Add venv to PATH
+ENV PATH="/app/venv/bin:${PATH}"
+
+# Install dependencies into the venv
+RUN uv sync --frozen
+
+# Copy the rest of the source code
+COPY . .
+
+# Expose port
 ENV PORT=2000
 EXPOSE 2000
 
-# Install dependencies
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh && \
-    uv /app/venv && \
-    source /app/venv/bin/activate &&\
-    uv sync \
-
-# Copy SourceCode to app-folder
-COPY ../ /app/
-
-## set environment for python-version
-ENV PATH="/app/venv/bin:${PATH}"
+# Run your app using uv
+#CMD ["uv", "run", "main.py"]
