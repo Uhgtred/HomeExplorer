@@ -28,15 +28,19 @@ RUN uv venv /app/venv
 # Add venv to PATH
 ENV PATH="/app/venv/bin:${PATH}"
 
-# Install dependencies into the venv
+# Install project dependencies
 RUN uv sync --frozen
 
-# Copy the rest of the source code
+# Install tools globally (coverage + mkdocs)
+RUN uv tool install coverage && \
+    uv tool install mkdocs && \
+    uv tool install mkdocs-material
+
+# Copy source code
 COPY . .
 
 # Expose port
 ENV PORT=2000
 EXPOSE 2000
 
-# Run your app using uv
 #CMD ["uv", "run", "main.py"]

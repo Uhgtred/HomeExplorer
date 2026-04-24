@@ -1,4 +1,4 @@
-name: Build and Test with Documentation
+name: Build, Test, and Docs
 
 on: [push]
 
@@ -19,12 +19,7 @@ jobs:
       - name: Build Docker image
         run: docker build . --file Dockerfile --tag robot_image
 
-      # Install coverage inside the container using uv
-      - name: Install coverage in Docker container
-        run: docker run --rm robot_image sh -c "uv tool install coverage"
-
-      # Run tests + generate coverage.xml inside container
-      - name: Run unit tests with coverage in Docker container and extract report
+      - name: Run tests with coverage inside container
         run: |
           docker run --name coverage_container robot_image sh -c "\
             uv run coverage run --rcfile=.coveragerc -m unittest discover -v && \
@@ -52,20 +47,12 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
 
+    container:
+      image: robot_image
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
-      - name: Install uv
-        run: curl -LsSf https://astral.sh/uv/install.sh | sh
-
-      - name: Add uv to PATH
-        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
-
-      - name: Install documentation tools
-        run: |
-          uv tool install mkdocs
-          uv tool install mkdocs-material
 
       - name: Build documentation
         run: mkdocs build
